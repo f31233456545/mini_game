@@ -13,5 +13,5 @@ cd mini_game
 npm install
 
 #开启开发服务器
-npm run serve
+npm run dev
 ```
