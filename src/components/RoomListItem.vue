@@ -1,15 +1,17 @@
 <template>
     <div class="room">
-        <div class="content" v-if="this.type=='normal'">
+         <div class="content" v-if="this.type=='normal'">
             <div class="room-id">{{id}}</div>
             <div class="room-name">xxx's room</div>
             <div class="state">
                 State
             </div>
             <div class="room-button-wrapper">
+            <router-link :to="`${this.$route.path}/content/${this.id}`">
                 <el-button class="room-button" type="primary">Join</el-button>
+            </router-link>
             </div> 
-        </div>
+         </div>
         <router-link :to="`${this.$route.path}/create`" v-else>
             <div class="create">
                 <div class="create-tag">Create</div>
