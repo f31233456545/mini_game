@@ -5,10 +5,19 @@
             <div class="room-name">{{this.room_name}}</div>
             <div class="state">
                 <div class="player-num">
-                    {{this.player_num}}/{{this.max_player_num}}
+                    <img src="../assets/icons/user-regular.svg" />
+                    <div>{{this.player_num}}/{{this.max_player_num}}</div>
                 </div>
                 <div class="status">
-                    {{this.status==0?"waiting...":"playing..."}}
+                    <div v-if="this.status==0">
+                        <img src="../assets/icons/cafe.svg" />
+                        waiting...
+                    </div>
+                    <div v-else>
+                        <img src="../assets/icons/dice.svg" />
+                        playing...
+                    </div>
+                    <!-- {{this.status==0?"waiting...":"playing..."}} -->
                 </div>
             </div>
             <div class="room-button-wrapper">
@@ -82,6 +91,11 @@ export default{
 .player-num{
     font-size: 2.5rem;
     padding: 10px;
+    display: flex;
+}
+.player-num img{
+    padding-left: 30px;
+    padding-right: 10px;
 }
 .status{
     font-size: 1.2rem;

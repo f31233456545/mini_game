@@ -10,8 +10,10 @@
     <div class="menu right">
         <router-link class="menu-item" to='/login-signup' v-if="!this.$store.state.login">Login/Sign Up</router-link>
         <div v-else>
-          <router-link class="user" to='/user-info'>{{this.$store.state.userName}}</router-link>
-          <router-link class="menu-item" to='/' @click="logout">Logout</router-link>
+          <router-link class="user" to='/user-info'>
+            <img src="../assets/icons/user-circle.svg" />
+          </router-link>
+          <router-link class="menu-item logout" to='/' @click="logout">Logout</router-link>
         </div>
         
     </div>
@@ -89,6 +91,7 @@ export default {
 
 .right {
     float: right;
+    position: relative;
 }
 
 .menu-item {
@@ -109,5 +112,11 @@ export default {
 
 .user {
     font-size: 1.2rem;
+    position: absolute;
+    top: -2px;
+}
+
+.logout {
+    margin-left: 40px;
 }
 </style>
