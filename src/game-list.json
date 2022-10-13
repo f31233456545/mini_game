@@ -3,26 +3,31 @@
         {
             "id":0, 
             "name":"Texas Poker",
+            "img":"TexasPoker.png",
             "rooms":[
-                {"id":0},
-                {"id":1},
-                {"id":2},
-                {"id":3},
-                {"id":4},
-                {"id":5},
-                {"id":6},
-                {"id":7},
-                {"id":8},
-                {"id":9},
-                {"id":10}
+                {
+                    "room_id":7,
+                    "room_name":"Bob's room",
+                    "player_num":3,
+                    "max_player_num":8,
+                    "status":0
+                },
+                {
+                    "room_id":12,
+                    "room_name":"David's room",
+                    "player_num":7,
+                    "max_player_num":8,
+                    "status":1
+                }
             ]
         },
-        {"id":1, "name":"a", "rooms":[{"id":12}]},
-        {"id":2, "name":"b", "rooms":[]},
-        {"id":3, "name":"c", "rooms":[]},
-        {"id":4, "name":"d", "rooms":[]},
-        {"id":5, "name":"e", "rooms":[]},
-        {"id":6, "name":"f", "rooms":[]},
-        {"id":7, "name":"g", "rooms":[]}
+        {
+            "id":1,
+            "name":"a"
+        },
+        {
+            "id":2,
+            "name":"b"
+        }
     ]
 }

@@ -9,6 +9,7 @@
                 :key="item.id"
                 :id="item.id"
                 :name="item.name"
+                :img="item.img"
             />
         </div>
     </div>

@@ -6,8 +6,8 @@
 body {
   padding: 0;
   margin: 0;
-  margin-top: 100px;
-  background: #ccc;
+  /* margin-top: 100px; */
+  background: white;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -21,6 +21,7 @@ a:visited {
 }
 .container {
   margin: 0 auto;
+  margin-top: 100px;
   max-width: 960px;
 }
 

@@ -3,7 +3,7 @@
        <el-row>
         <el-col :span="20">
          <h6>
-            Play Room: {{this.gameInfo.id}}
+            Play Room: {{this.$route.params.room_id}}
          </h6>
         </el-col>
         <el-col :span="4">
@@ -243,18 +243,24 @@
         }
     },
     props: {
-      id: Number,
+      room_id: Number,
     },
     methods: {
-        open2() {
-          this.$notify({
-            title: '操作提示',
-            message: '玩家5加注15,玩家6开始操作',
-            duration: 0,
-            offset: 100
-          });
-        }
+      open2() {
+        this.$notify({
+          title: '操作提示',
+          message: '玩家5加注15,玩家6开始操作',
+          duration: 0,
+          offset: 100
+        });
       }
+    },
+    mounted() {
+      this.$store.commit('enterRoom')
+    },
+    unmounted(){
+      this.$store.commit('exitRoom')
+    },
   }
   </script>
   

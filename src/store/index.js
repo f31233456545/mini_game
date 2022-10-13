@@ -7,7 +7,7 @@ const store = createStore({
             count: 1,
             login: false,
             userName: "Bob",
-            isPlaying: false,
+            isInRoom: false,
             games: sourceData.gamelist,
         }
     },
@@ -20,6 +20,12 @@ const store = createStore({
         },
         logout(state) {
             state.login = false;
+        },
+        enterRoom(state) {
+            state.isInRoom = true;
+        },
+        exitRoom(state) {
+            state.isInRoom = false;
         }
     },
     actions: {

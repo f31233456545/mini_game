@@ -8,8 +8,12 @@
             <RoomListItem :type="'create'"/>
             <RoomListItem
                 v-for="item in gameInfo.rooms"
-                :key="item.id"
-                :id="item.id"
+                :key="item.room_id"
+                :room_id="item.room_id"
+                :room_name="item.room_name"
+                :player_num="item.player_num"
+                :max_player_num="item.max_player_num"
+                :status="item.status"
                 :gameId="gameInfo.id"
                 :type="'normal'"
             />
@@ -34,10 +38,10 @@ export default {
 
 <style lan="css">
 .room-list-wrapper{
-    width: 960px;
+    max-width: 960px;
 }
 .room-list{
-    width: 960px;
+    max-width: 960px;
     flex-wrap: wrap;
     margin: 0 auto;
 }
