@@ -13,7 +13,7 @@
           <router-link class="user" to='/user-info'>
             <img src="../assets/icons/user-circle.svg" />
           </router-link>
-          <router-link class="menu-item logout" to='/' @click="logout">Logout</router-link>
+          <a class="menu-item logout" @click="logout">Logout</a>
         </div>
         
     </div>
@@ -118,5 +118,6 @@ export default {
 
 .logout {
     margin-left: 40px;
+    cursor: pointer;
 }
 </style>
