@@ -5,7 +5,7 @@
 
     <div class="room-list-wrapper">
         <div class="room-list">
-            <RoomListItem :type="'create'"/>
+            <CreateRoom />
             <RoomListItem
                 v-for="item in gameInfo.rooms"
                 :key="item.room_id"
@@ -15,7 +15,6 @@
                 :max_player_num="item.max_player_num"
                 :status="item.status"
                 :gameId="gameInfo.id"
-                :type="'normal'"
             />
         </div>
     </div>
@@ -25,9 +24,10 @@
 import sourceData from '../game-list.json'
 
 import RoomListItem from '../components/RoomListItem.vue'
+import CreateRoom from '../components/CreateRoom.vue'
 
 export default {
-    components:{ RoomListItem },
+    components:{ RoomListItem, CreateRoom },
     computed:{
         gameInfo(){
             return this.$store.state.games.find(gameInfo => gameInfo.id===parseInt(this.$route.params.id))

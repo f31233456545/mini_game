@@ -14,11 +14,6 @@ const routes = [
         component: () => import('../views/Rooms.vue'),
     },
     {
-        path: '/:id/:name/create',
-        name: 'create-room',
-        component: () => import('../views/CreateRoom.vue'),
-    },
-    {
         path: '/:id/:name/content/:room_id',
         name: 'play-room',
         component: () => import('../views/PlayRoom.vue'),
