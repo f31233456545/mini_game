@@ -11,18 +11,18 @@
                 <div class="status">
                     <div v-if="this.status==0">
                         <img src="../assets/icons/cafe.svg" />
-                        waiting...
+                        等待中...
                     </div>
                     <div v-else>
                         <img src="../assets/icons/dice.svg" />
-                        playing...
+                        游戏中...
                     </div>
                     <!-- {{this.status==0?"waiting...":"playing..."}} -->
                 </div>
             </div>
             <div class="room-button-wrapper">
             <router-link :to="`${this.$route.path}/content/${this.room_id}`">
-                <el-button class="room-button" type="primary">Join</el-button>
+                <el-button class="room-button" type="primary">加入</el-button>
             </router-link>
             </div> 
          </div>
