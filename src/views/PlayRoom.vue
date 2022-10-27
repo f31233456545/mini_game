@@ -256,7 +256,7 @@
       }
     },
     mounted() {
-      this.$store.commit('enterRoom')
+      //this.$store.commit('enterRoom')
     },
     unmounted(){
       this.$store.commit('exitRoom')

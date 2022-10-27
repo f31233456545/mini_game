@@ -6,7 +6,12 @@
             placeholder="Enter new room name here"
             maxlength="20"
         />
-        <el-button class="create-room-button" type="primary">Create Room</el-button>
+        <el-button
+            class="create-room-button"
+            type="primary"
+            @click="create_room">
+            Create Room
+        </el-button>
     </div>
 </template>
 
@@ -15,6 +20,33 @@ export default {
     data() {
         return {
             room_name: ""
+        }
+    },
+    computed:{
+        gameInfo(){
+            return this.$store.state.games.find(gameInfo => gameInfo.id===parseInt(this.$route.params.id))
+        }
+    },
+    methods: {
+        create_room() {
+            this.$store.dispatch("createRoom", {
+                    private: false,
+                    room_name: this.room_name,
+                    game_kind: 0,
+                    creator_name: this.$store.state.userName
+                }).then((room_id) => {
+                    this.join_room(room_id);
+                });
+        },
+        join_room(room_id) {
+            this.$store.dispatch("joinRoom", 
+                {
+                    room_id: room_id,
+                    user_name: this.$store.state.userName,
+                }).then(() => {
+                    console.log(this.$store.state.inRoomId);
+                    this.$router.push(`${this.$route.path}/content/${this.$store.state.inRoomId}`);
+                });
         }
     }
 }

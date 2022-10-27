@@ -10,9 +10,9 @@ export default {
 
 <template>
 
-<Navigation v-if="!this.$store.state.isInRoom" />
+<Navigation v-if="this.$store.state.inRoomId==0" />
 
-<div class="container" v-if="!this.$store.state.isInRoom">
+<div class="container" v-if="this.$store.state.inRoomId==0">
   <router-view></router-view>
 </div>
 

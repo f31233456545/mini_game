@@ -20,14 +20,16 @@
             </div>
         </div>
         <div class="room-button-wrapper">
-        <router-link :to="`${this.$route.path}/content/${this.room_id}`">
-            <el-button class="room-button" type="primary">Join</el-button>
-        </router-link>
+        <!-- <router-link :to="`${this.$route.path}/content/${this.room_id}`"> -->
+        <el-button class="room-button" type="primary" @click="join_room">Join</el-button>
+        <!-- </router-link> -->
         </div>
     </div>
 </template>
 
 <script>
+import routes from "../router/index.js"
+
 export default{
     props:{
         room_id: Number,
@@ -41,7 +43,19 @@ export default{
         gameInfo(){
             return this.$store.state.games.find(gameInfo => gameInfo.id === this.gameId)
         }
-  }
+    },
+    methods: {
+        join_room() {
+            this.$store.dispatch("joinRoom", 
+                {
+                    room_id: this.room_id,
+                    user_name: this.$store.state.userName,
+                }).then(() => {
+                    console.log(this.$store.state.inRoomId);
+                    this.$router.push(`${this.$route.path}/content/${this.$store.state.inRoomId}`);
+                });
+        }
+    }
 }
 // "`/${this.gameInfo.id}/${this.gameInfo.name}`"
 </script>
