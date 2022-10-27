@@ -6,6 +6,20 @@
             placeholder="Enter new room name here"
             maxlength="20"
         />
+        <span class="create-room-radios">
+            <input
+                type="radio"
+                value="private"
+                v-model="room_privacy"
+            />
+            Private
+            <input
+                type="radio"
+                value="public"
+                v-model="room_privacy"
+            />
+            Public
+        </span>
         <el-button
             class="create-room-button"
             type="primary"
@@ -19,7 +33,8 @@
 export default {
     data() {
         return {
-            room_name: ""
+            room_name: "",
+            room_privacy: "private",
         }
     },
     computed:{
@@ -30,7 +45,7 @@ export default {
     methods: {
         create_room() {
             this.$store.dispatch("createRoom", {
-                    private: false,
+                    private: (this.room_privacy == "private"),
                     room_name: this.room_name,
                     game_kind: 0,
                     creator_name: this.$store.state.userName
@@ -61,12 +76,19 @@ export default {
     padding: 10px 8px;
 }
 .create-room-input-box {
-    width: 80%;
-    margin-right: 1%;
+    width: 55%;
     font-size: 24px;
 }
+.create-room-radios {
+    width: auto;
+    font-size: 24px;
+    color: white;
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-right: 10px;
+}
 .create-room-button {
-    width: 19%;
+    width: 20%;
     font-size: 24px;
 }
 </style>
