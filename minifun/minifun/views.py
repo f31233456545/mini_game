@@ -147,3 +147,5 @@ def join_room(request):
         # for viewer in r.player_list.all():
         #   print(viewer)
     return HttpResponse(json.dumps(resp))
+
+# def request_room_list(request)
