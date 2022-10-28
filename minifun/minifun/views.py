@@ -176,4 +176,7 @@ def request_room_list(request):
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)
     resp['rooms'] = rooms
+    for r in Room.objects.filter(game_kind=my_game_kind):
+        print(r)
+    
     return HttpResponse(json.dumps(resp))
