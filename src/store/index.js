@@ -48,7 +48,7 @@ const store = createStore({
         },
         createRoom({ commit, dispatch, state }, params) {
             return new Promise((resolve, reject) => {
-                request('request_create_room', params)
+                request('create_room', params)
                 .then(data => {
                     if (data.succeed == true)
                     {
@@ -69,7 +69,7 @@ const store = createStore({
         },
         joinRoom({ commit, state }, params) {
             return new Promise((resolve, reject) => {
-                request('request_join_room', params)
+                request('join_room', params)
                 .then(data => {
                     if (data.succeed == true)
                     {
