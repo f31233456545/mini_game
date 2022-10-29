@@ -45,49 +45,6 @@ const store = createStore({
                     console.log("request failed!")
                     console.log(error);
                 })
-        },
-        createRoom({ commit, dispatch, state }, params) {
-            return new Promise((resolve, reject) => {
-                request('create_room', params)
-                .then(data => {
-                    if (data.succeed == true)
-                    {
-                        console.log(data);
-                        resolve(data.room_id);
-                    }
-                    else
-                    {
-                        console.log("create failed!");
-                        reject(data);
-                    }
-                })
-                .catch(function (error) {
-                    console.log("request failed!");
-                    reject(error);
-                })
-            })
-        },
-        joinRoom({ commit, state }, params) {
-            return new Promise((resolve, reject) => {
-                request('join_room', params)
-                .then(data => {
-                    if (data.succeed == true)
-                    {
-                        console.log(data);
-                        commit("enterRoom", params.room_id);
-                        resolve();
-                    }
-                    else
-                    {
-                        console.log("join failed!");
-                        reject(data);
-                    }
-                })
-                .catch(function (error) {
-                    console.log("request failed!");
-                    reject(error);
-                })
-            })
         }
     }
 })

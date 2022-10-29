@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { request } from '../utils/request';
+
 export default {
     data() {
         return {
@@ -44,24 +46,56 @@ export default {
     },
     methods: {
         create_room() {
-            this.$store.dispatch("createRoom", {
-                    private: (this.room_privacy == "private"),
-                    room_name: this.room_name,
-                    game_kind: 0,
-                    creator_name: this.$store.state.userName
-                }).then((room_id) => {
-                    this.join_room(room_id);
-                });
+            var self = this;  // 组件自身
+            request("create_room", {
+                private: (self.room_privacy == "private"),
+                room_name: self.room_name,
+                game_kind: self.gameInfo.id,
+                creator_name: self.$store.state.userName
+            })
+            .then(function (response) {
+                if (response.succeed == true)
+                {
+                    console.log("create succeed!");
+                    self.join_room(response.room_id);
+                    return;
+                }
+                else
+                {
+                    console.log("create failed!");
+                    console.log(response)
+                }
+            })
+            .catch(function (error) {
+                console.log("request failed!");
+                console.log(error);
+            });
         },
         join_room(room_id) {
-            this.$store.dispatch("joinRoom", 
+            var self = this;  // 组件自身
+            request('join_room', {
+                room_id: room_id,
+                user_name: self.$store.state.userName,
+            })
+            .then(function (response) {  // 等待请求返回
+                if (response.succeed == true)
                 {
-                    room_id: room_id,
-                    user_name: this.$store.state.userName,
-                }).then(() => {
-                    console.log(this.$store.state.inRoomId);
-                    this.$router.push(`${this.$route.path}/content/${this.$store.state.inRoomId}`);
-                });
+                    self.$store.commit("enterRoom", room_id)
+                    console.log(`joined room ${self.$store.state.inRoomId}`);
+                    self.$router.push(`${self.$route.path}/content/${self.$store.state.inRoomId}`);
+                    return;
+                }
+                else
+                {
+                    console.log("join failed!");
+                    console.log(response);
+                    return;
+                }
+            })
+            .catch(function (error) {
+                console.log("request failed!");
+                console.log(error);
+            });
         }
     }
 }

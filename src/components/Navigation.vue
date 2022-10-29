@@ -4,7 +4,6 @@
   <div class="nav-wrapper">
     <div class="menu left">
         <router-link class="logo" to='/'>MiniFun</router-link>
-        <router-link class="menu-item" to='/games'>Games</router-link>
     </div>
 
     <div class="menu right">
