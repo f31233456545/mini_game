@@ -5,7 +5,7 @@ const store = createStore({
     state() {
         return {
             login: false,
-            userName: "Bob",
+            userName: "",
             inRoomId: 0,
             games: sourceData.gamelist,
         }
@@ -16,6 +16,7 @@ const store = createStore({
         },
         logout(state) {
             state.login = false;
+            state.userName = ""
         },
         enterRoom(state, room_id) {
             state.inRoomId = room_id;

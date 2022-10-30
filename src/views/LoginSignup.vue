@@ -111,7 +111,8 @@ export default {
                             case true:
                                 alert("登录成功！");
                                 store.commit('login');
-                                router.push('/');
+                                //router.push('/');
+                                router.back();
                                 break;
                             case false:
                                 this.error=true;
