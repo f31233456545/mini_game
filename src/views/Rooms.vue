@@ -34,6 +34,7 @@ import sourceData from '../game-list.json'
 import RoomListItem from '../components/RoomListItem.vue'
 import CreateRoom from '../components/CreateRoom.vue'
 import Navigation from '../components/Navigation.vue'
+import { request } from '../utils/request.js'
 
 export default {
     components:{ RoomListItem, CreateRoom, Navigation },
@@ -43,8 +44,21 @@ export default {
         }
     },
     methods:{
-        update(){
-            this.$store.dispatch('updateRoomList',this.gameInfo.id)
+        // update(){
+        //     this.$store.dispatch('updateRoomList',this.gameInfo.id)
+        // },
+        update() {
+            var params = {game_kind: this.gameInfo.id, user_name: this.$store.state.userName}
+            request('request_room_list', params)
+                .then(data => {
+                    this.$store.commit('updateRoomListInfo', {gameId:this.gameInfo.id, list:data})
+                    console.log(data)
+                })
+                .catch(function (error) { // 请求失败处理
+                    alert("request failed!")
+                    console.log("request failed!")
+                    console.log(error);
+                })
         }
     },
     mounted(){

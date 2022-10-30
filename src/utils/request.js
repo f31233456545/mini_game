@@ -1,5 +1,4 @@
 import axios from 'axios'
-import store from '../store/index.js'
 
 export function request(request_type, params) {
     return axios
@@ -8,8 +7,4 @@ export function request(request_type, params) {
             //console.log(response.data)
             return response.data
         })
-        // .catch(function (error) { // 请求失败处理
-        //     console.log(error);
-        // })
-
 }
