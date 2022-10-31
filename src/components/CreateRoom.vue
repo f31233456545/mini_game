@@ -47,6 +47,15 @@ export default {
     methods: {
         create_room() {
             var self = this;  // 组件自身
+            if(this.$store.state.login == false){
+                alert('请先登录')
+                self.$router.push('/login-signup')
+                return
+            }
+            if(self.room_name == ""){
+                alert('请输入房间名')
+                return
+            }
             request("create_room", {
                 private: (self.room_privacy == "private"),
                 room_name: self.room_name,
