@@ -47,6 +47,11 @@ export default{
     methods: {
         join_room() {
             var self = this;  // 组件自身
+            if(this.$store.state.login == false){
+                alert('请先登录')
+                self.$router.push('/login-signup')
+                return
+            }
             request('join_room', {
                 room_id: self.room_id,
                 user_name: self.$store.state.userName,
