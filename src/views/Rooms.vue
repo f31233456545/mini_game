@@ -51,12 +51,12 @@ export default {
             var params = {game_kind: this.gameInfo.id, user_name: this.$store.state.userName}
             request('request_room_list', params)
                 .then(data => {
+                    if(!data){
+                        return
+                    }
                     this.$store.commit('updateRoomListInfo', {gameId:this.gameInfo.id, list:data})
-                    console.log(data)
                 })
-                .catch(function (error) { // 请求失败处理
-                    alert("request failed!")
-                    console.log("request failed!")
+                .catch(function (error) {
                     console.log(error);
                 })
         }

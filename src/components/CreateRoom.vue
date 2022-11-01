@@ -63,6 +63,9 @@ export default {
                 creator_name: self.$store.state.userName
             })
             .then(function (response) {
+                if(!response){
+                    return
+                }
                 if (response.succeed == true)
                 {
                     console.log("create succeed!");
@@ -92,6 +95,9 @@ export default {
                 user_name: self.$store.state.userName,
             })
             .then(function (response) {  // 等待请求返回
+                if(!response){
+                    return
+                }
                 if (response.succeed == true)
                 {
                     self.$store.commit("enterRoom", room_id)
@@ -107,7 +113,6 @@ export default {
                 }
             })
             .catch(function (error) {
-                console.log("request failed!");
                 console.log(error);
             });
         }

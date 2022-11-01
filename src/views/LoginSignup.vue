@@ -106,18 +106,20 @@ export default {
                 //axios.post('http://47.94.92.103:3005/login',LoginData)
                 request('login',LoginData)
                 .then(function (res){
+                    if(!res){
+                        return
+                    }
                     console.log(res.succeed)
                     switch(res.succeed){
-                            case true:
-                                alert("登录成功！");
-                                store.commit('login');
-                                //router.push('/');
-                                router.back();
-                                break;
-                            case false:
-                                this.error=true;
-                                break;
-
+                    case true:
+                        alert("登录成功！");
+                        store.commit('login');
+                        //router.push('/');
+                        router.back(); //回到上一个路由
+                        break;
+                    case false:
+                        this.error=true;
+                        break;
                     }
                 })
                 .catch(err => {
@@ -141,6 +143,9 @@ export default {
                 //axios.post('http://47.94.92.103:3005/register',LoginData)
                 request('register',LoginData)
                 .then(function (res){
+                    if(!res){
+                        return
+                    }
                     switch(res.succeed){
                     case true:
                         alert("注册成功！");
@@ -148,7 +153,6 @@ export default {
                         break;
                     case false:
                         this.existed=true;
-
                     }
                 })
                 .catch(err => {

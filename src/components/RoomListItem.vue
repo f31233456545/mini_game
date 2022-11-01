@@ -52,6 +52,9 @@ export default{
                 user_name: self.$store.state.userName,
             })
             .then(function (response) {  // 等待请求返回
+                if(!response){
+                    return
+                }
                 if (response.succeed == true)
                 {
                     self.$store.commit("enterRoom", self.room_id)
