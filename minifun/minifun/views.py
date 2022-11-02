@@ -37,13 +37,20 @@ def login(request):
                 return HttpResponse(json.dumps(resp))
                 return HttpResponse("登录成功")
             else:
-                # create a python dictionary
                 resp = {}
-                resp['message'] = "用户名不存在"
+                resp['message'] = "密码错误"
                 resp['succeed'] = False
                 # convert dict to json
                 return HttpResponse(json.dumps(resp))
-                return HttpResponse("用户名不存在")
+                return HttpResponse("密码错误")
+        else:
+            # create a python dictionary
+            resp = {}
+            resp['message'] = "用户名不存在"
+            resp['succeed'] = False
+            # convert dict to json
+            return HttpResponse(json.dumps(resp))
+            return HttpResponse("用户名不存在")
 
 
 # register function
@@ -69,8 +76,8 @@ def register(request):
             # 将数据写入数据库
             user.save()
             resp = {}
-            resp['message'] = "注册成功"
-            resp['succeed'] = True
+            resp['message'] = "用户名已存在"
+            resp['succeed'] = False
             # convert dict to json
             return HttpResponse(json.dumps(resp))
             return HttpResponse("注册成功")
@@ -78,16 +85,9 @@ def register(request):
         else:
             # 不存在
             resp = {}
-            resp['message'] = "用户名已存在"
-            resp['succeed'] = False
+            resp['message'] = "注册成功"
+            resp['succeed'] = True
             # convert dict to json
             return HttpResponse(json.dumps(resp))
             return HttpResponse("用户名已存在")
 
-
-# 数据库添加数据
-def db_handle(request):
-
-    models.UserInfo.objects.create(username='大帅逼', password='123456')
-
-    return HttpResponse('OK')  # 检查是否成功
