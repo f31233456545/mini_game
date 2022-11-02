@@ -94,8 +94,11 @@ def create_room(request):
     if not my_game_kind:
         my_game_kind = '0'
     my_game_kind_int = int(my_game_kind)
-    id_counter = id_counter+1
-    r = Room(room_id=id_counter, private=my_private_bl,
+    id_counter = 1
+    for r in Room.objects.all():
+        if r.room_id == id_counter:    
+            id_counter = r.room_id+1
+    r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name,
              player_num=0, viewer_num=0, max_num=my_max_num_int)
     # r.creator = usr
