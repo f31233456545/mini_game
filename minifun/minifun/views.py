@@ -69,12 +69,6 @@ def register(request):
 
         if x:
             # 存在
-            # 定义数据库表userinfo对象
-            user = models.UserInfo()
-            user.username = u
-            user.password = p
-            # 将数据写入数据库
-            user.save()
             resp = {}
             resp['message'] = "用户名已存在"
             resp['succeed'] = False
@@ -84,10 +78,17 @@ def register(request):
 
         else:
             # 不存在
+            # 定义数据库表userinfo对象
+            user = models.UserInfo()
+            user.username = u
+            user.password = p
+            # 将数据写入数据库
+            user.save()
             resp = {}
             resp['message'] = "注册成功"
             resp['succeed'] = True
             # convert dict to json
             return HttpResponse(json.dumps(resp))
             return HttpResponse("用户名已存在")
+
 
