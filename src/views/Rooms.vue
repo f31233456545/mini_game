@@ -1,25 +1,30 @@
 <template>
-    <div class="header-wrapper">
-        <h1 class="room-list-header">{{gameInfo.name}} rooms</h1>
-        <div class="update-wrapper">
-            <button class="update-button" @click="update()"><img src="../assets/icons/update.svg"/></button>
-        </div>
-    </div>
+    <Navigation />
+    <div class="container" >
 
-    <div class="room-list-wrapper">
-        <div class="room-list">
-            <CreateRoom />
-            <RoomListItem
-                v-for="item in gameInfo.rooms"
-                :key="item.room_id"
-                :room_id="item.room_id"
-                :room_name="item.room_name"
-                :player_num="item.player_num"
-                :max_player_num="item.max_player_num"
-                :status="item.status"
-                :gameId="gameInfo.id"
-            />
+        <div class="header-wrapper">
+            <h1 class="room-list-header">{{gameInfo.name}} rooms</h1>
+            <div class="update-wrapper">
+                <button class="update-button" @click="update()"><img src="../assets/icons/update.svg"/></button>
+            </div>
         </div>
+
+        <div class="room-list-wrapper">
+            <div class="room-list">
+                <CreateRoom />
+                <RoomListItem
+                    v-for="item in gameInfo.rooms"
+                    :key="item.room_id"
+                    :room_id="item.room_id"
+                    :room_name="item.room_name"
+                    :player_num="item.player_num"
+                    :max_player_num="item.max_player_num"
+                    :status="item.status"
+                    :gameId="gameInfo.id"
+                />
+            </div>
+        </div>
+        
     </div>
 </template>
 
@@ -28,17 +33,32 @@ import sourceData from '../game-list.json'
 
 import RoomListItem from '../components/RoomListItem.vue'
 import CreateRoom from '../components/CreateRoom.vue'
+import Navigation from '../components/Navigation.vue'
+import { request } from '../utils/request.js'
 
 export default {
-    components:{ RoomListItem, CreateRoom },
+    components:{ RoomListItem, CreateRoom, Navigation },
     computed:{
         gameInfo(){
             return this.$store.state.games.find(gameInfo => gameInfo.id===parseInt(this.$route.params.id))
         }
     },
     methods:{
-        update(){
-            this.$store.dispatch('updateRoomList',this.gameInfo.id)
+        // update(){
+        //     this.$store.dispatch('updateRoomList',this.gameInfo.id)
+        // },
+        update() {
+            var params = {game_kind: this.gameInfo.id, user_name: this.$store.state.userName}
+            request('request_room_list', params)
+                .then(data => {
+                    this.$store.commit('updateRoomListInfo', {gameId:this.gameInfo.id, list:data})
+                    console.log(data)
+                })
+                .catch(function (error) { // 请求失败处理
+                    alert("request failed!")
+                    console.log("request failed!")
+                    console.log(error);
+                })
         }
     },
     mounted(){

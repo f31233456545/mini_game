@@ -20,15 +20,15 @@
             </div>
         </div>
         <div class="room-button-wrapper">
-        <!-- <router-link :to="`${this.$route.path}/content/${this.room_id}`"> -->
-        <el-button class="room-button" type="primary" @click="join_room">Join</el-button>
-        <!-- </router-link> -->
+            <el-button class="room-button" type="primary" @click="join_room">Join</el-button>
         </div>
     </div>
 </template>
 
 <script>
+import { resolveComponent } from "vue"
 import routes from "../router/index.js"
+import { request } from '../utils/request.js'
 
 export default{
     props:{
@@ -46,14 +46,35 @@ export default{
     },
     methods: {
         join_room() {
-            this.$store.dispatch("joinRoom", 
+            var self = this;  // 组件自身
+            if(this.$store.state.login == false){
+                alert('请先登录')
+                self.$router.push('/login-signup')
+                return
+            }
+            request('join_room', {
+                room_id: self.room_id,
+                user_name: self.$store.state.userName,
+            })
+            .then(function (response) {  // 等待请求返回
+                if (response.succeed == true)
                 {
-                    room_id: this.room_id,
-                    user_name: this.$store.state.userName,
-                }).then(() => {
-                    console.log(this.$store.state.inRoomId);
-                    this.$router.push(`${this.$route.path}/content/${this.$store.state.inRoomId}`);
-                });
+                    self.$store.commit("enterRoom", self.room_id)
+                    console.log(`joined room ${self.$store.state.inRoomId}`);
+                    self.$router.push(`${self.$route.path}/content/${self.$store.state.inRoomId}`);
+                    return
+                }
+                else
+                {
+                    console.log("join failed!");
+                    console.log(response);
+                    return
+                }
+            })
+            .catch(function (error) {
+                console.log("request failed!");
+                console.log(error);
+            })
         }
     }
 }
