@@ -178,5 +178,5 @@ def request_room_list(request):
     resp['rooms'] = rooms
     for r in Room.objects.filter(game_kind=my_game_kind):
         print(r)
-    
+
     return HttpResponse(json.dumps(resp))
