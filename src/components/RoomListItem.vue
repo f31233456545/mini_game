@@ -5,7 +5,7 @@
         <div class="state">
             <div class="player-num">
                 <img src="../assets/icons/user-regular.svg" />
-                <div>{{this.player_num}}/{{this.max_player_num}}</div>
+                <div>{{this.player_num + this.viewer_num}}/{{this.max_player_num}}</div>
             </div>
             <div class="status">
                 <div v-if="this.status==0">
@@ -35,6 +35,7 @@ export default{
         room_id: Number,
         room_name: String,
         player_num: Number,
+        viewer_num: Number,
         max_player_num: Number,
         status: Number,
         gameId: Number,

@@ -18,7 +18,8 @@
                     :room_id="item.room_id"
                     :room_name="item.room_name"
                     :player_num="item.player_num"
-                    :max_player_num="item.max_player_num"
+                    :viewer_num="item.viewer_num"
+                    :max_player_num="item.max_num"
                     :status="item.status"
                     :gameId="gameInfo.id"
                 />
@@ -51,7 +52,7 @@ export default {
             var params = {game_kind: this.gameInfo.id, user_name: this.$store.state.userName}
             request('request_room_list', params)
                 .then(data => {
-                    this.$store.commit('updateRoomListInfo', {gameId:this.gameInfo.id, list:data})
+                    this.$store.commit('updateRoomListInfo', {gameId:this.gameInfo.id, list:data.rooms})
                     console.log(data)
                 })
                 .catch(function (error) { // 请求失败处理
