@@ -37,13 +37,20 @@ def login(request):
                 return HttpResponse(json.dumps(resp))
                 return HttpResponse("登录成功")
             else:
-                # create a python dictionary
                 resp = {}
-                resp['message'] = "用户名不存在"
+                resp['message'] = "密码错误"
                 resp['succeed'] = False
                 # convert dict to json
                 return HttpResponse(json.dumps(resp))
-                return HttpResponse("用户名不存在")
+                return HttpResponse("密码错误")
+        else:
+            # create a python dictionary
+            resp = {}
+            resp['message'] = "用户名不存在"
+            resp['succeed'] = False
+            # convert dict to json
+            return HttpResponse(json.dumps(resp))
+            return HttpResponse("用户名不存在")
 
 
 # register function
@@ -62,6 +69,17 @@ def register(request):
 
         if x:
             # 存在
+            
+            
+            resp = {}
+            resp['message'] = "用户名已存在"
+            resp['succeed'] = False
+            # convert dict to json
+            return HttpResponse(json.dumps(resp))
+            return HttpResponse("注册成功")
+
+        else:
+            # 不存在
             # 定义数据库表userinfo对象
             user = models.UserInfo()
             user.username = u
@@ -73,21 +91,6 @@ def register(request):
             resp['succeed'] = True
             # convert dict to json
             return HttpResponse(json.dumps(resp))
-            return HttpResponse("注册成功")
-
-        else:
-            # 不存在
-            resp = {}
-            resp['message'] = "用户名已存在"
-            resp['succeed'] = False
-            # convert dict to json
-            return HttpResponse(json.dumps(resp))
             return HttpResponse("用户名已存在")
 
 
-# 数据库添加数据
-def db_handle(request):
-
-    models.UserInfo.objects.create(username='大帅逼', password='123456')
-
-    return HttpResponse('OK')  # 检查是否成功
