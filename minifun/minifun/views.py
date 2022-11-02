@@ -77,6 +77,7 @@ def register(request):
             return HttpResponse("注册成功")
 
         else:
+            
             # 不存在
             # 定义数据库表userinfo对象
             user = models.UserInfo()
