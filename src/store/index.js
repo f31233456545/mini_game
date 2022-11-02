@@ -11,12 +11,13 @@ const store = createStore({
         }
     },
     mutations: {
-        login(state) {
+        login(state, name) {
             state.login = true;
+            state.userName = name;
         },
         logout(state) {
             state.login = false;
-            state.userName = ""
+            state.userName = "";
         },
         enterRoom(state, room_id) {
             state.inRoomId = room_id;

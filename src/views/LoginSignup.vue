@@ -110,7 +110,7 @@ export default {
                     switch(res.succeed){
                             case true:
                                 alert("登录成功！");
-                                store.commit('login');
+                                store.commit('login',LoginData.name);
                                 //router.push('/');
                                 router.back();
                                 break;
