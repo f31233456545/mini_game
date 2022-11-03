@@ -4,6 +4,72 @@
             "id":0, 
             "name":"Texas Poker",
             "img":"TexasPoker.png",
+            "users":[
+                {
+                    "user_name": "p1",
+                    "user_num": 0,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 95,
+                    "user_bet": 5
+                },
+                {
+                    "user_name": "p2",
+                    "user_num": 1,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 90,
+                    "user_bet": 10
+                },
+                {
+                    "user_name": "p3",
+                    "user_num": 2,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 90,
+                    "user_bet": 10
+                },
+                {
+                    "user_name": "p4",
+                    "user_num": 3,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 90,
+                    "user_bet": 10
+                },
+                {
+                    "user_name": "p5",
+                    "user_num": 4,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 85,
+                    "user_bet": 15
+                },
+                {
+                    "user_name": "p6",
+                    "user_num": 5,
+                    "user_status": 1,
+                    "user_action": 0,
+                    "user_money": 100,
+                    "user_bet": 0
+                },
+                {
+                    "user_name": "p7",
+                    "user_num": 6,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 100,
+                    "user_bet": 0
+                },
+                {
+                    "user_name": "p8",
+                    "user_num": 7,
+                    "user_status": 0,
+                    "user_action": 0,
+                    "user_money": 100,
+                    "user_bet": 0
+                }
+            ],
             "rooms":[
                 {
                     "room_id":7,
