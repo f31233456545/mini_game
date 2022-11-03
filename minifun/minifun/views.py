@@ -128,8 +128,14 @@ def join_room(request):
     #    resp['message'] = "Invalid username."
     #    return HttpResponse(json.dumps(resp))
     my_room_id_int = int(my_room_id)
-    r = Room.objects.filter(room_id=my_room_id_int)[0]
-    print(r)
+    rs = Room.objects.filter(room_id=my_room_id_int)
+    if rs:
+        r = rs[0]
+    else:
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+    
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -151,6 +157,67 @@ def join_room(request):
     r.save()
     resp['succeed'] = True
     resp['message'] = "Welcome to room " + my_room_id
+    # debug
+    # Print the database
+    for r in Room.objects.all():
+        print(r)
+        # TODO: print the ForeignKey and ManyToManyField
+        # print(r.creator)
+        # for player in r.player_list.all():
+        #   print(player)
+        # for viewer in r.player_list.all():
+        #   print(viewer)
+    return HttpResponse(json.dumps(resp))
+
+
+def exit_room(request):
+    my_room_id = request.GET.get("room_id")
+    my_username = request.GET.get("user_name")
+
+    resp = {}
+    if (not my_room_id) or (not my_username):
+        resp['succeed'] = False
+        resp['message'] = "Invalid room id or username."
+        return HttpResponse(json.dumps(resp))
+    # TODO: check if the user is a valid account by filtering in database of USERINFO
+    # usr = UserInfo.objects.get(username=my_username)
+    # if not usr:
+    #    resp['succeed'] = False
+    #    resp['message'] = "Invalid username."
+    #    return HttpResponse(json.dumps(resp))
+    my_room_id_int = int(my_room_id)
+    rs = Room.objects.filter(room_id=my_room_id_int)
+    if rs:
+        r = rs[0]
+    else:
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+        
+    if not r:
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+    # TODO: check if the user is in the room
+    # TODO: a viewer or a player?
+    if r.viewer_num == 0:
+        resp['succeed'] = False
+        resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
+        return HttpResponse(json.dumps(resp))
+    #tmp_usr = r.viewer_list.get(username=my_username)
+    # if !tmp_usr:
+    #    resp['succeed'] = False
+    #    resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
+    #    return HttpResponse(json.dumps(resp))
+    # TODO: transfer the host to someone else?
+    #if my_username == r.creator_name:
+    #      
+    r.viewer_num = r.viewer_num-1
+    # TODO: add the user into viewer list
+    # r.viewer_list.add(usr)
+    r.save()
+    resp['succeed'] = True
+    resp['message'] = "Goodbye from room " + my_room_id
     # debug
     # Print the database
     for r in Room.objects.all():
