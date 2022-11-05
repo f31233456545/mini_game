@@ -96,9 +96,9 @@ def create_room(request):
     my_game_kind_int = int(my_game_kind)
     id_counter = 1
     for r in Room.objects.all():
-        if r.room_id == id_counter:    
+        if r.room_id == id_counter:
             id_counter = r.room_id+1
-    r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
+    r = Room(room_id=id_counter, room_name=my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name,
              player_num=0, viewer_num=0, max_num=my_max_num_int)
     # r.creator = usr
@@ -135,7 +135,7 @@ def join_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-    
+
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -193,7 +193,7 @@ def exit_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-        
+
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -210,8 +210,8 @@ def exit_room(request):
     #    resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
     #    return HttpResponse(json.dumps(resp))
     # TODO: transfer the host to someone else?
-    #if my_username == r.creator_name:
-    #      
+    # if my_username == r.creator_name:
+    #
     r.viewer_num = r.viewer_num-1
     # TODO: add the user into viewer list
     # r.viewer_list.add(usr)
@@ -236,12 +236,14 @@ def request_room_list(request):
     my_user_name = request.GET.get("user_name")
 
     resp = {}
-    r = Room.objects.filter(game_kind=my_game_kind)
+    r = Room.objects.filter(game_kind=my_game_kind, private=False)
+    # no public room of this game_kind exit, return empty list
     if not r:
         resp['rooms'] = []
         return HttpResponse(json.dumps(resp))
+
     rooms = []
-    for r in Room.objects.filter(game_kind=my_game_kind):
+    for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)
