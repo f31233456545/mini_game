@@ -19,46 +19,67 @@
         &nbsp;
        </el-col>
        <el-col :span="1">
-       <el-avatar>小盲</el-avatar>
-       <el-card>
-        <span class="txt">95</span>
-       </el-card>
+        <user  v-for="item in gameInfo.users.slice(0,1)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
        </el-col>
        <el-col :span="3">
-        <div class="demo-image">
-        <img :src="back0" alt="">
-        <img :src="back0" alt="">
-        </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="13"/>
+     <card :open="true" :num="15"/>
+     </el-row>
+     </div>
        </el-col>
        <el-col :span="1">
         &nbsp;
        </el-col>
        <el-col :span="1">
-        <el-avatar>大盲</el-avatar>
-        <el-card>
-         <span class="txt">90</span>
-        </el-card>
+        <user  v-for="item in gameInfo.users.slice(1,2)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
        </el-col>
        <el-col :span="3">
-        <div class="demo-image">
-        <img :src="back0" alt="">
-        <img :src="back0" alt="">
-        </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="16"/>
+     <card :open="true" :num="8"/>
+     </el-row>
+     </div>
        </el-col>
        <el-col :span="1">
         &nbsp;
        </el-col>
        <el-col :span="1">
-        <el-avatar>玩家3</el-avatar>
-        <el-card>
-         <span class="txt">90</span>
-        </el-card>
+        <user  v-for="item in gameInfo.users.slice(2,3)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
        </el-col>
        <el-col :span="3">
-        <div class="demo-image">
-        <img :src="back0" alt="">
-        <img :src="back0" alt="">
-        </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="3"/>
+     <card :open="true" :num="7"/>
+     </el-row>
+     </div>
        </el-col>
        <el-col :span="5">
         &nbsp;
@@ -71,31 +92,45 @@
         &nbsp;
        </el-col>
        <el-col :span="1">
-        <el-avatar>玩家8</el-avatar>
-        <el-card>
-         <span class="txt">100</span>
-        </el-card>
+        <user  v-for="item in gameInfo.users.slice(7,8)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
        </el-col>
        <el-col :span="3">
-        <div class="demo-image">
-        <img :src="back0" alt="">
-        <img :src="back0" alt="">
-        </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="1"/>
+     <card :open="true" :num="19"/>
+     </el-row>
+     </div>
        </el-col>
        <el-col :span="10">
         &nbsp;
        </el-col>
        <el-col :span="1">
-        <el-avatar>玩家4</el-avatar>
-        <el-card>
-         <span class="txt">90</span>
-        </el-card>
+        <user  v-for="item in gameInfo.users.slice(3,4)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
        </el-col>
        <el-col :span="3">
-        <div class="demo-image">
-        <img :src="back0" alt="">
-        <img :src="back0" alt="">
-        </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="50"/>
+     <card :open="true" :num="42"/>
+     </el-row>
+     </div>
        </el-col>
        <el-col :span="5">
         &nbsp;
@@ -106,16 +141,18 @@
     <el-container>
     <el-header height="130px">
       <el-row>
-       <el-col :span="6">
+       <el-col :span="9">
           &nbsp;
        </el-col>
-       <el-col :span="10">
-        <div class="demo-image">
-        <img :src="d8" alt="">
-        <img :src="s8" alt="">
-        <img :src="d9" alt="">
-        <img :src="s9" alt="">
-        <img :src="s10" alt="">
+       <el-col :span="7">
+        <div class="tablecard">
+        <el-row>
+        <card :open="true" :num="1"/>
+        <card :open="true" :num="11"/>
+        <card :open="true" :num="26"/>
+        <card :open="true" :num="36"/>
+        <card :open="true" :num="31"/>
+        </el-row>
         </div>
        </el-col>
        <el-col :span="8">
@@ -132,31 +169,45 @@
          &nbsp;
         </el-col>
         <el-col :span="1">
-         <el-avatar>玩家7</el-avatar>
-         <el-card>
-          <span class="txt">100</span>
-         </el-card>
+          <user  v-for="item in gameInfo.users.slice(6,7)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
         </el-col>
         <el-col :span="3">
-         <div class="demo-image">
-         <img :src="back0" alt="">
-         <img :src="back0" alt="">
-         </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="48"/>
+     <card :open="true" :num="38"/>
+     </el-row>
+     </div>
         </el-col>
         <el-col :span="10">
          &nbsp;
         </el-col>
         <el-col :span="1">
-         <el-avatar>玩家5</el-avatar>
-         <el-card>
-          <span class="txt">85</span>
-         </el-card>
+          <user  v-for="item in gameInfo.users.slice(4,5)"
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
         </el-col>
         <el-col :span="3">
-         <div class="demo-image">
-         <img :src="back0" alt="">
-         <img :src="back0" alt="">
-         </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="25"/>
+     <card :open="true" :num="37"/>
+     </el-row>
+     </div>
         </el-col>
         <el-col :span="3">
          &nbsp;
@@ -171,16 +222,23 @@
       &nbsp;
     </el-col>
     <el-col :span="1">
-      <el-avatar>玩家6</el-avatar>
-      <el-card>
-        <span class="txt">100</span>
-      </el-card>
+    <user  v-for="item in gameInfo.users.slice(5,6)" 
+                :key="item.user_num"
+                :user_num="item.user_num"
+                :user_name="item.user_name"
+                :user_status="item.user_status"
+                :user_action="item.user_action"
+                :user_money="item.user_money"
+                :user_bet="item.user_bet"
+                />
     </el-col>
     <el-col :span="3">
-        <div class="demo-image">
-        <img :src="d7" alt="">
-        <img :src="s7" alt="">
-        </div>
+     <div class="handcard">
+     <el-row>
+     <card :open="true" :num="51"/>
+     <card :open="true" :num="52"/>
+     </el-row>
+     </div>
     </el-col>
     <el-col :span="10">
      &nbsp;
@@ -207,32 +265,22 @@
 </template>
   
   <script>
-  import back0 from "../assets/back.png"
-  import d7 from "../assets/d7.png"
-  import d8 from "../assets/d8.png"
-  import d9 from "../assets/d9.png"
-  import s7 from "../assets/s7.png"
-  import s8 from "../assets/s8.png"
-  import s9 from "../assets/s9.png"
-  import s10 from "../assets/s10.png"
+
   import table0 from "../assets/table.jpg"
   import GameListItem from '../components/GameListItem.vue'
+  import User from './User.vue'
+  import Card from './Card.vue'
   
   export default {
     name: 'PlayRoom',
     components: {
-      GameListItem
+      GameListItem,
+      User,
+      Card
     },
     data(){
         return{
-            back0: back0,
-            d7: d7,
-            d8: d8,
-            d9: d9,
-            s7: s7,
-            s8: s8,
-            s9: s9,
-            s10: s10,
+
             table0: table0,
         };
 
