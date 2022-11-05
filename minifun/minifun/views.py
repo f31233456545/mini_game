@@ -166,12 +166,12 @@ def request_room_list(request):
     my_user_name = request.GET.get("user_name")
 
     resp = {}
-    r = Room.objects.filter(game_kind=my_game_kind)
+    r = Room.objects.filter(game_kind=my_game_kind, parvate=False)
     if not r:
         resp['rooms'] = []
         return HttpResponse(json.dumps(resp))
     rooms = []
-    for r in Room.objects.filter(game_kind=my_game_kind):
+    for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)
