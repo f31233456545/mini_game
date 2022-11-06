@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import sourceData from '../game-list.json'
+import gameData from '../game-info.json'
 
 const store = createStore({
     state() {
@@ -8,6 +9,11 @@ const store = createStore({
             userName: "",
             inRoomId: 0,
             games: sourceData.gamelist,
+            gameInfo: {
+                user_infos: gameData.user_infos,
+                pod_info: gameData.pod_info,
+                last_action: gameData.last_action,
+            }
         }
     },
     mutations: {

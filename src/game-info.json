@@ -1,0 +1,90 @@
+{
+    "user_infos": [
+        {
+        "user_name": "小王",
+        "seat_id": 1,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [12,29]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 2,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 3,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 4,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 5,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 6,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 7,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        },
+        {
+        "user_name": "user",
+        "seat_id": 8,
+        "stack_cnt": 100,
+        "chip_cnt": 0,
+        "folded": false,
+        "last_action": 0,
+        "hand_pokes": [0,0]
+        }
+    ],
+
+    "pod_info": {
+        "curr_id": 0,
+        "bookmarker_id": 4,
+        "term": 0,
+        "pod_chip_cnt": 0,
+        "pokes": [0,0,0,0,0]
+    },
+
+    "last_action": {
+        "user_id": 0,
+        "action_type": 0,
+        "raise_num": 0
+    }
+}
