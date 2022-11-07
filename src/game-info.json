@@ -10,7 +10,7 @@
         "hand_pokes": [12,29]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 2,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -75,11 +75,11 @@
     ],
 
     "pod_info": {
-        "curr_id": 0,
+        "curr_id": 7,
         "bookmarker_id": 4,
-        "term": 0,
-        "pod_chip_cnt": 0,
-        "pokes": [0,0,0,0,0]
+        "term": 1,
+        "pod_chip_cnt": 100,
+        "pokes": [33,20,5,0,0]
     },
 
     "last_action": {

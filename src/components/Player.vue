@@ -1,11 +1,11 @@
 <template>
     <div :class="'player p'+pos" v-if="playerInfo.user_name!=''">
         <div class="player-container">
-            <div class="user-wrapper">
+            <div :class="inAction?'user-wrapper in-action':'user-wrapper'">
                 <div class="user-name">{{playerInfo.user_name}}</div>
                 <img class="user-icon" src="../assets/icons/user-regular.svg" />
                 <div class="user-chip">
-                    <img class="chip-icon" src="../assets/icons/chip2.png"/>
+                    <img class="chip-icon" src="../assets/icons/chip.png"/>
                     <div class="chip-num">
                         {{playerInfo.stack_cnt}}
                     </div>
@@ -14,14 +14,21 @@
                     {{playerCharacter[1]}}
                 </div>
                 <div class="action-info">
-                    行动中...
+                    {{inAction?'行动中...':''}}
                 </div>
             </div>
 
             <div class="hand">
-                <Card :value="playerInfo.hand_pokes[0]"/>
-                <Card :value="playerInfo.hand_pokes[1]"/>
+                <Card
+                v-for="i in playerInfo.hand_pokes"
+                :value="i"
+                />
             </div>
+        </div>
+    </div>
+    <div :class="'empty p'+pos" v-else>
+        <div class="player-container">
+            <div class="empty-sign">EMPTY</div>
         </div>
     </div>
 </template>
@@ -52,6 +59,9 @@ export default{
             else{
                 return ["normal-player",""]
             }
+        },
+        inAction(){
+            return this.playerInfo.seat_id == this.$store.state.gameInfo.pod_info.curr_id
         }
     },
 }
@@ -60,7 +70,18 @@ export default{
 .player{
     position: absolute;
 }
-
+.empty{
+    position: absolute;
+}
+.empty-sign{
+    position: absolute;
+    top: 30px;
+    border: solid;
+    border-radius: 6px;
+    color: rgba(255,255,255,0.5);
+    font-size: 40px;
+    transform:rotate(330deg);
+}
 .p1{
     left: 50%;
     top: 80%;
@@ -99,13 +120,18 @@ export default{
     width: 220px;
     height: 120px;
     top: -60px;
-    left: -110px;
+    left: -50px;
 }
 .user-wrapper{
     height: 120px;
     width: 100px;
     background: rgba(100,150,210,0.5);
-    border-radius: 6px;
+    border: solid;
+    border-color: rgba(255,255,255,0);
+    border-width: 1px;
+}
+.in-action{
+    border-color: rgba(255,255,50,1);
 }
 .user-name{
     font-size: 16px;
@@ -126,8 +152,8 @@ export default{
 }
 
 .user-chip{
-    height: 20px;
-    background: rgba(70,180,120,1);
+    height: 19px;
+    background: rgba(200,200,100,1);
 }
 .chip-icon{
     width: 20px;
@@ -158,8 +184,8 @@ export default{
     position: absolute;
     width: 40px;
     height: 20px;
-    top: 20px;
-    left: 0px;
+    top: 21px;
+    left: 1px;
     font-size: 14px;
     color: white;
     text-align: center;
