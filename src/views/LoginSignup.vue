@@ -90,13 +90,13 @@ export default {
             console.log(res.succeed);
             switch (res.succeed) {
               case true:
-                this.$message.success('登陆成功！');
+                self.$message.success('登陆成功！');
                 store.commit("login", LoginData.name);
                 //router.push('/');
                 router.back();
                 break;
               case false:
-                this.error = true;
+                self.error = true;
                 break;
             }
           })
@@ -120,12 +120,12 @@ export default {
           .then(function (res) {
             switch (res.succeed) {
               case true:
-                  this.$message.success('注册成功！');
-                  this.$message.success('正在登陆，请稍后...');
+                  self.$message.success('注册成功！');
+                  self.$message.success('正在登陆，请稍后...');
                 self.login();
                 break;
               case false:
-                this.existed = true;
+                self.existed = true;
             }
           })
           .catch((err) => {
