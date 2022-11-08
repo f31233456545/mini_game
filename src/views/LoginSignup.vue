@@ -91,9 +91,7 @@ export default {
             console.log(res.succeed);
             switch (res.succeed) {
               case true:
-                this.$message.success({
-                  message: "登陆成功！",
-                });
+                this.$message.success('登陆成功！');
                 store.commit("login", LoginData.name);
                 //router.push('/');
                 router.back();
@@ -124,14 +122,8 @@ export default {
           .then(function (res) {
             switch (res.succeed) {
               case true:
-                this.$message({
-                  message: "注册成功！",
-                  type: "success",
-                });
-                this.$message({
-                  message: "正在登陆，请稍后...",
-                  type: "success",
-                });
+                  this.$message.success('注册成功！');
+                  this.$message.success('正在登陆，请稍后...');
                 self.login();
                 break;
               case false:
