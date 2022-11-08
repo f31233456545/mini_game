@@ -84,7 +84,7 @@ export default {
     mounted() {
       //this.$store.commit('enterRoom')
     },
-    unmounted(){
+    unmounted() {
       this.$store.commit('exitRoom')
     },
 }
