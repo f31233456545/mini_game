@@ -109,7 +109,6 @@ export default {
       },
     //用户注册
     register() {
-      this.$message.error("填写不能为空！");
       const self = this;
       var LoginData = {
         name: self.rulesForm.name,
