@@ -17,6 +17,7 @@
                     {{this.$store.getters.currRoom.viewer_num}}
                 </div>
             </div>
+
         </div>
         <div class="button-group1">
             <el-button type="success">坐下</el-button>
@@ -79,7 +80,73 @@ export default {
           duration: 0,
           offset: 100
         });
-      }
+      },
+      sit() {
+      const self = this;
+      var sit_data = {
+       room_id:self.$route.params.room_id,
+       user_name:self.$route.params.userName
+      };
+      request("sit", sit_data) 
+        .then(function (res) {
+          switch (res.succeed) {
+            case true:
+            this.$message.success('已坐下！');
+            case false:
+            console("sit err!");
+            this.$message.error('发生错误！');
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+    },
+    stand() {
+      const self = this;
+      var stand_data = {
+        room_id:self.$route.params.room_id,
+       user_name:self.$route.params.userName
+      };
+      request("stand", stand_data) 
+        .then(function (res) {
+          console.log(res.data);
+          switch (res.succeed) {
+            case true:
+            this.$message.success('已站起！');
+            case false:
+            this.$message.error('发生错误！');
+            console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+    },
+    exit_room() {
+      const self = this;
+      var exit_data = {
+      room_id:self.$route.params.room_id,
+      user_name:self.$route.params.userName
+      };
+      request("exit_room", exit_data)
+        .then(function (res) {
+          switch (res.succeed) {
+            case true:
+            this.$message.success('已退出房间！');
+            this.$store.exitroom();
+            router.back();
+            case false:
+            this.$message.error('发生错误！');
+              console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+    },
     },
     mounted() {
       //this.$store.commit('enterRoom')
@@ -87,8 +154,19 @@ export default {
     unmounted() {
       this.$store.commit('exitRoom')
     },
-}
-</script>
+
+    clicked() {
+            createPopup(SimplePopup, {
+                top: `${Math.random() * 80}%`,
+                left: `${Math.random() * 80}%`
+            }, {
+                title: `${Math.round(Math.random() * 10)}`,
+                message: `${Math.random()}`
+            })
+        }
+  }
+  </script>
+
   
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
