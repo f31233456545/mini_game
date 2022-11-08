@@ -51,7 +51,6 @@
 </template>
     
 <script>
-import axios from "axios";
 import Navigation from "../components/Navigation.vue";
 import { request } from "../utils/request.js";
 import store from "../store/index.js";
@@ -107,10 +106,10 @@ export default {
       } else {
         this.$message.error('请填写用户名和密码！');
       }
-      }
-    },
+      },
     //用户注册
     register() {
+      this.$message.error("填写不能为空！");
       const self = this;
       var LoginData = {
         name: self.rulesForm.name,
@@ -137,6 +136,7 @@ export default {
         this.$message.error("填写不能为空！");
       }
     },
+  },
 };
 </script>
 
