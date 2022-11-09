@@ -26,11 +26,6 @@
         </div>
     </div>
 
-    <Player 
-    v-for="i in [1,2,3,4,5,6,7,8]"
-    :pos="i"
-    />
-
     <GameBoard/>
 
     <div class="play-room-footer">
@@ -154,16 +149,6 @@ export default {
     unmounted() {
       this.$store.commit('exitRoom')
     },
-
-    clicked() {
-            createPopup(SimplePopup, {
-                top: `${Math.random() * 80}%`,
-                left: `${Math.random() * 80}%`
-            }, {
-                title: `${Math.round(Math.random() * 10)}`,
-                message: `${Math.random()}`
-            })
-        }
   }
   </script>
 

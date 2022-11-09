@@ -51,7 +51,6 @@
 </template>
     
 <script>
-import axios from "axios";
 import Navigation from "../components/Navigation.vue";
 import { request } from "../utils/request.js";
 import store from "../store/index.js";
@@ -91,13 +90,13 @@ export default {
             console.log(res.succeed);
             switch (res.succeed) {
               case true:
-                this.$message.success('登陆成功！');
+                self.$message.success('登陆成功！');
                 store.commit("login", LoginData.name);
                 //router.push('/');
                 router.back();
                 break;
               case false:
-                this.error = true;
+                self.error = true;
                 break;
             }
           })
@@ -105,10 +104,9 @@ export default {
             console.log(err); //代码错误、请求失败捕获
           });
       } else {
-        this.$message.error('请填写用户名和密码！');
+        self.$message.error('请填写用户名和密码！');
       }
-      }
-    },
+      },
     //用户注册
     register() {
       const self = this;
@@ -122,21 +120,22 @@ export default {
           .then(function (res) {
             switch (res.succeed) {
               case true:
-                  this.$message.success('注册成功！');
-                  this.$message.success('正在登陆，请稍后...');
+                  self.$message.success('注册成功！');
+                  self.$message.success('正在登陆，请稍后...');
                 self.login();
                 break;
               case false:
-                this.existed = true;
+                self.existed = true;
             }
           })
           .catch((err) => {
             console.log(err); //代码错误、请求失败捕获
           });
       } else {
-        this.$message.error("填写不能为空！");
+        self.$message.error("填写不能为空！");
       }
     },
+  },
 };
 </script>
 
