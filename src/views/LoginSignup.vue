@@ -120,8 +120,7 @@ export default {
           .then(function (res) {
             switch (res.succeed) {
               case true:
-                  self.$message.success('注册成功！');
-                  self.$message.success('正在登陆，请稍后...');
+                  self.$message.success('注册成功！正在登陆，请稍后...');
                 self.login();
                 break;
               case false:
