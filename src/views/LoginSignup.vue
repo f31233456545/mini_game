@@ -104,7 +104,7 @@ export default {
             console.log(err); //代码错误、请求失败捕获
           });
       } else {
-        this.$message.error('请填写用户名和密码！');
+        self.$message.error('请填写用户名和密码！');
       }
       },
     //用户注册
