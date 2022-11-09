@@ -132,7 +132,7 @@ export default {
             console.log(err); //代码错误、请求失败捕获
           });
       } else {
-        this.$message.error("填写不能为空！");
+        self.$message.error("填写不能为空！");
       }
     },
   },
