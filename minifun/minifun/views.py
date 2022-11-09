@@ -81,12 +81,12 @@ def create_room(request):
     #    resp['message'] = "Invalid username of the creator."
     #    return HttpResponse(json.dumps(resp))
 
-    r = Room.objects.filter(room_name=my_room_name)
-    if r:
-        resp['succeed'] = False
-        resp['room_id'] = -1
-        resp['message'] = "Room "+my_room_name+" already exists."
-        return HttpResponse(json.dumps(resp))
+    # r = Room.objects.filter(room_name=my_room_name)
+    # if r:
+    #    resp['succeed'] = False
+    #    resp['room_id'] = -1
+    #    resp['message'] = "Room "+my_room_name+" already exists."
+    #    return HttpResponse(json.dumps(resp))
 
     #if not my_private:
     #    my_private = '1'
@@ -98,10 +98,11 @@ def create_room(request):
     if not my_game_kind:
         my_game_kind = '0'
     my_game_kind_int = int(my_game_kind)
-    id_counter = 1
+    id_counter = 0
     for r in Room.objects.all():
-        if r.room_id == id_counter:    
-            id_counter = r.room_id+1
+        if r.room_id > id_counter:    
+            id_counter = r.room_id
+    id_counter = id_counter+1
     r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name,
              player_num=0, viewer_num=0, max_num=my_max_num_int)
