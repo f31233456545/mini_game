@@ -46,6 +46,7 @@ export default {
                         return;
                     }
                     else {
+                        self.$message.error('加入房间失败，请检查是否输入了正确的房间号')
                         console.log("join failed!");
                         console.log(response);
                         return;
