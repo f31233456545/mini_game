@@ -24,10 +24,14 @@ export default {
     },
     methods: {
         join_room() {
-            var self = this;  // 组件自身
+            const self = this;  // 组件自身
             if (this.$store.state.login == false) {
-                alert('请先登录')
+                self.$message.error('请先登录')
                 self.$router.push('/login-signup')
+                return
+            }
+            if(self.room_name == ""){
+                self.$message.error('请输入房间号')
                 return
             }
             request('join_room', {
