@@ -40,7 +40,7 @@ export default {
             })
                 .then(function (response) {  // 等待请求返回
                     if (response.succeed == true) {
-                        self.$store.commit("enterRoom", self.room_id)
+                        self.$store.commit("enterRoom", parseInt(self.room_id))
                         console.log(`joined room ${self.$store.state.inRoomId}`);
                         self.$router.push(`${self.$route.path}/content/${self.$store.state.inRoomId}`);
                         return;
