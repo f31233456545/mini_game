@@ -30,7 +30,7 @@ export default {
                 self.$router.push('/login-signup')
                 return
             }
-            if(self.room_name == ""){
+            if(self.room_id == ""){
                 self.$message.error('请输入房间号')
                 return
             }
