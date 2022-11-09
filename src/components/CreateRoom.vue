@@ -46,14 +46,14 @@ export default {
     },
     methods: {
         create_room() {
-            var self = this;  // 组件自身
+            const self = this;  // 组件自身
             if(this.$store.state.login == false){
-                alert('请先登录')
+                self.$message.error('请先登录')
                 self.$router.push('/login-signup')
                 return
             }
             if(self.room_name == ""){
-                alert('请输入房间名')
+                self.$message.error('请输入房间名')
                 return
             }
             request("create_room", {
@@ -81,9 +81,9 @@ export default {
             });
         },
         join_room(room_id) {
-            var self = this;  // 组件自身
+            const self = this;  // 组件自身
             if(this.$store.state.login == false){
-                alert('请先登录')
+                self.$message.error('请先登录')
                 self.$router.push('/login-signup')
                 return
             }

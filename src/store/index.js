@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import sourceData from '../game-list.json'
+import gameData from '../game-info.json'
 
 const store = createStore({
     state() {
@@ -7,16 +8,31 @@ const store = createStore({
             login: false,
             userName: "",
             inRoomId: 0,
+            inGameId: -1, //当前游戏id，-1表示未选择
             games: sourceData.gamelist,
+            gameInfo: {
+                user_infos: gameData.user_infos,
+                pod_info: gameData.pod_info,
+                last_action: gameData.last_action,
+            },
+            sitDown: false, //是否坐下
+        }
+    },
+    getters: {
+        currRoom(state) {
+            console.log(state.inGameId)
+            console.log(state.inRoomId)
+            return state.games[state.inGameId].rooms.find(room => room.room_id===state.inRoomId)
         }
     },
     mutations: {
-        login(state) {
+        login(state, name) {
             state.login = true;
+            state.userName = name;
         },
         logout(state) {
             state.login = false;
-            state.userName = ""
+            state.userName = "";
         },
         enterRoom(state, room_id) {
             state.inRoomId = room_id;
@@ -25,7 +41,10 @@ const store = createStore({
             state.inRoomId = 0;
         },
         updateRoomListInfo(state, info) {
-            state.games[info.gameId].rooms=info.list
+            state.games[info.gameId].rooms = info.list
+        },
+        setGameId(state, id) {
+            state.inGameId = id
         }
     },
     actions: {
