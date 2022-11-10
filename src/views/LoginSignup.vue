@@ -80,7 +80,7 @@ export default {
     login() {
       const self = this;
       var LoginData = {
-        name: self.rulesForm.name,
+        username: self.rulesForm.name,
         password: self.rulesForm.password,
       };
       if (self.rulesForm.name != "" && self.rulesForm.password != "") {
@@ -111,7 +111,7 @@ export default {
     register() {
       const self = this;
       var LoginData = {
-        name: self.rulesForm.name,
+        username: self.rulesForm.name,
         password: self.rulesForm.password,
       };
       if (self.rulesForm.name != "" && self.rulesForm.password != "") {
