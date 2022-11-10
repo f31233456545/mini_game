@@ -91,7 +91,7 @@ export default {
             switch (res.succeed) {
               case true:
                 self.$message.success('登陆成功！');
-                store.commit("login", LoginData.name);
+                store.commit("login", LoginData.username);
                 //router.push('/');
                 router.back();
                 break;
