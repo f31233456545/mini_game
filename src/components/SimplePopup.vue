@@ -23,19 +23,19 @@ export default {
     props: {
         title: {
             type: String,
-            default: "message"
+            default: 'message'
         },
         titleColor: {
             type: String,
-            default: "#FFCC00"
+            default: '#FFCC00'
         },
         message: {
             type: String,
-            default: "something"
+            default: 'something'
         },
         messageColor: {
             type: String,
-            default: "#FFFFFF"
+            default: '#FFFFFF'
         },
         duration: {
             type: Number,
@@ -56,7 +56,7 @@ export default {
             }
         },
         mouseoverHandler() {
-            this.removeTimer(this.duration);
+            this.removeTimer()
         },
         mouseoutHandler() {
             this.setTimer(this.duration)
@@ -69,7 +69,7 @@ export default {
         this.setTimer(this.duration)
     },
     unmounted() {
-        this.removeTimer(this.duration)
+        this.removeTimer()
     }
 }
 </script>
