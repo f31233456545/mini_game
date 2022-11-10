@@ -20,13 +20,18 @@
 
         </div>
         <div class="button-group1">
-            <el-button type="success">坐下</el-button>
-            <el-button type="warning">站起</el-button>
-            <el-button type="danger">离开房间</el-button>
+            <el-button type="success" @click="sit">坐下</el-button>
+            <el-button type="warning" @click="stand">站起</el-button>
+            <el-button type="danger" @click="exit_room">离开房间</el-button>
         </div>
     </div>
 
     <GameBoard/>
+
+    <Player
+        v-for="i in [1,2,3,4,5,6,7,8]"
+        :pos="i"
+    />
 
     <div class="play-room-footer">
         <div class="button-group2">
@@ -86,10 +91,10 @@ export default {
         .then(function (res) {
           switch (res.succeed) {
             case true:
-            this.$message.success('已坐下！');
+            self.$message.success('已坐下！');
             case false:
             console("sit err!");
-            this.$message.error('发生错误！');
+            self.$message.error('发生错误！');
           }
         })
         .catch((err) => {
@@ -108,9 +113,9 @@ export default {
           console.log(res.data);
           switch (res.succeed) {
             case true:
-            this.$message.success('已站起！');
+            self.$message.success('已站起！');
             case false:
-            this.$message.error('发生错误！');
+            self.$message.error('发生错误！');
             console(succeed.message);
           }
         })
@@ -129,11 +134,11 @@ export default {
         .then(function (res) {
           switch (res.succeed) {
             case true:
-            this.$message.success('已退出房间！');
-            this.$store.exitroom();
+            self.$message.success('已退出房间！');
+            self.$store.exitroom();
             router.back();
             case false:
-            this.$message.error('发生错误！');
+            self.$message.error('发生错误！');
               console(succeed.message);
           }
         })
