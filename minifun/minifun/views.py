@@ -131,23 +131,28 @@ def create_room(request):
     #    resp['message'] = "Invalid username of the creator."
     #    return HttpResponse(json.dumps(resp))
 
-    r = Room.objects.filter(room_name=my_room_name)
-    if r:
-        resp['succeed'] = False
-        resp['room_id'] = -1
-        resp['message'] = "Room "+my_room_name+" already exists."
-        return HttpResponse(json.dumps(resp))
+    # r = Room.objects.filter(room_name=my_room_name)
+    # if r:
+    #    resp['succeed'] = False
+    #    resp['room_id'] = -1
+    #    resp['message'] = "Room "+my_room_name+" already exists."
+    #    return HttpResponse(json.dumps(resp))
 
-    if not my_private:
-        my_private = '1'
-    my_private_bl = bool(my_private)
+    #if not my_private:
+    #    my_private = '1'
+    if my_private == '0':
+        my_private_bl = False
+    else:
+        my_private_bl = True
+    print(my_private_bl)
     if not my_game_kind:
         my_game_kind = '0'
     my_game_kind_int = int(my_game_kind)
-    id_counter = 1
+    id_counter = 0
     for r in Room.objects.all():
-        if r.room_id == id_counter:    
-            id_counter = r.room_id+1
+        if r.room_id > id_counter:    
+            id_counter = r.room_id
+    id_counter = id_counter+1
     r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name,
              player_num=0, viewer_num=0, max_num=my_max_num_int)
@@ -266,6 +271,8 @@ def exit_room(request):
     # TODO: add the user into viewer list
     # r.viewer_list.add(usr)
     r.save()
+    if r.viewer_num+r.player_num == 0 :
+        r.delete()
     resp['succeed'] = True
     resp['message'] = "Goodbye from room " + my_room_id
     # debug
@@ -291,7 +298,7 @@ def request_room_list(request):
         resp['rooms'] = []
         return HttpResponse(json.dumps(resp))
     rooms = []
-    for r in Room.objects.filter(game_kind=my_game_kind):
+    for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)

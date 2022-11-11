@@ -22,6 +22,11 @@ export default{
         name: String,
         img: String,
     },
+    // methods:{
+    //     chooseGame(){
+    //         this.$store.state.commit('setGameId',this.id)
+    //     }
+    // }
 }
 </script>
 

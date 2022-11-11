@@ -32,6 +32,9 @@ export default {
             games: this.$store.state.games
         }
     },
+    mounted(){
+        this.$store.commit('setGameId',-1)
+    }
 }
 </script>
 

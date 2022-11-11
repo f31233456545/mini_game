@@ -65,6 +65,7 @@ export default {
         }
     },
     mounted(){
+        this.$store.commit('setGameId',this.gameInfo.id)
         this.update()
     }
 }
