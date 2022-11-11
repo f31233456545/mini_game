@@ -22,4 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-/templates/db.sqlite3
+/minifun/db.sqlite3
+**/__pycache__
