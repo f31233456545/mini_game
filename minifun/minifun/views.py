@@ -29,9 +29,9 @@ def login(request):
         # get param 'password'
         p = request.GET.get("password")
 
-        x = models.UserInfo.objects.filter(username=u)[0]
+        x = models.UserInfo.objects.filter(username=u)
         if x:
-            if x.password == p:
+            if x[0].password == p:
                 # create a python dictionary
                 resp = {}
                 resp['message'] = "登陆成功"
@@ -307,3 +307,5 @@ def request_room_list(request):
         print(r)
 
     return HttpResponse(json.dumps(resp))
+
+
