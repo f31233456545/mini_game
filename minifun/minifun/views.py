@@ -5,6 +5,7 @@ import json
 from room.models import Room
 from room.admin import id_counter
 from room import models
+from room.models import UserInfo
 # this is a test function.
 
 
@@ -28,7 +29,7 @@ def login(request):
         # get param 'password'
         p = request.GET.get("password")
 
-        x = models.UserInfo.objects.filter(username=u)
+        x = models.UserInfo.objects.filter(username=u)[0]
         if x:
             if x.password == p:
                 # create a python dictionary
@@ -67,7 +68,7 @@ def register(request):
         p = request.GET.get("password")
 
         # 检查数据库中是否存在该用户名
-        x = models.UserInfo.objects.filter(username=u)
+        x = models.UserInfo.objects.filter(username=u)[0]
 
         if x:
             # 存在
