@@ -7,11 +7,12 @@
             <div class="update-wrapper">
                 <button class="update-button" @click="update()"><img src="../assets/icons/update.svg"/></button>
             </div>
+            <JoinRoom class="join-room-wrapper" />
         </div>
 
         <div class="room-list-wrapper">
             <div class="room-list">
-                <CreateRoom />
+                <CreateRoom class="create-room-wrapper"/>
                 <RoomListItem
                     v-for="item in gameInfo.rooms"
                     :key="item.room_id"
@@ -35,10 +36,11 @@ import sourceData from '../game-list.json'
 import RoomListItem from '../components/RoomListItem.vue'
 import CreateRoom from '../components/CreateRoom.vue'
 import Navigation from '../components/Navigation.vue'
+import JoinRoom from '../components/JoinRoom.vue'
 import { request } from '../utils/request.js'
 
 export default {
-    components:{ RoomListItem, CreateRoom, Navigation },
+    components:{ RoomListItem, CreateRoom, Navigation, JoinRoom },
     computed:{
         gameInfo(){
             return this.$store.state.games.find(gameInfo => gameInfo.id===parseInt(this.$route.params.id))
@@ -63,6 +65,7 @@ export default {
         }
     },
     mounted(){
+        this.$store.commit('setGameId',this.gameInfo.id)
         this.update()
     }
 }
@@ -93,6 +96,16 @@ export default {
 }
 .update-button:hover{
     transform: scale(1.02);
+}
+
+.join-room-wrapper {
+    margin-top: 21px;
+    margin-bottom: 20px;
+    float: right;
+}
+
+.create-room-wrapper {
+    float: left;
 }
 
 .room-list-header{

@@ -9,5 +9,4 @@ class RoomAdmin(admin.ModelAdmin):
     # TODO: with ForeignKey and ManyToManyField
     # list_display = ['room_id', 'room_name', 'private', 'game_kind', 'creator_dis', 'player_num', 'player_list_dis', 'viewer_num', 'viewer_list_dis', 'max_num']
 admin.site.register(models.Room, RoomAdmin)
-
 id_counter = 0  # the maximal id of the created rooms, increment and then use each time you create a room.
