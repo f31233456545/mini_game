@@ -94,8 +94,12 @@ def create_room(request):
     if not my_game_kind:
         my_game_kind = '0'
     my_game_kind_int = int(my_game_kind)
-    id_counter = id_counter+1
-    r = Room(room_id=id_counter, private=my_private_bl,
+
+    id_counter = 1
+    for r in Room.objects.all():
+        if r.room_id == id_counter:
+            id_counter = r.room_id+1
+    r = Room(room_id=id_counter, room_name=my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name,
              player_num=0, viewer_num=0, max_num=my_max_num_int)
     # r.creator = usr
@@ -125,8 +129,14 @@ def join_room(request):
     #    resp['message'] = "Invalid username."
     #    return HttpResponse(json.dumps(resp))
     my_room_id_int = int(my_room_id)
-    r = Room.objects.filter(room_id=my_room_id_int)[0]
-    print(r)
+    rs = Room.objects.filter(room_id=my_room_id_int)
+    if rs:
+        r = rs[0]
+    else:
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -161,22 +171,85 @@ def join_room(request):
     return HttpResponse(json.dumps(resp))
 
 
+def exit_room(request):
+    my_room_id = request.GET.get("room_id")
+    my_username = request.GET.get("user_name")
+
+    resp = {}
+    if (not my_room_id) or (not my_username):
+        resp['succeed'] = False
+        resp['message'] = "Invalid room id or username."
+        return HttpResponse(json.dumps(resp))
+    # TODO: check if the user is a valid account by filtering in database of USERINFO
+    # usr = UserInfo.objects.get(username=my_username)
+    # if not usr:
+    #    resp['succeed'] = False
+    #    resp['message'] = "Invalid username."
+    #    return HttpResponse(json.dumps(resp))
+    my_room_id_int = int(my_room_id)
+    rs = Room.objects.filter(room_id=my_room_id_int)
+    if rs:
+        r = rs[0]
+    else:
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+
+    if not r:
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+    # TODO: check if the user is in the room
+    # TODO: a viewer or a player?
+    if r.viewer_num == 0:
+        resp['succeed'] = False
+        resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
+        return HttpResponse(json.dumps(resp))
+    #tmp_usr = r.viewer_list.get(username=my_username)
+    # if !tmp_usr:
+    #    resp['succeed'] = False
+    #    resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
+    #    return HttpResponse(json.dumps(resp))
+    # TODO: transfer the host to someone else?
+    # if my_username == r.creator_name:
+    #
+    r.viewer_num = r.viewer_num-1
+    # TODO: add the user into viewer list
+    # r.viewer_list.add(usr)
+    r.save()
+    resp['succeed'] = True
+    resp['message'] = "Goodbye from room " + my_room_id
+    # debug
+    # Print the database
+    for r in Room.objects.all():
+        print(r)
+        # TODO: print the ForeignKey and ManyToManyField
+        # print(r.creator)
+        # for player in r.player_list.all():
+        #   print(player)
+        # for viewer in r.player_list.all():
+        #   print(viewer)
+    return HttpResponse(json.dumps(resp))
+
+
 def request_room_list(request):
     my_game_kind = request.GET.get("game_kind")
     my_user_name = request.GET.get("user_name")
 
     resp = {}
-    r = Room.objects.filter(game_kind=my_game_kind,private=False)
+    r = Room.objects.filter(game_kind=my_game_kind, private=False)
+    # no public room of this game_kind exit, return empty list
     if not r:
         resp['rooms'] = []
         return HttpResponse(json.dumps(resp))
+
     rooms = []
-    for r in Room.objects.filter(game_kind=my_game_kind,private=False):
+    for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)
     resp['rooms'] = rooms
     for r in Room.objects.filter(game_kind=my_game_kind):
         print(r)
-    
+
     return HttpResponse(json.dumps(resp))

@@ -4,30 +4,7 @@
             "id":0, 
             "name":"Texas Poker",
             "img":"TexasPoker.png",
-            "rooms":[
-                {
-                    "room_id":7,
-                    "room_name":"Bob's room",
-                    "player_num":3,
-                    "max_player_num":8,
-                    "status":0
-                },
-                {
-                    "room_id":12,
-                    "room_name":"David's room",
-                    "player_num":7,
-                    "max_player_num":8,
-                    "status":1
-                }
-            ]
-        },
-        {
-            "id":1,
-            "name":"a"
-        },
-        {
-            "id":2,
-            "name":"b"
+            "rooms":[]
         }
     ]
 }

@@ -1,74 +1,165 @@
 <template>
-    <div class="login-signup-wrapper">
-        <div class="menu-wrapper">
-            <el-menu
-                :default-active="activeIndex"
-                class="login-signup-menu"
-                mode="horizontal"
-                background-color="#434a50"
-                text-color="white"
-                active-text-color="#ffd04b"
-                @select="handleSelect"
-            >
-                <el-menu-item index="1">登录</el-menu-item>
-                <el-menu-item index="2">注册</el-menu-item>
-            </el-menu>
-        </div>
-        <div class="form-section">
-            <el-form
-                label-position="top" label-width="100px" class="demo-ruleForm"
-                :rules="rules"
-                :model="rulesForm"
-                status-icon
-                ref="ruleForm"
-            >
-                <el-form-item props="name">
-                    <el-input type="text" placeholder="用户名" v-model="rulesForm.name"></el-input>
-                </el-form-item>
-                <el-form-item props="password">
-                    <el-input type="password" placeholder="密码" v-model="rulesForm.password"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <div class="button-wrapper">
-                        <el-button class="button" type="primary" @click="submitForm('ruleForm')">
-                            {{this.activeIndex=="1"?"登录":"注册"}}
-                        </el-button>
-                    </div>
-                </el-form-item>
-            </el-form>
+    <Navigation/>
+    <div class="container">
+        <div class="login-signup-wrapper">
+            <div class="menu-wrapper" >
+                <el-menu
+                    class="login-signup-menu"
+                    mode="horizontal"
+                    background-color="#434a50"
+                            text-color="white"
+                    active-text-color="#ffd04b"
+                >
+                    <el-menu-item v-if="!islogin">登录</el-menu-item>
+                    <el-menu-item v-else>注册</el-menu-item>
+                </el-menu>
+            </div>
+            <div class="form-section" v-if="!islogin">
+                <el-form
+                    label-position="top" label-width="100px" class="demo-ruleForm"
+                    :rules="rules"
+                    :model="rulesForm"
+                    status-icon
+                    ref="ruleForm"
+                >
+                    <el-form-item props="name">
+                        <el-input type="text" placeholder="用户名" v-model="rulesForm.name"></el-input>
+                    </el-form-item>
+                    <el-form-item props="password">
+                        <el-input type="password" placeholder="密码" v-model="rulesForm.password"></el-input>
+                        <span class="errTips" v-if="error">*用户名或密码错误！</span>
+                    </el-form-item>
+                    <el-form-item>
+                        <div class="button-wrapper">
+                            <el-button class="button" type="primary" @click="login">登录</el-button>
+                        </div>
+                        <div class="button-wrapper">
+                            <el-button class="button" type="primary" @click="changeType">立即注册</el-button>
+                        </div>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="form-section"  v-else>
+                <el-form
+                    label-position="top" label-width="100px" class="demo-ruleForm"
+                    :rules="rules"
+                    status-icon
+                    ref="ruleForm"
+                >
+                    <el-form-item props="name">
+                        <el-input type="text" placeholder="用户名" v-model="rulesForm.name"></el-input>
+                        <span class="errTips" v-if="existed">*用户名已经存在！</span>
+                    </el-form-item>
+                    <el-form-item props="password">
+                        <el-input  type="password" placeholder="密码" v-model="rulesForm.password"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <div class="button-wrapper">
+                            <el-button class="button" type="primary" @click="register">注册</el-button>
+                        </div>
+                        <div class="button-wrapper">
+                            <el-button class="button" type="primary" @click="changeType"> 马上登录</el-button>
+                        </div>
+                    </el-form-item>
+                </el-form>
+            </div>
         </div>
     </div>
 </template>
-
+    
 <script>
-export default{
+import axios from 'axios'
+import Navigation from '../components/Navigation.vue'
+import {request} from '../utils/request.js'
+import store from '../store/index.js'
+import router from '../router/index.js'
+export default {
+    components:{Navigation},
     data(){
         return{
+            islogin:false,//当前界面：false：登录 true：注册
+            error:false,//用户名或密码是否错误
+            existed:false,//用户名是否已被注册
             rulesForm:{
+                islogin:true,
                 name:'',
                 password:''
             },
-            rules:{
-                name:[
-                    {required:true,message:"请输入名字",trigger:"blur"},
-                    {min:1,max:12,message:"长度1-12",trigger:"blur"}
-                ],
-                password:[
-                    {required:true,message:"请输入密码",trigger:"blur"},
-                    {min:6,max:20,message:"长度6-20",trigger:"blur"}
-                ],
-            },
-            activeIndex:'1'
+
         }
     },
     methods:{
-        handleSelect(index){
-            this.activeIndex=index
+        //登录/注册界面切换
+        changeType(){
+            this.islogin=!this.islogin,
+            this.rulesForm.name='',
+            this.rulesForm.password='';
         },
-        submitForm(ruleForm){
-            this.$store.commit('login')
-            this.$router.push('/games')
-        }
+        //用户登录
+        login(){
+            const self=this;
+            var LoginData={
+                        name:self.rulesForm.name,
+                        password:self.rulesForm.password
+                    };
+            if(self.rulesForm.name!=""&&self.rulesForm.password!=""){
+                //axios.post('http://47.94.92.103:3005/login',LoginData)
+                request('login',LoginData)
+                .then(function (res){
+                    console.log(res.succeed)
+                    switch(res.succeed){
+                            case true:
+                                alert("登录成功！");
+                                store.commit('login',LoginData.name);
+                                //router.push('/');
+                                router.back();
+                                break;
+                            case false:
+                                this.error=true;
+                                break;
+
+                    }
+                })
+                .catch(err => {
+                    console.log(err)//代码错误、请求失败捕获
+                })
+            }
+            else
+            {
+                alert("请填写用户名和密码！");
+            }
+
+        },
+        //用户注册
+        register(){
+            const self=this;
+            var LoginData={
+                        name:self.rulesForm.name,
+                        password:self.rulesForm.password
+                    };
+            if(self.rulesForm.name!=""&&self.rulesForm.password!=""){
+                //axios.post('http://47.94.92.103:3005/register',LoginData)
+                request('register',LoginData)
+                .then(function (res){
+                    switch(res.succeed){
+                    case true:
+                        alert("注册成功！");
+                        self.login();
+                        break;
+                    case false:
+                        this.existed=true;
+
+                    }
+                })
+                .catch(err => {
+                    console.log(err)//代码错误、请求失败捕获
+                })
+            }
+            else
+            {
+                alert("填写不能为空！");
+            }
+        },
     }
 }
 </script>
@@ -98,3 +189,4 @@ export default{
     width: 200px;
 }
 </style>
+
