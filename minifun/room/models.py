@@ -2,7 +2,14 @@ from email.policy import default
 from tabnanny import verbose
 from django.db import models
 
-# Create your models here.
+#用户数据库
+class UserInfo(models.Model):
+    username = models.CharField(max_length=32)
+    password = models.CharField(max_length=32)
+
+
+
+
 class Room(models.Model):
     room_id = models.IntegerField()
     room_name = models.CharField(max_length = 128)
@@ -39,3 +46,4 @@ class Room(models.Model):
     #    return ','.join([i.username for i in self.player_list.all()])
     #def viewer_list_dis(self):
     #    return ','.join([i.username for i in self.viewer_list.all()])
+    

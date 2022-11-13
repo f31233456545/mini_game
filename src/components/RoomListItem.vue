@@ -1,56 +1,83 @@
 <template>
     <div class="room">
-         <div class="content" v-if="this.type=='normal'">
-            <div class="room-id">{{this.room_id}}</div>
-            <div class="room-name">{{this.room_name}}</div>
-            <div class="state">
-                <div class="player-num">
-                    <img src="../assets/icons/user-regular.svg" />
-                    <div>{{this.player_num}}/{{this.max_player_num}}</div>
-                </div>
-                <div class="status">
-                    <div v-if="this.status==0">
-                        <img src="../assets/icons/cafe.svg" />
-                        waiting...
-                    </div>
-                    <div v-else>
-                        <img src="../assets/icons/dice.svg" />
-                        playing...
-                    </div>
-                    <!-- {{this.status==0?"waiting...":"playing..."}} -->
-                </div>
+        <div class="room-id">{{this.room_id}}</div>
+        <div class="room-name">{{this.room_name}}</div>
+        <div class="state">
+            <div class="player-num">
+                <img src="../assets/icons/user-regular.svg" />
+                <div>{{this.player_num + this.viewer_num}}/{{this.max_player_num}}</div>
             </div>
-            <div class="room-button-wrapper">
-            <router-link :to="`${this.$route.path}/content/${this.room_id}`">
-                <el-button class="room-button" type="primary">Join</el-button>
-            </router-link>
-            </div> 
-         </div>
-        <router-link :to="`${this.$route.path}/create`" v-else>
-            <div class="create">
-                <div class="create-tag">Create</div>
-                <div class="create-icon">+</div>
+            <div class="status">
+                <div v-if="this.status==0">
+                    <img src="../assets/icons/cafe.svg" />
+                    waiting...
+                </div>
+                <div v-else>
+                    <img src="../assets/icons/dice.svg" />
+                    playing...
+                </div>
+                <!-- {{this.status==0?"waiting...":"playing..."}} -->
             </div>
-        </router-link>
+        </div>
+        <div class="room-button-wrapper">
+            <el-button class="room-button" type="primary" @click="join_room">Join</el-button>
+        </div>
     </div>
 </template>
 
 <script>
+import { resolveComponent } from "vue"
+import routes from "../router/index.js"
+import { request } from '../utils/request.js'
+
 export default{
     props:{
         room_id: Number,
         room_name: String,
         player_num: Number,
+        viewer_num: Number,
         max_player_num: Number,
         status: Number,
         gameId: Number,
-        type: String,
     },
     computed:{
         gameInfo(){
             return this.$store.state.games.find(gameInfo => gameInfo.id === this.gameId)
         }
-  }
+    },
+    methods: {
+        join_room() {
+            var self = this;  // 组件自身
+            if(this.$store.state.login == false){
+                alert('请先登录')
+                self.$router.push('/login-signup')
+                return
+            }
+            request('join_room', {
+                room_id: self.room_id,
+                user_name: self.$store.state.userName,
+            })
+            .then(function (response) {  // 等待请求返回
+                if (response.succeed == true)
+                {
+                    self.$store.commit("enterRoom", self.room_id)
+                    console.log(`joined room ${self.$store.state.inRoomId}`);
+                    self.$router.push(`${self.$route.path}/content/${self.$store.state.inRoomId}`);
+                    return
+                }
+                else
+                {
+                    console.log("join failed!");
+                    console.log(response);
+                    return
+                }
+            })
+            .catch(function (error) {
+                console.log("request failed!");
+                console.log(error);
+            })
+        }
+    }
 }
 // "`/${this.gameInfo.id}/${this.gameInfo.name}`"
 </script>
@@ -109,26 +136,4 @@ export default{
     font-size: 1.2rem;
 }
 
-.create{
-    margin: 0 auto;
-    font-size: 1.5rem;
-    height: 100%;
-    background: #eee;
-    border-radius: 6px;
-}
-.create-tag{
-    padding-top: 3px;
-    font-size: 1.5rem;
-    background: #434a50;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    color: white;
-}
-.create-icon{
-    position: absolute;
-    top: 60px;
-    font-size: 8.0rem;
-    width: 100%;
-    color: #636a70;
-}
 </style>

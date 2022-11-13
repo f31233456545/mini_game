@@ -5,10 +5,14 @@ import router from './router'
 import store from './store'
 import ElementPlus from 'element-plus'
 import 'element-plus/theme-chalk/index.css'
+import createPopup from './utils/popup.js'
 
 
-createApp(App)
+const app = createApp(App)
     .use(router)
     .use(store)
     .use(ElementPlus)
-    .mount('#app')
+
+app.config.globalProperties.$popup = createPopup
+
+app.mount('#app')

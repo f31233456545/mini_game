@@ -10,14 +10,6 @@ export default {
 
 <template>
 
-<Navigation v-if="!this.$store.state.isInRoom" />
-
-<div class="container" v-if="!this.$store.state.isInRoom">
-  <router-view></router-view>
-</div>
-
-<div class="playroom-container" v-else>
-  <router-view></router-view>
-</div>
+<router-view></router-view>
 
 </template>
