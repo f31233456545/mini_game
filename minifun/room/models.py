@@ -24,7 +24,7 @@ class Room(models.Model):
     player_num = models.IntegerField(default = 0)
     viewer_num = models.IntegerField(default = 1)
     max_num = models.IntegerField(default = 13) # 8 players and 5 viewers.
-    status = models.IntegerField(default = 0)
+    status = models.IntegerField(default = 0) # 0|1 for waiting|playing
 
     # TODO: Foreignkey lists of current players and viewers.
     # player_list = models.ManyToManyField(

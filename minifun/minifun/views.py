@@ -72,8 +72,7 @@ def register(request):
 
         if x:
             # 存在
-            
-            
+
             resp = {}
             resp['message'] = "用户名已存在"
             resp['succeed'] = False
@@ -138,7 +137,7 @@ def create_room(request):
     #    resp['message'] = "Room "+my_room_name+" already exists."
     #    return HttpResponse(json.dumps(resp))
 
-    #if not my_private:
+    # if not my_private:
     #    my_private = '1'
     if my_private == '0':
         my_private_bl = False
@@ -150,10 +149,10 @@ def create_room(request):
     my_game_kind_int = int(my_game_kind)
     id_counter = 0
     for r in Room.objects.all():
-        if r.room_id > id_counter:    
+        if r.room_id > id_counter:
             id_counter = r.room_id
     id_counter = id_counter+1
-    r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
+    r = Room(room_id=id_counter, room_name=my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name,
              player_num=0, viewer_num=0, max_num=my_max_num_int)
     # r.creator = usr
@@ -190,7 +189,7 @@ def join_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-    
+
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -248,7 +247,7 @@ def exit_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-        
+
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -265,13 +264,13 @@ def exit_room(request):
     #    resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
     #    return HttpResponse(json.dumps(resp))
     # TODO: transfer the host to someone else?
-    #if my_username == r.creator_name:
-    #      
+    # if my_username == r.creator_name:
+    #
     r.viewer_num = r.viewer_num-1
     # TODO: add the user into viewer list
     # r.viewer_list.add(usr)
     r.save()
-    if r.viewer_num+r.player_num == 0 :
+    if r.viewer_num+r.player_num == 0:
         r.delete()
     resp['succeed'] = True
     resp['message'] = "Goodbye from room " + my_room_id
@@ -288,8 +287,63 @@ def exit_room(request):
     return HttpResponse(json.dumps(resp))
 
 
+def sit(request):
+    my_room_id = int(request.GET.get("room_id"))
+    my_user_name = request.GET.get("user_name")
+    my_chip_cnt = int(request.GET.get("chip_cnt"))
+
+    resp={}
+    #seat_id = -1 when failing to sit
+
+    #room doesn't exist
+    if not Room.object.filter(room_id=my_room_id)
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        resp['seat_id'] = -1
+        return HttpResponse(json.dumps(resp))
+    room = Room.object.filter(room_id=my_room_id)[0]
+    #player_num has reached to maximum
+    if room.player_num>7:
+        resp['succeed'] = False
+        resp['message'] = " seat of player are full. "
+        resp['seat_id'] = -1
+        return HttpResponse(json.dump(resp))
+
+    #modified database message of room
+    room.player_num += 1
+    room.viwer_num -= 1
+    room.save()
+    #TODO: modify desk.user_info and assign right seat_id
+    #distribute seat for player
+    resp['succeed'] = True
+    resp['message'] = "assign playe_rnum to seat_id(to be modified) "
+    resp['seat_id'] = room.player_num
+    return HttpResponse(json.dumps(resp))
+
+def stand(request):
+    my_room_id = int(request.GET.get("room_id"))
+    my_user_name = request.GET.get("user_name")
+
+    #room don't exist
+    if not Room.object.filter(room_id=my_room_id)
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+
+    room = Room.object.filter(room_id=my_room_id)[0]
+    #TODO:judge if user_name is valid
+    #TODO:modify desk.user_info
+    #modify database message of room
+    room.player_num -= 1
+    room.viwer_num += 1
+    room.save()
+
+    resp['succeed'] = True
+    resp{'message'} = "has only modified player_num and viewer_num"
+
+
 def request_room_list(request):
-    my_game_kind = request.GET.get("game_kind")
+    my_game_kind = int(request.GET.get("game_kind"))
     my_user_name = request.GET.get("user_name")
 
     resp = {}
@@ -297,6 +351,7 @@ def request_room_list(request):
     if not r:
         resp['rooms'] = []
         return HttpResponse(json.dumps(resp))
+
     rooms = []
     for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
@@ -307,5 +362,3 @@ def request_room_list(request):
         print(r)
 
     return HttpResponse(json.dumps(resp))
-
-
