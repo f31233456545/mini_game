@@ -1,7 +1,7 @@
 {
     "user_infos": [
         {
-        "user_name": "小王",
+        "user_name": "player",
         "seat_id": 1,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -10,7 +10,7 @@
         "hand_pokes": [12,29]
         },
         {
-        "user_name": "",
+        "user_name": "user",
         "seat_id": 2,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -75,8 +75,8 @@
     ],
 
     "pod_info": {
-        "curr_id": 7,
-        "bookmarker_id": 4,
+        "curr_id": 1,
+        "bookmarker_id": 1,
         "term": 1,
         "pod_chip_cnt": 100,
         "pokes": [33,20,5,0,0]
@@ -85,6 +85,6 @@
     "last_action": {
         "user_id": 0,
         "action_type": 0,
-        "raise_num": 0
+        "raise_num": 15
     }
 }
