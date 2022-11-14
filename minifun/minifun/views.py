@@ -68,7 +68,7 @@ def register(request):
         p = request.GET.get("password")
 
         # 检查数据库中是否存在该用户名
-        x = models.UserInfo.objects.filter(username=u)[0]
+        x = models.UserInfo.objects.filter(username=u)
 
         if x:
             # 存在

@@ -20,27 +20,21 @@ const store = createStore({
             sitDown: false, //是否坐下
         }
     },
-    getters: {
-        currRoom(state) {
-            console.log(state.inGameId)
-            console.log(state.inRoomId)
-            return state.games[state.inGameId].rooms.find(room => room.room_id===state.inRoomId)
-        }
-    },
     mutations: {
         login(state, name) {
-            state.login = true;
-            state.userName = name;
+            state.login = true
+            state.userName = name
+            console.log("userName:" + name)
         },
         logout(state) {
-            state.login = false;
-            state.userName = "";
+            state.login = false
+            state.userName = ""
         },
         enterRoom(state, room_id) {
-            state.inRoomId = room_id;
+            state.inRoomId = room_id
         },
         exitRoom(state) {
-            state.inRoomId = 0;
+            state.inRoomId = 0
         },
         updateRoomListInfo(state, info) {
             state.games[info.gameId].rooms = info.list
