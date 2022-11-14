@@ -1,12 +1,14 @@
 {
+    "room_name": "room",
+    "view_cnt": 1,
     "user_infos": [
         {
         "user_name": "小王",
         "seat_id": 1,
         "stack_cnt": 100,
-        "chip_cnt": 0,
+        "chip_cnt": 50,
         "folded": false,
-        "last_action": 0,
+        "last_action": 2,
         "hand_pokes": [12,29]
         },
         {
@@ -75,6 +77,8 @@
     ],
 
     "pod_info": {
+        "playing": true,
+        "your_id": 4,
         "curr_id": 7,
         "bookmarker_id": 4,
         "term": 1,
