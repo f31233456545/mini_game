@@ -40,6 +40,11 @@
             <el-button type="danger">弃牌</el-button>
         </div>
     </div>
+
+    <!-- 调试用 -->
+    <div class="debug">
+        <el-button type="primary" @click="debug1">debug: change</el-button>
+    </div>
   
 </div>
 </template>
@@ -71,83 +76,89 @@ export default {
         }
     },
     props: {
-      room_id: Number,
+        room_id: Number,
     },
     methods: {
-      open2() {
-        this.$notify({
-          title: '操作提示',
-          message: '玩家5加注15,玩家6开始操作',
-          duration: 0,
-          offset: 100
-        });
-      },
-      sit() {
-      const self = this;
-      var sit_data = {
-       room_id:self.$route.params.room_id,
-       user_name:self.$route.params.userName
-      };
-      request("sit", sit_data) 
-        .then(function (res) {
-          switch (res.succeed) {
-            case true:
-            self.$message.success('已坐下！');
-            case false:
-            console("sit err!");
-            self.$message.error('发生错误！');
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        open2() {
+            this.$notify({
+            title: '操作提示',
+            message: '玩家5加注15,玩家6开始操作',
+            duration: 0,
+            offset: 100
+            })
+        },
+        sit() {
+            const self = this
+            var sit_data = {
+                room_id:self.$route.params.room_id,
+                user_name:self.$route.params.userName
+            }
+            request("sit", sit_data) 
+                .then(function (res) {
+                    switch (res.succeed) {
+                    case true: 
+                        self.$message.success('已坐下！')
+                        break
+                    case false:
+                        console("sit err!")
+                        self.$message.error('发生错误！')
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
         
-    },
-    stand() {
-      const self = this;
-      var stand_data = {
-        room_id:self.$route.params.room_id,
-       user_name:self.$route.params.userName
-      };
-      request("stand", stand_data) 
-        .then(function (res) {
-          console.log(res.data);
-          switch (res.succeed) {
+        },
+        stand() {
+            const self = this;
+            var stand_data = {
+                room_id:self.$route.params.room_id,
+                user_name:self.$route.params.userName
+            };
+            request("stand", stand_data) 
+                .then(function (res) {
+                    console.log(res.data)
+                    switch (res.succeed) {
+                    case true:
+                        self.$message.success('已站起！')
+                        break
+                    case false:
+                        self.$message.error('发生错误！')
+                        console(succeed.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        },
+        exit_room() {
+            const self = this
+            var exit_data = {
+                room_id:self.$route.params.room_id,
+                user_name:self.$route.params.userName
+            }
+        request("exit_room", exit_data)
+            .then(function (res) {
+            switch (res.succeed) {
             case true:
-            self.$message.success('已站起！');
+                self.$message.success('已退出房间！')
+                self.$store.exitRoom()
+                router.back()
+                break
             case false:
-            self.$message.error('发生错误！');
-            console(succeed.message);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-        
-    },
-    exit_room() {
-      const self = this;
-      var exit_data = {
-      room_id:self.$route.params.room_id,
-      user_name:self.$route.params.userName
-      };
-      request("exit_room", exit_data)
-        .then(function (res) {
-          switch (res.succeed) {
-            case true:
-            self.$message.success('已退出房间！');
-            self.$store.exitRoom();
-            router.back();
-            case false:
-            self.$message.error('发生错误！');
-              console(succeed.message);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-        
-    },
+                self.$message.error('发生错误！')
+                console(succeed.message)
+            }
+            })
+            .catch((err) => {
+                console.log(err)
+            });
+            
+        },
+        // debug
+        debug1(){
+            this.$store.commit('changeInfo')
+        }
     },
     mounted() {
       //this.$store.commit('enterRoom')
@@ -244,6 +255,11 @@ export default {
 
 }
 
-
+/* debug */
+.debug{
+    position: absolute;
+    top: 100px;
+    left: 10px;
+}
 </style>
   

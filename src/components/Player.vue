@@ -33,6 +33,10 @@
                 :value="i"
                 />
             </div>
+
+            <div class="seat-id">
+                {{playerInfo.seat_id}}
+            </div>
         </div>
     </div>
     <div :class="'empty p'+pos" v-else>
@@ -44,9 +48,9 @@
 
 <script>
 import Card from './Card.vue'
-
+import SimplePopup from './SimplePopup.vue'
 export default{
-    components:{Card},
+    components:{Card, SimplePopup},
     data(){
         return{
             lastActionDisplay: true, // 是否显示上个行动
@@ -105,9 +109,18 @@ export default{
             }
         }
     },
-    methods:{
-        setLastActionDisplay(flag){
-            this.lastActionDisplay = flag
+    watch:{
+        lastAction(newLastAction,oldLastAction){
+            const self = this
+            // alert("change!")
+            self.$popup(SimplePopup,{
+                top: `50%`,
+                left: `50%`,
+            },{
+                title: self.playerInfo.seat_id + " " + self.playerInfo.user_name,
+                message: self.lastAction[1],
+                duration: 1000,
+            })
         }
     }
 }
@@ -301,5 +314,13 @@ export default{
     position: absolute;
     left: 105px;
     top: 40px;
+}
+
+.seat-id{
+    position: absolute;
+    left: -15px;
+    top: 2px;
+    color: white;
+    text-align: center;
 }
 </style>

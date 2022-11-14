@@ -41,6 +41,11 @@ const store = createStore({
         },
         setGameId(state, id) {
             state.inGameId = id
+        },
+        // debug 不是正式的方法
+        changeInfo(state) {
+            let x = state.gameInfo.user_infos[0].last_action
+            state.gameInfo.user_infos[0].last_action = (x+1)%3
         }
     },
     actions: {
