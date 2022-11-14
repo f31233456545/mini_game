@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import ActionPopup from '../components/ActionPopup.vue'
 
 // 将指定组件以浮窗形式弹出，并赋予其 remove 方法
 const createPopup = function (component, position, props) {
@@ -23,6 +24,12 @@ const createPopup = function (component, position, props) {
             }
         })
     return app.mount(mountNode)
+}
+
+export function createActionPopup(title, message) {
+    let position = { top: `15%`, right: `0px` }
+    let props = { title: title, message: message, duration: 1000 }
+    createPopup(ActionPopup,position,props)
 }
 
 export default createPopup

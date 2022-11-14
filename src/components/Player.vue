@@ -49,6 +49,7 @@
 <script>
 import Card from './Card.vue'
 import SimplePopup from './SimplePopup.vue'
+import { createActionPopup } from '../utils/popup.js'
 export default{
     components:{Card, SimplePopup},
     data(){
@@ -113,14 +114,18 @@ export default{
         lastAction(newLastAction,oldLastAction){
             const self = this
             // alert("change!")
-            self.$popup(SimplePopup,{
-                top: `50%`,
-                left: `50%`,
-            },{
-                title: self.playerInfo.seat_id + " " + self.playerInfo.user_name,
-                message: self.lastAction[1],
-                duration: 1000,
-            })
+            let actionType = this.playerInfo.last_action
+            let action = ""
+            if(actionType==0){
+                action = self.lastAction[1]
+            }
+            else{
+                action = self.lastAction[1] + "到 " + self.playerInfo.chip_cnt
+            }
+            createActionPopup(
+                self.playerInfo.seat_id + " " + self.playerInfo.user_name,
+                action
+            )
         }
     }
 }

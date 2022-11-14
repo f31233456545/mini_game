@@ -162,8 +162,10 @@ export default {
     },
     mounted() {
       //this.$store.commit('enterRoom')
+       document.body.style.overflow = "hidden"
     },
     unmounted() {
+        document.body.style.overflow = "auto"
       this.$store.commit('exitRoom')
     },
   }
