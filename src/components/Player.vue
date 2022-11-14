@@ -6,7 +6,7 @@
                 <img class="user-icon" src="../assets/icons/user-regular.svg" />
                 <div class="user-chip">
                     <img class="chip-icon" src="../assets/icons/chip.png"/>
-                    <div class="chip-num">
+                    <div class="stack-cnt">
                         {{playerInfo.stack_cnt}}
                     </div>
                 </div>
@@ -15,6 +15,15 @@
                 </div>
                 <div class="action-info">
                     {{inAction?'行动中...':''}}
+                </div>
+                <div :class="'last-action '+lastAction[0]" v-if="lastActionDisplay">
+                    {{lastAction[1]}}
+                </div>
+                <div class="put-chip" v-if="lastActionDisplay">
+                    <img class="chip-icon2" src="../assets/icons/chip2.png"/>
+                    <div class="chip-cnt">
+                        {{playerInfo.chip_cnt}}
+                    </div>
                 </div>
             </div>
 
@@ -38,15 +47,34 @@ import Card from './Card.vue'
 
 export default{
     components:{Card},
+    data(){
+        return{
+            lastActionDisplay: true, // 是否显示上个行动
+        }
+    },
     props:{
         pos: Number,
     },
     computed:{
+        gameInfo(){
+            return this.$store.state.gameInfo
+        },
+        seated(){
+            return this.gameInfo.pod_info.your_id >=1 && this.gameInfo.pod_info.your_id <=8
+        },
+        seatId(){ // 该位置玩家座位号
+            if(this.seated){
+                return (this.pos + this.gameInfo.pod_info.your_id-2) % 8 + 1
+            }
+            else{
+                return this.pos
+            }
+        },
         playerInfo(){
-            return this.$store.state.gameInfo.user_infos[this.pos-1]
+            return this.gameInfo.user_infos[this.seatId-1]
         },
         playerCharacter(){
-            let bookmarkerId = this.$store.state.gameInfo.pod_info.bookmarker_id;
+            let bookmarkerId = this.gameInfo.pod_info.bookmarker_id;
             if(this.playerInfo.seat_id==bookmarkerId){
                 return ["bookmarker","庄家"]
             }
@@ -61,15 +89,34 @@ export default{
             }
         },
         inAction(){
-            return this.playerInfo.seat_id == this.$store.state.gameInfo.pod_info.curr_id
+            return this.playerInfo.seat_id == this.gameInfo.pod_info.curr_id
+        },
+        lastAction(){
+            if(!this.gameInfo.pod_info.playing)
+                return ["fold",""]
+            let actionType = this.playerInfo.last_action
+            switch(actionType){
+            case 0:
+                return ["fold","弃牌"]
+            case 1:
+                return ["follow","跟注"]
+            case 2:
+                return ["raise","加注"]
+            }
         }
     },
+    methods:{
+        setLastActionDisplay(flag){
+            this.lastActionDisplay = flag
+        }
+    }
 }
 </script>
 <style scoped>
 .player{
     position: absolute;
 }
+
 .empty{
     position: absolute;
 }
@@ -82,6 +129,7 @@ export default{
     font-size: 40px;
     transform:rotate(330deg);
 }
+
 .p1{
     left: 50%;
     top: 80%;
@@ -153,7 +201,7 @@ export default{
 
 .user-chip{
     height: 19px;
-    background: rgba(200,200,100,1);
+    background: rgba(80,200,50,1);
 }
 .chip-icon{
     width: 20px;
@@ -163,23 +211,69 @@ export default{
     margin-left: 5px;
     margin-right: 5px;
 }
-.chip-num{
+.stack-cnt{
     display: flex;
     float: left;
-    color: rgb(60,60,200);
+    color: white;
 }
+
 .action-info{
     position: absolute;
     width: 100px;
-    height: 30px;
-    top: 70px;
+    height: 20px;
+    top: 50px;
     left: 0px;
-    padding-top: 5px;
-    padding-bottom: 5px;
     font-size: 16px;
     color: yellow;
     text-align: center;
 }
+
+.last-action{
+    position: absolute;
+    width: 60px;
+    height: 20px;
+    top: 76px;
+    left: 2px;
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    border-radius: 4px;
+}
+.fold{
+    background: rgba(128,128,128,0.8);
+}
+.follow{
+    background: rgba(64,158,255,0.8);
+}
+.raise{
+    background: rgba(103,194,58,0.8);
+}
+
+.put-chip{
+    position: absolute;
+    width: 40px;
+    height: 26px;
+    top: 73px;
+    left: 60px;
+}
+.chip-icon2{
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    margin-left: 7px;
+    opacity: 50%;
+}
+.chip-cnt{
+    position: absolute;
+    top: 2px;
+    width: 40px;
+    height: 22px;
+    color: rgb(220,255,200);
+    font-size: 16px;
+    text-align: center;
+    padding: 2px;
+}
+
 .tag{
     position: absolute;
     width: 40px;
@@ -202,6 +296,7 @@ export default{
 .normal-player{
     opacity: 0%;
 }
+
 .hand{
     position: absolute;
     left: 105px;

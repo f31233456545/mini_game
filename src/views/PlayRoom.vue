@@ -4,17 +4,17 @@
     <div class="play-room-header">
         <div class="room-info">
             <div class="room-name">
-                {{this.$store.getters.currRoom.room_name}}
+                {{gameInfo.room_name}}
             </div>
             <div class="room-id">
-                {{"房间号: "+this.$store.getters.currRoom.room_id}}
+                {{"房间号: "+this.$route.params.room_id}}
             </div>
             <div class="spectate">
                 <div class="spectate-icon">
                     <img :src="spectate"/>
                 </div>
                 <div class="spectate-num">
-                    {{this.$store.getters.currRoom.viewer_num}}
+                    {{gameInfo.view_cnt}}
                 </div>
             </div>
 
@@ -50,6 +50,7 @@ import table0 from "../assets/table.jpg"
 import spectate from "../assets/icons/eye.svg"
 import Player from '../components/Player.vue'
 import GameBoard from '../components/GameBoard.vue'
+import {request} from '../utils/request.js'
   
 export default {
     name: 'PlayRoom',
@@ -66,7 +67,7 @@ export default {
     },
     computed:{
         gameInfo(){
-            return this.$store.state.games.find(gameInfo => gameInfo.id === parseInt(this.$route.params.id))
+            return this.$store.state.gameInfo
         }
     },
     props: {
@@ -135,7 +136,7 @@ export default {
           switch (res.succeed) {
             case true:
             self.$message.success('已退出房间！');
-            self.$store.exitroom();
+            self.$store.exitRoom();
             router.back();
             case false:
             self.$message.error('发生错误！');

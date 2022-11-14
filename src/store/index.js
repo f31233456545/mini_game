@@ -11,6 +11,8 @@ const store = createStore({
             inGameId: -1, //当前游戏id，-1表示未选择
             games: sourceData.gamelist,
             gameInfo: {
+                room_name: gameData.room_name,
+                view_cnt: gameData.view_cnt,
                 user_infos: gameData.user_infos,
                 pod_info: gameData.pod_info,
                 last_action: gameData.last_action,
