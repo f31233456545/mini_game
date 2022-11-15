@@ -9,7 +9,7 @@ class desk(object):
         your_id=0
         curr_id=0
         bookmarker_id=0
-        trem=0
+        term=0
         pod_chip_cnt=0
         pokes=[0,0,0]
     
@@ -35,7 +35,6 @@ class desk(object):
     #对于user_info初始化
     i=1
     while i<9 :
-        i += 1
         #用户名为‘’表示该座位无人
         user_info[i]['user_name']=''
         user_info[i]['seat_id']=i
@@ -47,6 +46,7 @@ class desk(object):
         #手牌初始化为背面
         user_info[i]['hand_poke0']=0
         user_info[i]['hand_poke1']=0
+        i += 1
     
     
     def create_room(self,private,room_name,game_kind,creator_name):
@@ -66,8 +66,21 @@ class desk(object):
         last_action.user_id=user_name
         last_action.action_type=action_type
         last_action.raise_num=raise_num
-        
     
     def request_game_info(self,room_id,user_name):
-        pod_info.your_id=user_name
+        i=1
+        while i<9:
+            if self.user_info[i]['username']==user_name:
+                pod_info.your_id = i
+                break
+            i += 1
+        if i==9:
+            pod_info.your_id=0
+        return self
+        
+
+
+
+
+
         

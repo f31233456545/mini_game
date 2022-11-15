@@ -27,4 +27,5 @@ urlpatterns = [
     path('join_room/', views.join_room),
     path('exit_room/', views.exit_room),
     path('request_room_list/',views.request_room_list),
+    path('request_game_info',views.request_game_info),
 ]
