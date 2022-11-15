@@ -31,14 +31,18 @@ class desk(object):
         }
     )
     #建立一个有八个元素的初始化为0的数组保存user_info
-    user_info=np.array([('zero',0.,0.,0.,0.,0.,0.,0.,0.)]*10,dtype=user_infoType)
+    user_info=np.array([('zero',0.,0.,0.,0.,0.,0.,0.)]*10,dtype=user_infoType)
     #对于user_info初始化
     i=1
     while i<9 :
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 98ee862ff7a7c48b40d91f30b781304213010850
         #用户名为‘’表示该座位无人
         user_info[i]['user_name']=''
         user_info[i]['seat_id']=i
-        user_info[i]['stack_int']=0
+        user_info[i]['stack_cnt']=0
         user_info[i]['chip_cnt']=0
         user_info[i]['folded']=True
         #0表示弃牌
