@@ -277,16 +277,18 @@ def sit(request):
         resp['message'] = " seat for player are full. "
         resp['seat_id'] = -1
         return HttpResponse(json.dumps(resp))
+    
+
+    #TODO: modify desk.user_info and assign right seat_id(by calling room.desk.sit)
+    #distribute seat for player 
+    resp['succeed'] = True
+    resp['message'] = "assign playe_rnum to seat_id(to be modified) "
+    resp['seat_id'] = room.desk.sit(my_room_id,my_user_name,my_chip_cnt)
 
     #modified database message of room
     room.player_num += 1
     room.viwer_num -= 1
     room.save()
-    #TODO: modify desk.user_info and assign right seat_id
-    #distribute seat for player
-    resp['succeed'] = True
-    resp['message'] = "assign playe_rnum to seat_id(to be modified) "
-    resp['seat_id'] = room.player_num
     return HttpResponse(json.dumps(resp))
 
 def stand(request):
@@ -301,16 +303,20 @@ def stand(request):
         return HttpResponse(json.dumps(resp))
 
     room = Room.object.filter(room_id=my_room_id)[0]
-    #TODO:judge if user_name is valid
+    #TODO:judge if user_name is valid(by calling stand)
     #TODO:modify desk.user_info
     #modify database message of room
-    room.player_num -= 1
-    room.viwer_num += 1
-    room.save()
-
-    resp['succeed'] = True
-    resp['message'] = "has only modified player_num and viewer_num"
-
+    if room.desk.stand(my_room_id, my_user_name):
+        room.player_num -= 1
+        room.viwer_num += 1
+        room.save()
+        resp['succeed'] = True
+        resp['message'] = " "
+        return HttpResponse(json.dumps(resp))
+    else:
+        resp['succeed'] = False
+        resp['message'] = "desk.stand() return false."
+        return HttpResponse(json.dumps(resp))
 
 def request_room_list(request):
     my_game_kind = int(request.GET.get("game_kind"))
