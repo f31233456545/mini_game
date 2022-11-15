@@ -35,10 +35,6 @@ class desk(object):
     #对于user_info初始化
     i=1
     while i<9 :
-<<<<<<< HEAD
-=======
-        
->>>>>>> 98ee862ff7a7c48b40d91f30b781304213010850
         #用户名为‘’表示该座位无人
         user_info[i]['user_name']=''
         user_info[i]['seat_id']=i
