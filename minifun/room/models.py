@@ -1,6 +1,7 @@
 from email.policy import default
 from tabnanny import verbose
 from django.db import models
+from minifun.desk import desk
 
 #用户数据库
 class UserInfo(models.Model):
@@ -35,6 +36,9 @@ class Room(models.Model):
     #    UserInfo, 
     #    on_delete=models.CASCADE
     #)
+
+    desk = desk()
+
     def __str__(self):
         return "Profile for room {1}:\n    room_id={0}, private={2}, game_kind={3}\n    Created by user {4}\n    current player number={5}, viewer number={6}, maximal capacity={7}".format(
             self.room_id, self.room_name, self.private, self.game_kind, self.creator_name, self.player_num, self.viewer_num, self.max_num

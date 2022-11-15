@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import json
 from room.models import Room
-from room.admin import id_counter
 from room import models
 from room.models import UserInfo
 # this is a test function.
@@ -103,7 +102,6 @@ def register(request):
 def create_room(request):
     # Note: After the creator creates the room, he needs manually send a join_room request to join the room.
     # TODO: should we auto join_room after create_room?
-    global id_counter
     # default: 0, that is a public room
     my_private = request.GET.get("private")
     my_room_name = request.GET.get("room_name")
