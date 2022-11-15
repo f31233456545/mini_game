@@ -7,7 +7,7 @@
     >
         <div class="prefix"/>
         <span :style="{ color: titleColor }">
-            {{ title }}:
+            {{ title + " " }}
         </span>
         <span :style="{ color: messageColor }">
             {{ message }}

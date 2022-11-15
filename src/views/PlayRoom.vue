@@ -56,7 +56,8 @@ import spectate from "../assets/icons/eye.svg"
 import Player from '../components/Player.vue'
 import GameBoard from '../components/GameBoard.vue'
 import {request} from '../utils/request.js'
-  
+import { createActionPopup } from '../utils/popup.js'
+
 export default {
     name: 'PlayRoom',
     components: {
@@ -73,6 +74,24 @@ export default {
     computed:{
         gameInfo(){
             return this.$store.state.gameInfo
+        },
+        lastAction(){
+            return this.gameInfo.last_action
+        },
+        userInfos(){
+            return this.gameInfo.user_infos
+        },
+        term(){
+            switch(this.gameInfo.pod_info.term){
+            case 0:
+                return "PREFLOP"
+            case 1:
+                return "FLOP"
+            case 2:
+                return "TURN"
+            case 3:
+                return "RIVER"
+            }
         }
     },
     props: {
@@ -155,9 +174,52 @@ export default {
             });
             
         },
-        // debug
+        // debug 改变游戏信息
         debug1(){
             this.$store.commit('changeInfo')
+        }
+    },
+    watch: {
+        lastAction(newLastAction,oldLastAction){
+            const self = this
+            let user_id = newLastAction.user_id
+            let action_type = newLastAction.action_type
+            let raise_num = newLastAction.raise_num
+            let user = self.userInfos.find(user => user.seat_id===user_id)
+            let user_name = user.user_name
+            let chip_cnt = user.chip_cnt
+            let title = ""
+            let action = ""
+            switch(action_type){
+            case 0: // 弃牌
+                title = user_id + " " + user_name
+                action = "弃牌"
+                break;
+            case 1: // 过牌
+                title = user_id + " " + user_name
+                action = "过牌"
+                break;
+            case 2: // 跟注
+                title = user_id + " " + user_name
+                action = "跟注到" + chip_cnt
+                break;
+            case 3: // 加注
+                title = user_id + " " + user_name
+                action = "加注到" + chip_cnt
+                break;
+            case 4: // 新回合
+                title = "<< " + self.term + " >>"
+                action = ""
+                break;
+            case 5: // 结束
+                title = "游戏结束！"
+                action = ""
+                break;
+            }
+            createActionPopup(
+                title,
+                action
+            )
         }
     },
     mounted() {

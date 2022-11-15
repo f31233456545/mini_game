@@ -49,7 +49,7 @@
 <script>
 import Card from './Card.vue'
 import SimplePopup from './SimplePopup.vue'
-import { createActionPopup } from '../utils/popup.js'
+
 export default{
     components:{Card, SimplePopup},
     data(){
@@ -108,24 +108,6 @@ export default{
             case 2:
                 return ["raise","加注"]
             }
-        }
-    },
-    watch:{
-        lastAction(newLastAction,oldLastAction){
-            const self = this
-            // alert("change!")
-            let actionType = this.playerInfo.last_action
-            let action = ""
-            if(actionType==0){
-                action = self.lastAction[1]
-            }
-            else{
-                action = self.lastAction[1] + "到 " + self.playerInfo.chip_cnt
-            }
-            createActionPopup(
-                self.playerInfo.seat_id + " " + self.playerInfo.user_name,
-                action
-            )
         }
     }
 }

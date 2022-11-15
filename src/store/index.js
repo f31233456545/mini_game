@@ -18,6 +18,7 @@ const store = createStore({
                 last_action: gameData.last_action,
             },
             sitDown: false, //是否坐下
+            x: 0, // debug 用于测试各种动作
         }
     },
     mutations: {
@@ -44,8 +45,8 @@ const store = createStore({
         },
         // debug 不是正式的方法
         changeInfo(state) {
-            let x = state.gameInfo.user_infos[0].last_action
-            state.gameInfo.user_infos[0].last_action = (x+1)%3
+            state.x = (state.x + 1) % 6
+            state.gameInfo.last_action = {user_id:1,action_type:state.x,raise_num:0}
         }
     },
     actions: {
