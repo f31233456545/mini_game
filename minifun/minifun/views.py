@@ -296,7 +296,7 @@ def sit(request):
     #seat_id = -1 when failing to sit
 
     #room doesn't exist
-    if not Room.object.filter(room_id=my_room_id)
+    if not Room.object.filter(room_id=my_room_id):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         resp['seat_id'] = -1
@@ -305,7 +305,7 @@ def sit(request):
     #player_num has reached to maximum
     if room.player_num>7:
         resp['succeed'] = False
-        resp['message'] = " seat of player are full. "
+        resp['message'] = " seat for player are full. "
         resp['seat_id'] = -1
         return HttpResponse(json.dump(resp))
 
@@ -323,9 +323,10 @@ def sit(request):
 def stand(request):
     my_room_id = int(request.GET.get("room_id"))
     my_user_name = request.GET.get("user_name")
-
+    
+    resp = {}
     #room don't exist
-    if not Room.object.filter(room_id=my_room_id)
+    if not Room.object.filter(room_id=my_room_id):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
@@ -339,7 +340,7 @@ def stand(request):
     room.save()
 
     resp['succeed'] = True
-    resp{'message'} = "has only modified player_num and viewer_num"
+    resp['message'] = "has only modified player_num and viewer_num"
 
 
 def request_room_list(request):
