@@ -276,7 +276,7 @@ def sit(request):
         resp['succeed'] = False
         resp['message'] = " seat for player are full. "
         resp['seat_id'] = -1
-        return HttpResponse(json.dump(resp))
+        return HttpResponse(json.dumps(resp))
 
     #modified database message of room
     room.player_num += 1
