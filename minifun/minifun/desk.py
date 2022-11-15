@@ -46,7 +46,7 @@ class desk(object):
             user_info[i]['hand_poke1']=0
             i += 1
     
-        def create_room(self,private,room_name,game_kind,creator_name):
+    def create_room(self,private,room_name,game_kind,creator_name):
             self.room_name=room_name
         
     def sit(self,room_id,user_name,chip_cnt):
