@@ -272,17 +272,17 @@ def sit(request):
         return HttpResponse(json.dumps(resp))
     room = Room.object.filter(room_id=my_room_id)[0]
     #player_num has reached to maximum
-    if room.player_num>7:
+    if room.player_num>room:
         resp['succeed'] = False
         resp['message'] = " seat for player are full. "
         resp['seat_id'] = -1
         return HttpResponse(json.dumps(resp))
     
 
-    #TODO: modify desk.user_info and assign right seat_id(by calling room.desk.sit)
+    #modify desk.user_info and assign right seat_id(by calling room.desk.sit)
     #distribute seat for player 
     resp['succeed'] = True
-    resp['message'] = "assign playe_rnum to seat_id(to be modified) "
+    resp['message'] = "assign minimum available seat_id."
     resp['seat_id'] = room.desk.sit(my_room_id,my_user_name,my_chip_cnt)
 
     #modified database message of room
@@ -303,9 +303,8 @@ def stand(request):
         return HttpResponse(json.dumps(resp))
 
     room = Room.object.filter(room_id=my_room_id)[0]
-    #TODO:judge if user_name is valid(by calling stand)
-    #TODO:modify desk.user_info
-    #modify database message of room
+    #judge if user_name is valid(by calling stand)
+    #modify desk.user_info and database message of room
     if room.desk.stand(my_room_id, my_user_name):
         room.player_num -= 1
         room.viwer_num += 1
