@@ -337,3 +337,34 @@ def request_room_list(request):
         print(r)
 
     return HttpResponse(json.dumps(resp))
+
+
+def request_game_info(request):
+    my_room_id=int(request.GET.get("room_id"))
+    my_user_name=request.GET.get("user_name")
+    # search room
+    resp = {}
+    r = Room.objects.get(room_id=my_room_id)
+    if not r: # room does not exist
+        resp['message'] = "game does not exist"
+        return HttpResponse(json.dumps(resp))
+    resp["room_name"] = r.room_name
+    resp["view_cnt"] = r.viewer_num
+    your_id=r.desk.get_user_seat_id(my_user_name)
+    pod = {}
+    pod["playing"]=r.desk.pod_infoClass.playing
+    pod["your_id"]=your_id
+    pod["curr_id"]=r.desk.pod_infoClass.curr_id
+    pod["bookmarker_id"]=r.desk.pod_infoClass.bookmarker_id
+    pod["term"]=r.desk.pod_infoClass.term
+    pod["pod_chip_cnt"]=r.desk.pod_infoClass.pod_chip_cnt
+    pod["pokes"]=r.desk.pod_infoClass.pokes
+    resp["pod_info"]=pod
+    resp["user_infos"]=r.desk.get_player_info()
+    last_act={}
+    last_act["user_id"]=r.desk.last_actionClass.user_id
+    last_act["action_type"]=r.desk.last_actionClass.action_type
+    last_act["raise_num"]=r.desk.last_actionClass.raise_num
+    resp["last_action"]=last_act
+    return HttpResponse(json.dumps(resp))
+    

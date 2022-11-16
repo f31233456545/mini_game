@@ -28,5 +28,6 @@ urlpatterns = [
     path('sit/', views.sit),
     path('stand/', views.stand),
     path('exit_room/', views.exit_room),
-    path('request_room_list/', views.request_room_list),
+    path('request_room_list/',views.request_room_list),
+    path('request_game_info/',views.request_game_info),
 ]
