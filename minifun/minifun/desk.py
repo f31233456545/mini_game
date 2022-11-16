@@ -1,4 +1,3 @@
-import numpy as np
 import json
 class player(object):
     def __init__(self,seat) -> None:
