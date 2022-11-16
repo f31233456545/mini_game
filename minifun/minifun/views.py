@@ -272,7 +272,7 @@ def sit(request):
         return HttpResponse(json.dumps(resp))
     room = Room.object.filter(room_id=my_room_id)[0]
     #player_num has reached to maximum
-    if room.player_num>room:
+    if room.player_num>7:
         resp['succeed'] = False
         resp['message'] = " seat for player are full. "
         resp['seat_id'] = -1
