@@ -1,8 +1,36 @@
 import numpy as np
+import json
+class player(object):
+    def __init__(self,seat) -> None:
+        self.user_name=""
+        self.seat_id=seat
+        self.stack_cnt=-1
+        self.chip_cnt=0
+        self.folded=True
+        self.last_action=-1
+        self.hand_pokes=[0,0]
+    def to_json(self):
+        dict={}
+        dict["user_name"]=self.user_name
+        dict["seat_id"]=self.seat_id
+        dict["stack_cnt"]=self.stack_cnt
+        dict["chip_cnt"]=self.chip_cnt
+        dict["folded"]=self.folded
+        dict["last_action"]=self.last_action
+        dict["hand_pokes"]=self.hand_pokes
+        return json.dumps(dict)
+    
+    
+
+
 class desk(object):
     def __init__(self) -> None:
-        pass
+        i=1
+        while i<9:
+            self.user_info.append(player(i))
+            i+=1
     
+    user_info=[]
     #定义并初始化pod_info信息
     class pod_infoClass:
         playing=False
@@ -16,38 +44,6 @@ class desk(object):
         user_id=0
         action_type=0
         raise_num=0
-        
-    global pod_info
-    global last_action
-    pod_info=pod_infoClass()
-    last_action=last_actionClass()
-    
-    user_infoType=np.dtype(
-        {
-            'names':['user_name','seat_id','stack_cnt','chip_cnt','folded','last_action','hand_poke0','hand_poke1'],
-            'formats':['a','i','i','i','b','i','i','i']
-            #names表示所需变量名，formats表示变量名对应的数据类型
-        }
-    )
-    #建立一个有八个元素的初始化为0的数组保存user_info
-    user_info=np.array([('zero',0.,0.,0.,0.,0.,0.,0.)]*10,dtype=user_infoType)
-    #对于user_info初始化
-    i=1
-    while i<9 :
-
-        #用户名为‘’表示该座位无人
-        user_info[i]['user_name']=''
-        user_info[i]['seat_id']=i
-        user_info[i]['stack_cnt']=0
-        user_info[i]['chip_cnt']=0
-        user_info[i]['folded']=True
-        #0表示弃牌
-        user_info[i]['last_action']=0
-        #手牌初始化为背面
-        user_info[i]['hand_poke0']=0
-        user_info[i]['hand_poke1']=0
-        i += 1
-    
     
     def create_room(self,private,room_name,game_kind,creator_name):
         self.room_name=room_name
@@ -55,28 +51,55 @@ class desk(object):
     def sit(self,room_id,user_name,chip_cnt):
         self.cnt=chip_cnt
     
-    def start_game(room_id):
-        pod_info.playing=True
+    def start_game(self,room_id):
+        self.pod_infoClass.playing=True
+        # pass
+        # pod_info.playing=True
     
     def stand(self,room_id,user_name):
         pass
     
     def action(self,user_name,action_type,raise_num):
-        pod_info.curr_id=user_name
-        last_action.user_id=user_name
-        last_action.action_type=action_type
-        last_action.raise_num=raise_num
+        self.pod_infoClass.curr_id=user_name
+        self.last_actionClass.user_id=user_name
+        self.last_actionClass.action_type=action_type
+        self.last_actionClass_action.raise_num=raise_num
+        #pass
+        # pod_info.curr_id=user_name
+        # last_action.user_id=user_name
+        # last_action.action_type=action_type
+        # last_action.raise_num=raise_num
     
-    def request_game_info(self,room_id,user_name):
-        i=1
-        while i<9:
-            if self.user_info[i]['username']==user_name:
-                pod_info.your_id = i
-                break
+    def get_user_seat_id(self,user_name):
+        i=0
+        while i<8:
+            if self.user_info[i].user_name==user_name:
+                return i
             i += 1
-        if i==9:
-            pod_info.your_id=0
-        return self
+        return 0
+
+    def get_player_info(self):
+        resp=[]
+        for u in self.user_info:
+            # resp.append(json.dumps(u))
+            # u_json={}
+            # u_json["user_name"]=u["user_name"]
+            # u_json["seat_id"]=u["seat_id"]
+            # u_json["stack_cnt"]=u["stack_cnt"]
+            # u_json["chip_cnt"]=u["chip_cnt"]
+            # u_json["folded"]=u["folded"]
+            # u_json["last_action"]=u["last_action"]
+            # u_json["stack_cnt"]=u["stack_cnt"]
+            # hand_pokes=[]
+            # hand_pokes[0]=u["hand_poke0"]
+            # hand_pokes[1]=u["hand_poke1"]
+            # u_json["hand_pokes"]=hand_pokes
+            resp.append(u.to_json())
+        return resp
+        
+
+
+        
         
 
 

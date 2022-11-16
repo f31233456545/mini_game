@@ -287,13 +287,7 @@ def request_game_info(request):
         return HttpResponse(json.dumps(resp))
     resp["room_name"] = r.room_name
     resp["view_cnt"] = r.viewer_num
-    i=1
-    your_id=0
-    while i<9:
-        if r.desk.user_info[i]['username']==my_user_name:
-            your_id = i
-            break
-        i += 1
+    your_id=r.desk.get_user_seat_id(my_user_name)
     pod = {}
     pod["playing"]=r.desk.pod_infoClass.playing
     pod["your_id"]=your_id
@@ -303,11 +297,11 @@ def request_game_info(request):
     pod["pod_chip_cnt"]=r.desk.pod_infoClass.pod_chip_cnt
     pod["pokes"]=r.desk.pod_infoClass.pokes
     resp["pod_info"]=pod
-    resp["user_infos"]=r.desk.user_info
+    resp["user_infos"]=r.desk.get_player_info()
     last_act={}
     last_act["user_id"]=r.desk.last_actionClass.user_id
     last_act["action_type"]=r.desk.last_actionClass.action_type
     last_act["raise_num"]=r.desk.last_actionClass.raise_num
-    resp["last_Action"]=last_act
+    resp["last_action"]=last_act
     return HttpResponse(json.dumps(resp))
     
