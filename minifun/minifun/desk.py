@@ -6,7 +6,6 @@ class desk(object):
     #定义并初始化pod_info信息
     class pod_infoClass:
         playing=False
-        your_id=0
         curr_id=0
         bookmarker_id=0
         term=0
@@ -35,7 +34,7 @@ class desk(object):
     #对于user_info初始化
     i=1
     while i<9 :
-        
+
         #用户名为‘’表示该座位无人
         user_info[i]['user_name']=''
         user_info[i]['seat_id']=i
