@@ -78,12 +78,7 @@ export default {
     //用户登录
     login(LoginData) {
       const self = this;
-    //   var LoginData = {
-    //     username: self.rulesForm.username,
-    //     password: self.rulesForm.password,
-    //   };
       if (self.rulesForm.username != "" && self.rulesForm.password != "") {
-        //axios.post('http://47.94.92.103:3005/login',LoginData)
         request("login", LoginData)
           .then(function (res) {
             console.log(res.succeed);

@@ -4,34 +4,30 @@
     <div class="play-room-header">
         <div class="room-info">
             <div class="room-name">
-                {{gameInfo.room_name}}
+                {{this.$store.getters.currRoom.room_name}}
             </div>
             <div class="room-id">
-                {{"房间号: "+this.$route.params.room_id}}
+                {{"房间号: "+this.$store.getters.currRoom.room_id}}
             </div>
             <div class="spectate">
                 <div class="spectate-icon">
                     <img :src="spectate"/>
                 </div>
                 <div class="spectate-num">
-                    {{gameInfo.view_cnt}}
+                    {{this.$store.getters.currRoom.viewer_num}}
                 </div>
             </div>
 
         </div>
         <div class="button-group1">
-            <el-button type="success" @click="sit">坐下</el-button>
-            <el-button type="warning" @click="stand">站起</el-button>
-            <el-button type="danger" @click="exit_room">离开房间</el-button>
+            <el-button type="success" @click="sit({room_id:this.$store.getters.currRoom.room_id,user_name:this.$store.getters.currRoom.userName})">坐下</el-button>
+            <el-button type="warning" @click="stand({room_id:this.$store.getters.currRoom.room_id,user_name:this.$store.getters.currRoom.userName})">站起</el-button>
+            <el-button type="danger" @click="exit_room({room_id:this.$store.getters.currRoom.room_id,user_name:this.$store.getters.currRoom.userName})">离开房间</el-button>
         </div>
     </div>
 
     <GameBoard/>
 
-    <Player
-        v-for="i in [1,2,3,4,5,6,7,8]"
-        :pos="i"
-    />
 
     <div class="play-room-footer">
         <div class="button-group2">
@@ -39,11 +35,6 @@
             <el-button type="primary">跟注/过牌</el-button>
             <el-button type="danger">弃牌</el-button>
         </div>
-    </div>
-
-    <!-- 调试用 -->
-    <div class="debug">
-        <el-button type="primary" @click="debug1">debug: change</el-button>
     </div>
   
 </div>
@@ -55,9 +46,7 @@ import table0 from "../assets/table.jpg"
 import spectate from "../assets/icons/eye.svg"
 import Player from '../components/Player.vue'
 import GameBoard from '../components/GameBoard.vue'
-import {request} from '../utils/request.js'
-import { createActionPopup } from '../utils/popup.js'
-
+  
 export default {
     name: 'PlayRoom',
     components: {
@@ -69,165 +58,102 @@ export default {
             table0: table0,
             spectate: spectate,
         };
-
     },
     computed:{
         gameInfo(){
-            return this.$store.state.gameInfo
-        },
-        lastAction(){
-            return this.gameInfo.last_action
-        },
-        userInfos(){
-            return this.gameInfo.user_infos
-        },
-        term(){
-            switch(this.gameInfo.pod_info.term){
-            case 0:
-                return "PREFLOP"
-            case 1:
-                return "FLOP"
-            case 2:
-                return "TURN"
-            case 3:
-                return "RIVER"
-            }
+            return this.$store.state.games.find(gameInfo => gameInfo.id === parseInt(this.$route.params.id))
         }
     },
     props: {
-        room_id: Number,
+      room_id: Number,
     },
     methods: {
-        open2() {
-            this.$notify({
-            title: '操作提示',
-            message: '玩家5加注15,玩家6开始操作',
-            duration: 0,
-            offset: 100
-            })
-        },
-        sit() {
-            const self = this
-            var sit_data = {
-                room_id:self.$route.params.room_id,
-                user_name:self.$route.params.userName
-            }
-            request("sit", sit_data) 
-                .then(function (res) {
-                    switch (res.succeed) {
-                    case true: 
-                        self.$message.success('已坐下！')
-                        break
-                    case false:
-                        console("sit err!")
-                        self.$message.error('发生错误！')
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
-        
-        },
-        stand() {
-            const self = this;
-            var stand_data = {
-                room_id:self.$route.params.room_id,
-                user_name:self.$route.params.userName
-            };
-            request("stand", stand_data) 
-                .then(function (res) {
-                    console.log(res.data)
-                    switch (res.succeed) {
-                    case true:
-                        self.$message.success('已站起！')
-                        break
-                    case false:
-                        self.$message.error('发生错误！')
-                        console(succeed.message)
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
-        },
-        exit_room() {
-            const self = this
-            var exit_data = {
-                room_id:self.$route.params.room_id,
-                user_name:self.$route.params.userName
-            }
-        request("exit_room", exit_data)
-            .then(function (res) {
-            switch (res.succeed) {
+      open2() {
+        this.$notify({
+          title: '操作提示',
+          message: '玩家5加注15,玩家6开始操作',
+          duration: 0,
+          offset: 100
+        });
+      },
+      sit(sit_data) {
+      const self = this;
+      request("sit", sit_data) 
+        .then(function (res) {
+          switch (res.succeed) {
             case true:
-                self.$message.success('已退出房间！')
-                self.$store.exitRoom()
-                router.back()
-                break
+            self.$message.success('已坐下！');
+            store.commit("sit");
             case false:
-                self.$message.error('发生错误！')
-                console(succeed.message)
-            }
-            })
-            .catch((err) => {
-                console.log(err)
-            });
-            
-        },
-        // debug 改变游戏信息
-        debug1(){
-            this.$store.commit('changeInfo')
-        }
+            console("sit err!");
+            self.$message.error('发生错误！');
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
     },
-    watch: {
-        lastAction(newLastAction,oldLastAction){
-            const self = this
-            let user_id = newLastAction.user_id
-            let action_type = newLastAction.action_type
-            let raise_num = newLastAction.raise_num
-            let user = self.userInfos.find(user => user.seat_id===user_id)
-            let user_name = user.user_name
-            let chip_cnt = user.chip_cnt
-            let title = ""
-            let action = ""
-            switch(action_type){
-            case 0: // 弃牌
-                title = user_id + " " + user_name
-                action = "弃牌"
-                break;
-            case 1: // 过牌
-                title = user_id + " " + user_name
-                action = "过牌"
-                break;
-            case 2: // 跟注
-                title = user_id + " " + user_name
-                action = "跟注到" + chip_cnt
-                break;
-            case 3: // 加注
-                title = user_id + " " + user_name
-                action = "加注到" + chip_cnt
-                break;
-            case 4: // 新回合
-                title = "<< " + self.term + " >>"
-                action = ""
-                break;
-            case 5: // 结束
-                title = "游戏结束！"
-                action = ""
-                break;
-            }
-            createActionPopup(
-                title,
-                action
-            )
-        }
+    stand(stand_data) {
+      const self = this;
+      request("stand", stand_data) 
+        .then(function (res) {
+          console.log(res.data);
+          switch (res.succeed) {
+            case true:
+            self.$message.success('已站起！');
+            store.commit("stand");
+            case false:
+            self.$message.error('发生错误！');
+            console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+    },
+    exit_room(exit_data) {
+      const self = this;
+      request("exit_room", exit_data)
+        .then(function (res) {
+          switch (res.succeed) {
+            case true:
+            store.commit("stand");
+            self.$message.success('已退出房间！');
+            store.commit("exitroom");
+            router.back();
+            case false:
+            self.$message.error('发生错误！');
+              console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+    },
+    request_gameinfo()
+    {
+      const self = this;
+      var request_data = {
+        room_id:  self.$store.state.room_id,
+        user_name: self.$store.state.userName,
+      };
+      request("request_game_info", request_data)
+      .then(data => {
+                    this.$store.commit('updataGameinfo', data)
+                    console.log(data)
+                })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     },
     mounted() {
       //this.$store.commit('enterRoom')
-       document.body.style.overflow = "hidden"
     },
     unmounted() {
-        document.body.style.overflow = "auto"
       this.$store.commit('exitRoom')
     },
   }
@@ -319,11 +245,6 @@ export default {
 
 }
 
-/* debug */
-.debug{
-    position: absolute;
-    top: 100px;
-    left: 10px;
-}
+
 </style>
   
