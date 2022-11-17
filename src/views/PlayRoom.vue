@@ -4,25 +4,25 @@
     <div class="play-room-header">
         <div class="room-info">
             <div class="room-name">
-                {{this.$store.getters.currRoom.room_name}}
+                {{this.$store.state.room_name}}
             </div>
             <div class="room-id">
-                {{"房间号: "+this.$store.getters.currRoom.room_id}}
+                {{"房间号: "+this.$store.state.room_id}}
             </div>
             <div class="spectate">
                 <div class="spectate-icon">
                     <img :src="spectate"/>
                 </div>
                 <div class="spectate-num">
-                    {{this.$store.getters.currRoom.viewer_num}}
+                    {{this.$store.state.viewer_num}}
                 </div>
             </div>
 
         </div>
         <div class="button-group1">
-            <el-button type="success" @click="sit({room_id:this.$store.getters.currRoom.room_id,user_name:this.$store.getters.currRoom.userName})">坐下</el-button>
-            <el-button type="warning" @click="stand({room_id:this.$store.getters.currRoom.room_id,user_name:this.$store.getters.currRoom.userName})">站起</el-button>
-            <el-button type="danger" @click="exit_room({room_id:this.$store.getters.currRoom.room_id,user_name:this.$store.getters.currRoom.userName})">离开房间</el-button>
+            <el-button type="success" @click="sit({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">坐下</el-button>
+            <el-button type="warning" @click="stand({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">站起</el-button>
+            <el-button type="danger" @click="exit_room({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">离开房间</el-button>
         </div>
     </div>
 
@@ -115,23 +115,23 @@ export default {
     },
     exit_room(exit_data) {
       const self = this;
-      request("exit_room", exit_data)
-        .then(function (res) {
-          switch (res.succeed) {
-            case true:
-            store.commit("stand");
-            self.$message.success('已退出房间！');
-            store.commit("exitroom");
-            router.back();
-            case false:
-            self.$message.error('发生错误！');
-              console(succeed.message);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-        
+      // request("exit_room", exit_data)
+      //   .then(function (res) {
+      //     switch (res.succeed) {
+      //       case true:
+      //       store.commit("stand");
+      //       self.$message.success('已退出房间！');
+      //       store.commit("exitroom");
+      //       router.back();
+      //       case false:
+      //       self.$message.error('发生错误！');
+      //         console(succeed.message);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+      self.$router.push(`${self.$route.path}/content/${self.$store.state.inRoomId}`);
     },
     request_gameinfo()
     {
