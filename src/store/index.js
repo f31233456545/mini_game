@@ -34,6 +34,12 @@ const store = createStore({
         enterRoom(state, room_id) {
             state.inRoomId = room_id
         },
+        sit(state) {
+            state.sitDown = true
+        },
+        stand(state) {
+            state.sitDown = false
+        },
         exitRoom(state) {
             state.inRoomId = 0
         },
@@ -43,11 +49,14 @@ const store = createStore({
         setGameId(state, id) {
             state.inGameId = id
         },
+        updataGameinfo(state,info){
+            state.gameInfo=info
+        },
         // debug 不是正式的方法
         changeInfo(state) {
             state.x = (state.x + 1) % 6
             state.gameInfo.last_action = {user_id:1,action_type:state.x,raise_num:0}
-        }
+        },
     },
     actions: {
         // updateRoomList({ commit, state }, gameId) {
