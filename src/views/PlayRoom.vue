@@ -46,6 +46,7 @@ import table0 from "../assets/table.jpg"
 import spectate from "../assets/icons/eye.svg"
 import Player from '../components/Player.vue'
 import GameBoard from '../components/GameBoard.vue'
+import { request } from "../utils/request.js";
   
 export default {
     name: 'PlayRoom',
