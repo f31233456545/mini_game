@@ -1,7 +1,6 @@
 <template>
 <div class="play-room">
-  
-    <div class="play-room-header">
+  <div v-if="false" class="play-room-header">
         <div class="room-info">
             <div class="room-name">
                 {{this.$store.state.room_name}}
@@ -24,17 +23,23 @@
             <el-button type="warning" @click="stand({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">站起</el-button>
             <el-button type="danger" @click="exit_room({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">离开房间</el-button>
         </div>
-    </div>
+  </div>
 
     <GameBoard/>
 
 
     <div class="play-room-footer">
-        <div class="button-group2">
-            <el-button type="success">加注</el-button>
-            <el-button type="primary">跟注/过牌</el-button>
-            <el-button type="danger">弃牌</el-button>
+      <div v-if="!playing && this.$store.state.gameInfo.user_infos[0].seat_id==this.$store.state.gameInfo.pod_info.bookmarker_id" class="waiting">
+        <el-button type="danger" @click="start">开始游戏</el-button>
+      </div>
+      <div v-if="playing" class="playing">
+        <div v-if="!acting && this.$store.state.gameInfo.user_infos[0].seat_id==this.$store.state.gameInfo.pod_info.curr_id" class="button-group2">
+            <el-input-number v-model="num" @change="handleChange" :step="1" step-strictly :min=this.$store.state.gameInfo.last_action.raise_num+1 :max=this.$store.state.gameInfo.user_infos[0].stack_cnt></el-input-number>
+            <el-button type="success" @click="bet">加注</el-button>
+            <el-button type="primary" @click="call">跟注</el-button>
+            <el-button type="danger" @click="fold">弃牌</el-button>
         </div>
+      </div>
     </div>
   
 </div>
@@ -47,6 +52,7 @@ import spectate from "../assets/icons/eye.svg"
 import Player from '../components/Player.vue'
 import GameBoard from '../components/GameBoard.vue'
 import { request } from "../utils/request.js";
+
   
 export default {
     name: 'PlayRoom',
@@ -58,6 +64,9 @@ export default {
         return{
             table0: table0,
             spectate: spectate,
+            playing: false,
+            acting: false,
+            num: this.$store.state.gameInfo.last_action.raise_num + 1
         };
     },
     computed:{
@@ -77,6 +86,11 @@ export default {
           offset: 100
         });
       },
+
+      handleChange(value) {
+        console.log(value);
+      },
+
       sit(sit_data) {
       const self = this;
       request("sit", sit_data) 
@@ -92,8 +106,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-        });
-        
+        });    
+
     },
     stand(stand_data) {
       const self = this;
@@ -134,6 +148,107 @@ export default {
           console.log(err);
         });
     },
+
+
+
+
+
+
+    start(){
+      const self = this;
+    //  self.playing = true;
+      var start_data = {
+        room_id: self.room_id
+      };
+      request("start_game",start_data)
+        .then(function (res) {
+          console.log(res.data);
+          switch (res.succeed) {
+            case true:
+            self.$message.success('游戏开始！');
+            self.playing = true;
+            case false:
+            self.$message.error('发生错误！');
+            console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    bet(){
+      const self = this;
+      self.acting = true;
+      var bet_data = {
+        user_name: self.$store.state.gameInfo.user_infos[0].user_name,
+        action_type: 2,
+        raise_num: self.num,
+        room_id: self.room_id,
+      };
+      request("action",bet_data)
+        .then(function (res) {
+          console.log(res.data);
+          switch (res.succeed) {
+            case true:
+            self.$message.success('已下注！');
+            case false:
+            self.$message.error('发生错误！');
+            console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    call(){
+      const self = this;
+      self.acting = true;
+      var call_data = {
+        user_name: self.$store.state.gameInfo.user_infos[0].user_name,
+        action_type: 1,
+        raise_num: self.$store.state.gameInfo.last_action.raise_num,
+        room_id: self.room_id,
+      };
+      request("action",call_data)
+        .then(function (res) {
+          console.log(res.data);
+          switch (res.succeed) {
+            case true:
+            self.$message.success('已跟注！');
+            case false:
+            self.$message.error('发生错误！');
+            console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    fold(){
+      const self = this;
+      self.acting = true;
+      var fold_data = {
+        user_name: self.$store.state.gameInfo.user_infos[0].user_name,
+        action_type: 0,
+        raise_num: self.$store.state.gameInfo.user_infos[0].chip_cnt,
+        room_id: self.room_id,
+      };
+      request("action",fold_data)
+        .then(function (res) {
+          console.log(res.data);
+          switch (res.succeed) {
+            case true:
+            self.$message.success('已下注！');
+            case false:
+            self.$message.error('发生错误！');
+            console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        }); 
+    },
+
     request_gameinfo()
     {
       const self = this;
@@ -149,6 +264,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+
     }
     },
     mounted() {

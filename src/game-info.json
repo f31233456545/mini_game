@@ -3,7 +3,7 @@
     "view_cnt": 1,
     "user_infos": [
         {
-        "user_name": "小王",
+        "user_name": "player",
         "seat_id": 1,
         "stack_cnt": 100,
         "chip_cnt": 50,
@@ -89,6 +89,6 @@
     "last_action": {
         "user_id": 0,
         "action_type": 0,
-        "raise_num": 0
+        "raise_num": 15
     }
 }
