@@ -265,12 +265,12 @@ def sit(request):
     #seat_id = -1 when failing to sit
 
     #room doesn't exist
-    if not Room.object.filter(room_id=my_room_id):
+    if not Room.objects.filter(room_id=my_room_id):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         resp['seat_id'] = -1
         return HttpResponse(json.dumps(resp))
-    room = Room.object.filter(room_id=my_room_id)[0]
+    room = Room.objects.filter(room_id=my_room_id)[0]
     #player_num has reached to maximum
     if room.player_num == 8:
         resp['succeed'] = False
@@ -286,7 +286,7 @@ def sit(request):
 
     #modified database message of room
     room.player_num += 1
-    room.viwer_num -= 1
+    room.viewer_num -= 1
     room.save()
     return HttpResponse(json.dumps(resp))
 
@@ -296,17 +296,17 @@ def stand(request):
     
     resp = {}
     #room don't exist
-    if not Room.object.filter(room_id=my_room_id):
+    if not Room.objects.filter(room_id=my_room_id):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
 
-    room = Room.object.filter(room_id=my_room_id)[0]
+    room = Room.objects.filter(room_id=my_room_id)[0]
     #judge if user_name is valid(by calling stand)
     #modify desk.user_info and database message of room
     if room.desk.stand(my_room_id, my_user_name):
         room.player_num -= 1
-        room.viwer_num += 1
+        room.viewer_num += 1
         room.save()
         resp['succeed'] = True
         resp['message'] = " "
