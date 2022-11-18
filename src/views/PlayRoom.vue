@@ -115,23 +115,23 @@ export default {
     },
     exit_room(exit_data) {
       const self = this;
-      // request("exit_room", exit_data)
-      //   .then(function (res) {
-      //     switch (res.succeed) {
-      //       case true:
-      //       store.commit("stand");
-      //       self.$message.success('已退出房间！');
-      //       store.commit("exitroom");
-      //       router.back();
-      //       case false:
-      //       self.$message.error('发生错误！');
-      //         console(succeed.message);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-      self.$router.push(`${self.$route.path}/content/${self.$store.state.inRoomId}`);
+      request("exit_room", exit_data)
+        .then(function (res) {
+          switch (res.succeed) {
+            case true:
+            store.commit("stand");
+            self.$router.go(-1);
+            self.$message.success('已退出房间！');
+            store.commit("exitroom");
+            router.back();
+            case false:
+            self.$message.error('发生错误！');
+              console(succeed.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     request_gameinfo()
     {
