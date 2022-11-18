@@ -3,34 +3,30 @@
   <div v-if="false" class="play-room-header">
         <div class="room-info">
             <div class="room-name">
-                {{this.$store.getters.currRoom.room_name}}
+                {{this.$store.state.room_name}}
             </div>
             <div class="room-id">
-                {{"房间号: "+this.$store.getters.currRoom.room_id}}
+                {{"房间号: "+this.$store.state.room_id}}
             </div>
             <div class="spectate">
                 <div class="spectate-icon">
                     <img :src="spectate"/>
                 </div>
                 <div class="spectate-num">
-                    {{this.$store.getters.currRoom.viewer_num}}
+                    {{this.$store.state.viewer_num}}
                 </div>
             </div>
 
         </div>
         <div class="button-group1">
-            <el-button type="success" @click="sit">坐下</el-button>
-            <el-button type="warning" @click="stand">站起</el-button>
-            <el-button type="danger" @click="exit_room">离开房间</el-button>
+            <el-button type="success" @click="sit({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">坐下</el-button>
+            <el-button type="warning" @click="stand({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">站起</el-button>
+            <el-button type="danger" @click="exit_room({room_id:this.$store.state.room_id,user_name:this.$store.state.userName})">离开房间</el-button>
         </div>
   </div>
 
     <GameBoard/>
 
-    <Player
-        v-for="i in [1,2,3,4,5,6,7,8]"
-        :pos="i"
-    />
 
     <div class="play-room-footer">
       <div v-if="!playing && this.$store.state.gameInfo.user_infos[0].seat_id==this.$store.state.gameInfo.pod_info.bookmarker_id" class="waiting">
@@ -55,7 +51,8 @@ import table0 from "../assets/table.jpg"
 import spectate from "../assets/icons/eye.svg"
 import Player from '../components/Player.vue'
 import GameBoard from '../components/GameBoard.vue'
-import { request } from '../utils/request'
+import { request } from "../utils/request.js";
+
   
 export default {
     name: 'PlayRoom',
@@ -71,7 +68,6 @@ export default {
             acting: false,
             num: this.$store.state.gameInfo.last_action.raise_num + 1
         };
-
     },
     computed:{
         gameInfo(){
@@ -90,20 +86,19 @@ export default {
           offset: 100
         });
       },
+
       handleChange(value) {
         console.log(value);
       },
-      sit() {
+
+      sit(sit_data) {
       const self = this;
-      var sit_data = {
-       room_id:self.$route.params.room_id,
-       user_name:self.$route.params.userName
-      };
       request("sit", sit_data) 
         .then(function (res) {
           switch (res.succeed) {
             case true:
             self.$message.success('已坐下！');
+            store.commit("sit");
             case false:
             console("sit err!");
             self.$message.error('发生错误！');
@@ -114,18 +109,15 @@ export default {
         });    
 
     },
-    stand() {
+    stand(stand_data) {
       const self = this;
-      var stand_data = {
-        room_id:self.$route.params.room_id,
-       user_name:self.$route.params.userName
-      };
       request("stand", stand_data) 
         .then(function (res) {
           console.log(res.data);
           switch (res.succeed) {
             case true:
             self.$message.success('已站起！');
+            store.commit("stand");
             case false:
             self.$message.error('发生错误！');
             console(succeed.message);
@@ -136,18 +128,16 @@ export default {
         });
         
     },
-    exit_room() {
+    exit_room(exit_data) {
       const self = this;
-      var exit_data = {
-      room_id:self.$route.params.room_id,
-      user_name:self.$route.params.userName
-      };
       request("exit_room", exit_data)
         .then(function (res) {
           switch (res.succeed) {
             case true:
+            store.commit("stand");
+            self.$router.go(-1);
             self.$message.success('已退出房间！');
-            self.$store.exitroom();
+            store.commit("exitroom");
             router.back();
             case false:
             self.$message.error('发生错误！');
@@ -157,8 +147,8 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-        
     },
+
 
 
 
@@ -257,6 +247,24 @@ export default {
         .catch((err) => {
           console.log(err);
         }); 
+    },
+
+    request_gameinfo()
+    {
+      const self = this;
+      var request_data = {
+        room_id:  self.$store.state.room_id,
+        user_name: self.$store.state.userName,
+      };
+      request("request_game_info", request_data)
+      .then(data => {
+                    this.$store.commit('updataGameinfo', data)
+                    console.log(data)
+                })
+        .catch((err) => {
+          console.log(err);
+        });
+
     }
     },
     mounted() {
