@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import json
 from room.models import Room
-from room.admin import id_counter
 from room import models
 from room.models import UserInfo
 # this is a test function.
@@ -72,8 +71,7 @@ def register(request):
 
         if x:
             # 存在
-            
-            
+
             resp = {}
             resp['message'] = "用户名已存在"
             resp['succeed'] = False
@@ -101,16 +99,11 @@ def register(request):
 
 
 def create_room(request):
-    # Note: After the creator creates the room, he needs manually send a join_room request to join the room.
-    # TODO: should we auto join_room after create_room?
-    global id_counter
-    # default: 0, that is a public room
     my_private = request.GET.get("private")
     my_room_name = request.GET.get("room_name")
-    # default: Texas Hold'em poker
     my_game_kind = request.GET.get("game_kind")
     my_creator_name = request.GET.get("creator_name")
-    my_max_num_int = 13     # default: 8 players and 5 viewers at most.
+    my_max_num_int = 13
     # TODO: self-defined capacity of the room?
     # my_max_num = request.GET.get("max_num")
     # if not my_max_num:
@@ -123,20 +116,14 @@ def create_room(request):
         resp['room_id'] = -1
         resp['message'] = "Require room name and username of the creator."
         return HttpResponse(json.dumps(resp))
-    # TODO: check if the creator is a valid account by filtering in database of USERINFO
-    # usr = UserInfo.objects.get(username=my_creator_name)
-    # if not usr:
-    #    resp['succeed'] = False
-    #    resp['room_id'] = -1
-    #    resp['message'] = "Invalid username of the creator."
-    #    return HttpResponse(json.dumps(resp))
-
-    # r = Room.objects.filter(room_name=my_room_name)
-    # if r:
-    #    resp['succeed'] = False
-    #    resp['room_id'] = -1
-    #    resp['message'] = "Room "+my_room_name+" already exists."
-    #    return HttpResponse(json.dumps(resp))
+    usrs = UserInfo.objects.filter(username=my_creator_name)
+    if usrs:
+        usr = usrs[0]
+    else:
+        resp['succeed'] = False
+        resp['room_id'] = -1
+        resp['message'] = "Invalid username of the creator."
+        return HttpResponse(json.dumps(resp))
 
     #if not my_private:
     #    my_private = '1'
@@ -150,19 +137,18 @@ def create_room(request):
     my_game_kind_int = int(my_game_kind)
     id_counter = 0
     for r in Room.objects.all():
-        if r.room_id > id_counter:    
+        if r.room_id > id_counter:
             id_counter = r.room_id
     id_counter = id_counter+1
     r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
-             game_kind=my_game_kind_int, creator_name=my_creator_name,
+             game_kind=my_game_kind_int, creator_name=my_creator_name, creator=usr, 
              player_num=0, viewer_num=0, max_num=my_max_num_int)
-    # r.creator = usr
+    r.desk.create_room(r.private, r.room_name, r.game_kind, r.creator_name)
     r.save()
     resp['succeed'] = True
     resp['room_id'] = id_counter
     resp['message'] = "success"
     # debug
-    # Print the database
     print(Room.objects.all())
     return HttpResponse(json.dumps(resp))
 
@@ -176,12 +162,13 @@ def join_room(request):
         resp['succeed'] = False
         resp['message'] = "Invalid room id or username."
         return HttpResponse(json.dumps(resp))
-    # TODO: check if the user is a valid account by filtering in database of USERINFO
-    # usr = UserInfo.objects.get(username=my_username)
-    # if not usr:
-    #    resp['succeed'] = False
-    #    resp['message'] = "Invalid username."
-    #    return HttpResponse(json.dumps(resp))
+    usrs = UserInfo.objects.filter(username=my_username)
+    if not usrs:
+        resp['succeed'] = False
+        resp['message'] = "Invalid username."
+        return HttpResponse(json.dumps(resp))
+    else:
+        usr = usrs[0]
     my_room_id_int = int(my_room_id)
     rs = Room.objects.filter(room_id=my_room_id_int)
     if rs:
@@ -190,7 +177,7 @@ def join_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-    
+
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
@@ -199,29 +186,25 @@ def join_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" is filled to capacity."
         return HttpResponse(json.dumps(resp))
-    # TODO: check if the user is already in the room
     # TODO: a conception: blacklist?
-    #tmp_usr = r.viewer_list.get(username=my_username)
-    # if tmp_usr:
-    #    resp['succeed'] = False
-    #    resp['message'] = "User "+my_username+" is already in room "+my_room_id+"."
-    #    return HttpResponse(json.dumps(resp))
+    vusrs = r.viewer_list.filter(username=my_username)
+    if vusrs:
+        resp['succeed'] = False
+        resp['message'] = "User "+my_username+" is already in room "+my_room_id+"."
+        return HttpResponse(json.dumps(resp))
+    pusrs = r.player_list.filter(username=my_username)
+    if pusrs:
+        resp['succeed'] = False
+        resp['message'] = "User "+my_username+" is already in room "+my_room_id+"."
+        return HttpResponse(json.dumps(resp))
     r.viewer_num = r.viewer_num+1
-    # TODO: add the user into viewer list
-    # r.viewer_list.add(usr)
+    r.viewer_list.add(usr)
     r.save()
     resp['succeed'] = True
     resp['message'] = "Welcome to room " + my_room_id
     # debug
-    # Print the database
     for r in Room.objects.all():
         print(r)
-        # TODO: print the ForeignKey and ManyToManyField
-        # print(r.creator)
-        # for player in r.player_list.all():
-        #   print(player)
-        # for viewer in r.player_list.all():
-        #   print(viewer)
     return HttpResponse(json.dumps(resp))
 
 
@@ -234,12 +217,13 @@ def exit_room(request):
         resp['succeed'] = False
         resp['message'] = "Invalid room id or username."
         return HttpResponse(json.dumps(resp))
-    # TODO: check if the user is a valid account by filtering in database of USERINFO
-    # usr = UserInfo.objects.get(username=my_username)
-    # if not usr:
-    #    resp['succeed'] = False
-    #    resp['message'] = "Invalid username."
-    #    return HttpResponse(json.dumps(resp))
+    usrs = UserInfo.objects.filter(username=my_username)
+    if not usrs:
+        resp['succeed'] = False
+        resp['message'] = "Invalid username."
+        return HttpResponse(json.dumps(resp))
+    else:
+        usr = usrs[0]
     my_room_id_int = int(my_room_id)
     rs = Room.objects.filter(room_id=my_room_id_int)
     if rs:
@@ -248,48 +232,92 @@ def exit_room(request):
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-        
     if not r:
         resp['succeed'] = False
         resp['message'] = "Room "+my_room_id+" does not exist."
         return HttpResponse(json.dumps(resp))
-    # TODO: check if the user is in the room
-    # TODO: a viewer or a player?
-    if r.viewer_num == 0:
+    isviewer = False
+    vusrs = r.viewer_list.filter(username=my_username)
+    if not vusrs:
         resp['succeed'] = False
         resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
         return HttpResponse(json.dumps(resp))
-    #tmp_usr = r.viewer_list.get(username=my_username)
-    # if !tmp_usr:
-    #    resp['succeed'] = False
-    #    resp['message'] = "User "+my_username+" is not in room "+my_room_id+"."
-    #    return HttpResponse(json.dumps(resp))
+    r.viewer_list.remove(vusrs[0])
     # TODO: transfer the host to someone else?
-    #if my_username == r.creator_name:
-    #      
     r.viewer_num = r.viewer_num-1
-    # TODO: add the user into viewer list
-    # r.viewer_list.add(usr)
     r.save()
-    if r.viewer_num+r.player_num == 0 :
+    if r.viewer_num+r.player_num == 0:
         r.delete()
     resp['succeed'] = True
     resp['message'] = "Goodbye from room " + my_room_id
     # debug
-    # Print the database
     for r in Room.objects.all():
         print(r)
-        # TODO: print the ForeignKey and ManyToManyField
-        # print(r.creator)
-        # for player in r.player_list.all():
-        #   print(player)
-        # for viewer in r.player_list.all():
-        #   print(viewer)
     return HttpResponse(json.dumps(resp))
 
 
+def sit(request):
+    my_room_id = int(request.GET.get("room_id"))
+    my_user_name = request.GET.get("user_name")
+    my_chip_cnt = int(request.GET.get("chip_cnt"))
+
+    resp={}
+    #seat_id = -1 when failing to sit
+
+    #room doesn't exist
+    if not Room.object.filter(room_id=my_room_id):
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        resp['seat_id'] = -1
+        return HttpResponse(json.dumps(resp))
+    room = Room.object.filter(room_id=my_room_id)[0]
+    #player_num has reached to maximum
+    if room.player_num == 8:
+        resp['succeed'] = False
+        resp['message'] = " seat for player are full. "
+        resp['seat_id'] = -1
+        return HttpResponse(json.dumps(resp))
+    
+    #modify desk.user_info and assign right seat_id(by calling room.desk.sit)
+    #distribute seat for player 
+    resp['succeed'] = True
+    resp['message'] = "assign minimum available seat_id."
+    resp['seat_id'] = room.desk.sit(my_room_id,my_user_name,my_chip_cnt)
+
+    #modified database message of room
+    room.player_num += 1
+    room.viwer_num -= 1
+    room.save()
+    return HttpResponse(json.dumps(resp))
+
+def stand(request):
+    my_room_id = int(request.GET.get("room_id"))
+    my_user_name = request.GET.get("user_name")
+    
+    resp = {}
+    #room don't exist
+    if not Room.object.filter(room_id=my_room_id):
+        resp['succeed'] = False
+        resp['message'] = "Room "+my_room_id+" does not exist."
+        return HttpResponse(json.dumps(resp))
+
+    room = Room.object.filter(room_id=my_room_id)[0]
+    #judge if user_name is valid(by calling stand)
+    #modify desk.user_info and database message of room
+    if room.desk.stand(my_room_id, my_user_name):
+        room.player_num -= 1
+        room.viwer_num += 1
+        room.save()
+        resp['succeed'] = True
+        resp['message'] = " "
+        return HttpResponse(json.dumps(resp))
+    else:
+        resp['succeed'] = False
+        resp['message'] = "desk.stand() return false."
+        return HttpResponse(json.dumps(resp))
+
 def request_room_list(request):
-    my_game_kind = request.GET.get("game_kind")
+    my_game_kind = int(request.GET.get("game_kind"))
     my_user_name = request.GET.get("user_name")
 
     resp = {}
@@ -297,6 +325,7 @@ def request_room_list(request):
     if not r:
         resp['rooms'] = []
         return HttpResponse(json.dumps(resp))
+
     rooms = []
     for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
@@ -309,3 +338,32 @@ def request_room_list(request):
     return HttpResponse(json.dumps(resp))
 
 
+def request_game_info(request):
+    my_room_id=int(request.GET.get("room_id"))
+    my_user_name=request.GET.get("user_name")
+    # search room
+    resp = {}
+    r = Room.objects.get(room_id=my_room_id)
+    if not r: # room does not exist
+        resp['message'] = "game does not exist"
+        return HttpResponse(json.dumps(resp))
+    resp["room_name"] = r.room_name
+    resp["view_cnt"] = r.viewer_num
+    your_id=r.desk.get_user_seat_id(my_user_name)
+    pod = {}
+    pod["playing"]=r.desk.pod_infoClass.playing
+    pod["your_id"]=your_id
+    pod["curr_id"]=r.desk.pod_infoClass.curr_id
+    pod["bookmarker_id"]=r.desk.pod_infoClass.bookmarker_id
+    pod["term"]=r.desk.pod_infoClass.term
+    pod["pod_chip_cnt"]=r.desk.pod_infoClass.pod_chip_cnt
+    pod["pokes"]=r.desk.pod_infoClass.pokes
+    resp["pod_info"]=pod
+    resp["user_infos"]=r.desk.get_player_info()
+    last_act={}
+    last_act["user_id"]=r.desk.last_actionClass.user_id
+    last_act["action_type"]=r.desk.last_actionClass.action_type
+    last_act["raise_num"]=r.desk.last_actionClass.raise_num
+    resp["last_action"]=last_act
+    return HttpResponse(json.dumps(resp))
+    
