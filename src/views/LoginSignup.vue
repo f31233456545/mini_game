@@ -71,9 +71,9 @@ export default {
   methods: {
     //登录/注册界面切换
     changeType() {
-      (this.islogin = !this.islogin),
-        (this.rulesForm.username = ""),
-        (this.rulesForm.password = "");
+      this.islogin = !this.islogin,
+      this.rulesForm.username = "",
+      this.rulesForm.password = "";
     },
     //用户登录
     login(LoginData) {
@@ -91,6 +91,9 @@ export default {
                 break;
               case false:
                 self.error = true;
+                setTimeout(()=>{			
+                   self.error=false;
+                },2000)		
                 break;
             }
           })
@@ -104,12 +107,7 @@ export default {
     //用户注册
     register(LoginData) {
       const self = this;
-    //   var LoginData = {
-    //     username: self.rulesForm.username,
-    //     password: self.rulesForm.password,
-    //   };
       if (self.rulesForm.username != "" && self.rulesForm.password != "") {
-        //axios.post('http://47.94.92.103:3005/register',LoginData)
         request("register", LoginData)
           .then(function (res) {
             switch (res.succeed) {
@@ -119,6 +117,9 @@ export default {
                     break;
               case false:
                 self.existed = true;
+                setTimeout(()=>{			
+                   self.existed=false;
+                },2000)		
             }
           })
           .catch((err) => {
