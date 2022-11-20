@@ -97,9 +97,9 @@ class desk(object):
         i = 0
         while i < 8:
             if self.user_info[i].user_name == user_name:
-                return i
+                return i + 1
             i += 1
-        return 0
+        return 1
     
     def get_player_info(self):
         resp = []
