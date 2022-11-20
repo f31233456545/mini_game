@@ -57,9 +57,8 @@ class desk(object):
             if seat.user_name == '':
                 seat.user_name = user_name
                 seat.chip_cnt = chip_cnt
-                break
+                return seat.seat_id
             i += 1
-        return seat.seat_id
 
     def start_game(self, room_id):
         self.pod_infoClass.playing = True
