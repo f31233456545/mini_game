@@ -257,9 +257,9 @@ def exit_room(request):
 
 
 def sit(request):
-    my_room_id = int(request.GET.get("room_id"))
+    my_room_id = request.GET.get("room_id")
     my_user_name = request.GET.get("user_name")
-    my_chip_cnt = int(request.GET.get("chip_cnt"))
+    my_chip_cnt = request.GET.get("chip_cnt")
 
     resp={}
     #seat_id = -1 when failing to sit
@@ -267,7 +267,7 @@ def sit(request):
     #room doesn't exist
     if not Room.objects.filter(room_id=my_room_id):
         resp['succeed'] = False
-        resp['message'] = "Room "+my_room_id+" does not exist."
+        resp['message'] = "Room "+str(my_room_id)+" does not exist."
         resp['seat_id'] = -1
         return HttpResponse(json.dumps(resp))
     room = Room.objects.filter(room_id=my_room_id)[0]
