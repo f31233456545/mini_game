@@ -10,7 +10,8 @@ const store = createStore({
             inRoomId: 0,
             inGameId: -1, //当前游戏id，-1表示未选择
             games: sourceData.gamelist,
-            gameInfo: {
+            gameInfo: 
+            {
                 room_name: gameData.room_name,
                 view_cnt: gameData.view_cnt,
                 user_infos: gameData.user_infos,
@@ -33,6 +34,7 @@ const store = createStore({
         },
         enterRoom(state, room_id) {
             state.inRoomId = room_id
+            state.sitDown = false
         },
         sit(state) {
             state.sitDown = true
@@ -55,7 +57,8 @@ const store = createStore({
         // debug 不是正式的方法
         changeInfo(state) {
             state.x = (state.x + 1) % 6
-            state.gameInfo.last_action = {user_id:1,action_type:state.x,raise_num:0}
+            state.gameInfo.last_action = { user_id: 1, action_type: state.x, raise_num: 0 }
+            state.gameInfo.pod_info.your_id = 7
         },
     },
     actions: {

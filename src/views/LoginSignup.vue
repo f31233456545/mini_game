@@ -51,10 +51,10 @@
 </template>
     
 <script>
-import Navigation from "../components/Navigation.vue";
-import { request } from "../utils/request.js";
-import store from "../store/index.js";
-import router from "../router/index.js";
+import Navigation from "../components/Navigation.vue"
+import { request } from "../utils/request.js"
+import store from "../store/index.js"
+import router from "../router/index.js"
 export default {
   components: { Navigation },
   data() {
