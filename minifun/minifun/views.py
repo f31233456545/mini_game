@@ -5,6 +5,7 @@ import json
 from room.models import Room
 from room import models
 from room.models import UserInfo
+from .desk import desk, desks
 # this is a test function.
 
 
@@ -143,13 +144,16 @@ def create_room(request):
     r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name, creator=usr, 
              player_num=0, viewer_num=0, max_num=my_max_num_int)
-    r.desk.create_room(r.private, r.room_name, r.game_kind, r.creator_name)
+    d = desk()
+    desks[r.room_id] = d
+    desks[r.room_id].create_room(r.private, r.room_name, r.game_kind, r.creator_name)
     r.save()
     resp['succeed'] = True
     resp['room_id'] = id_counter
     resp['message'] = "success"
     # debug
     print(Room.objects.all())
+    print(desks)
     return HttpResponse(json.dumps(resp))
 
 
@@ -271,10 +275,9 @@ def sit(request):
     #room doesn't exist
     if not Room.objects.filter(room_id=my_room_id):
         resp['succeed'] = False
-        resp['message'] = "Room "+my_room_id+" does not exist."
+        resp['message'] = "Room "+str(my_room_id)+" does not exist."
         resp['seat_id'] = -1
         return HttpResponse(json.dumps(resp))
-    room = Room.objects.filter(room_id=my_room_id)[0]
     room = Room.objects.filter(room_id=my_room_id)[0]
     #player_num has reached to maximum
     if room.player_num == 8:
@@ -285,7 +288,7 @@ def sit(request):
     vusrs = room.viewer_list.filter(username=my_user_name)
     if not vusrs:
         resp['succeed'] = False
-        resp['message'] = "User "+my_user_name+" is not a viewer in room "+my_room_id+"."
+        resp['message'] = "User "+my_user_name+" is not a viewer in room "+str(my_room_id)+"."
         resp['seat_id'] = -1
         return HttpResponse(json.dumps(resp))
     
@@ -293,7 +296,7 @@ def sit(request):
     #distribute seat for player 
     resp['succeed'] = True
     resp['message'] = "assign minimum available seat_id."
-    resp['seat_id'] = room.desk.sit(my_room_id,my_user_name,my_chip_cnt)
+    resp['seat_id'] = desks[room.room_id].sit(my_room_id,my_user_name,my_chip_cnt)
 
     #modified database message of room
     room.player_num += 1
@@ -311,18 +314,18 @@ def stand(request):
     #room don't exist
     if not Room.objects.filter(room_id=my_room_id):
         resp['succeed'] = False
-        resp['message'] = "Room "+my_room_id+" does not exist."
+        resp['message'] = "Room "+str(my_room_id)+" does not exist."
         return HttpResponse(json.dumps(resp))
 
     room = Room.objects.filter(room_id=my_room_id)[0]
     pusrs = room.player_list.filter(username=my_user_name)
     if not pusrs:
         resp['succeed'] = False
-        resp['message'] = "User "+my_user_name+" is not a player in room "+my_room_id+"."
+        resp['message'] = "User "+my_user_name+" is not a player in room "+str(my_room_id)+"."
         return HttpResponse(json.dumps(resp))
     #judge if user_name is valid(by calling stand)
     #modify desk.user_info and database message of room
-    if room.desk.stand(my_room_id, my_user_name):
+    if desks[room.room_id].stand(my_room_id, my_user_name):
         room.player_num -= 1
         room.viewer_num += 1
         room.player_list.remove(pusrs[0])
@@ -369,21 +372,22 @@ def request_game_info(request):
         return HttpResponse(json.dumps(resp))
     resp["room_name"] = r.room_name
     resp["view_cnt"] = r.viewer_num
-    your_id=r.desk.get_user_seat_id(my_user_name)
+    desk = desks[r.room_id]
+    your_id=desk.get_user_seat_id(my_user_name)
     pod = {}
-    pod["playing"]=r.desk.pod_infoClass.playing
+    pod["playing"]=desk.pod_infoClass.playing
     pod["your_id"]=your_id
-    pod["curr_id"]=r.desk.pod_infoClass.curr_id
-    pod["bookmarker_id"]=r.desk.pod_infoClass.bookmarker_id
-    pod["term"]=r.desk.pod_infoClass.term
-    pod["pod_chip_cnt"]=r.desk.pod_infoClass.pod_chip_cnt
-    pod["pokes"]=r.desk.pod_infoClass.pokes
+    pod["curr_id"]=desk.pod_infoClass.curr_id
+    pod["bookmarker_id"]=desk.pod_infoClass.bookmarker_id
+    pod["term"]=desk.pod_infoClass.term
+    pod["pod_chip_cnt"]=desk.pod_infoClass.pod_chip_cnt
+    pod["pokes"]=desk.pod_infoClass.pokes
     resp["pod_info"]=pod
-    resp["user_infos"]=r.desk.get_player_info()
+    resp["user_infos"]=desk.get_player_info()
     last_act={}
-    last_act["user_id"]=r.desk.last_actionClass.user_id
-    last_act["action_type"]=r.desk.last_actionClass.action_type
-    last_act["raise_num"]=r.desk.last_actionClass.raise_num
+    last_act["user_id"]=desk.last_actionClass.user_id
+    last_act["action_type"]=desk.last_actionClass.action_type
+    last_act["raise_num"]=desk.last_actionClass.raise_num
     resp["last_action"]=last_act
     return HttpResponse(json.dumps(resp))
     
