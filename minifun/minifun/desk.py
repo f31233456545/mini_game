@@ -11,7 +11,7 @@ class player(object):
         self.last_action = -1
         self.hand_pokes = [0, 0]
 
-    def to_json(self):
+    def to_dict(self):
         dict = {}
         dict["user_name"] = self.user_name
         dict["seat_id"] = self.seat_id
@@ -20,7 +20,7 @@ class player(object):
         dict["folded"] = self.folded
         dict["last_action"] = self.last_action
         dict["hand_pokes"] = self.hand_pokes
-        return json.dumps(dict)
+        return dict
 
 
 class desk(object):
@@ -30,7 +30,9 @@ class desk(object):
             self.user_info.append(player(i))
             i += 1
 
+    # user_info is a list of player object.
     user_info = []
+
     # 定义并初始化pod_info信息
 
     class pod_infoClass:
@@ -98,7 +100,7 @@ class desk(object):
                 return i
             i += 1
         return 0
-
+    
     def get_player_info(self):
         resp = []
         for u in self.user_info:
@@ -115,5 +117,5 @@ class desk(object):
             # hand_pokes[0]=u["hand_poke0"]
             # hand_pokes[1]=u["hand_poke1"]
             # u_json["hand_pokes"]=hand_pokes
-            resp.append(u.to_json())
+            resp.append(u.to_dict())
         return resp
