@@ -100,7 +100,7 @@ def register(request):
 
 
 def create_room(request):
-    my_private = int(request.GET.get("private"))
+    my_private = request.GET.get("private")
     my_room_name = request.GET.get("room_name")
     my_game_kind = request.GET.get("game_kind")
     my_creator_name = request.GET.get("creator_name")
@@ -125,14 +125,10 @@ def create_room(request):
         resp['room_id'] = -1
         resp['message'] = "Invalid username of the creator."
         return HttpResponse(json.dumps(resp))
-
-    # if not my_private:
-    #     my_private = '1'
-    # if my_private == '0':
-    #     my_private_bl = False
-    # else:
-    #     my_private_bl = True
-    print(my_private)
+    my_private_bl = True
+    if my_private == '0' or my_private == 'false' or my_private=='False':
+        my_private_bl = False
+    # print(my_private)
     if not my_game_kind:
         my_game_kind = '0'
     my_game_kind_int = int(my_game_kind)
@@ -141,7 +137,7 @@ def create_room(request):
         if r.room_id > id_counter:
             id_counter = r.room_id
     id_counter = id_counter+1
-    r = Room(room_id=id_counter, room_name = my_room_name, private=bool(my_private),
+    r = Room(room_id=id_counter, room_name = my_room_name, private=my_private_bl,
              game_kind=my_game_kind_int, creator_name=my_creator_name, creator=usr, 
              player_num=0, viewer_num=0, max_num=my_max_num_int)
     d = desk()
