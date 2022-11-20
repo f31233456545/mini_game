@@ -51,15 +51,14 @@ class desk(object):
         self.room_name = room_name
 
     def sit(self, room_id, user_name, chip_cnt):
-        i = 1
-        while i < 9:
+        i = 0
+        while i < 8:
             seat = self.user_info[i]
             if seat.user_name == '':
                 seat.user_name = user_name
                 seat.chip_cnt = chip_cnt
-                break
+                return seat.seat_id
             i += 1
-        return i
 
     def start_game(self, room_id):
         self.pod_infoClass.playing = True
