@@ -215,7 +215,12 @@ export default {
                         self.$message.success('已退出房间！')
                         break
                     case false:
-                        self.$message.error('发生错误！')
+                        if(self.seated){
+                            self.$message.error('请先站起！')
+                        }
+                        else{
+                            self.$message.error('发生错误！')
+                        }
                         console.log(res.message)
                         break
                     }
@@ -223,6 +228,8 @@ export default {
                 .catch((err) => {
                     console.log(err);
                 });
+
+
         },
         start(){
             const self = this;
@@ -418,7 +425,8 @@ export default {
         if(this.$store.state.inRoomId!=0){
             this.exit_room({
                         room_id:this.$store.state.inRoomId,
-                        user_name:this.$store.state.userName
+                        user_name:this.$store.state.userName,
+                        force:true,
                     })
         }
     },
