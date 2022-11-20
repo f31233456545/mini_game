@@ -390,4 +390,3 @@ def request_game_info(request):
     last_act["raise_num"]=desk.last_actionClass.raise_num
     resp["last_action"]=last_act
     return HttpResponse(json.dumps(resp))
-    

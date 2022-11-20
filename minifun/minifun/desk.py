@@ -59,7 +59,7 @@ class desk(object):
                 seat.chip_cnt = chip_cnt
                 break
             i += 1
-        return i
+        return seat.seat_id
 
     def start_game(self, room_id):
         self.pod_infoClass.playing = True
