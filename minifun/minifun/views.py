@@ -418,10 +418,8 @@ def action(request):
         d.user_info[seat_id].folded = True
         d.user_info[seat_id].hand_pokers = [0, 0]
     # Check
-    elif action_type == 1:
-        pass 
     # Call
-    elif action_type == 2:
+    elif action_type == 1:
         if d.user_info[seat_id].stack_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
@@ -430,7 +428,7 @@ def action(request):
             d.pod_chip_cnt += (raise_num-d.user_info[seat_id].chip_cnt)
             d.user_info[seat_id].chip_cnt = raise_num
     # Raise
-    elif action_type == 3:
+    elif action_type == 2:
         if d.user_info[seat_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
