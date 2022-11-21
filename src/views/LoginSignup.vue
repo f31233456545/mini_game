@@ -80,7 +80,7 @@ export default {
     login() {
       const self = this;
       var LoginData = {
-        name: self.rulesForm.name,
+        username: self.rulesForm.name,
         password: self.rulesForm.password,
       };
       if (self.rulesForm.name != "" && self.rulesForm.password != "") {
@@ -91,7 +91,7 @@ export default {
             switch (res.succeed) {
               case true:
                 self.$message.success('登陆成功！');
-                store.commit("login", LoginData.name);
+                store.commit("login", LoginData.username);
                 //router.push('/');
                 router.back();
                 break;
@@ -111,7 +111,7 @@ export default {
     register() {
       const self = this;
       var LoginData = {
-        name: self.rulesForm.name,
+        username: self.rulesForm.name,
         password: self.rulesForm.password,
       };
       if (self.rulesForm.name != "" && self.rulesForm.password != "") {
@@ -120,8 +120,7 @@ export default {
           .then(function (res) {
             switch (res.succeed) {
               case true:
-                  self.$message.success('注册成功！');
-                  self.$message.success('正在登陆，请稍后...');
+                  self.$message.success('注册成功！正在登陆，请稍后...');
                 self.login();
                 break;
               case false:

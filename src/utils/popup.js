@@ -4,17 +4,24 @@ import { createApp } from 'vue'
 const createPopup = function (component, position, props) {
     let body = document.body
     let mountNode = document.createElement('div')
-    let style = `position: absolute; left: ${position.left}; top: ${position.top}; $right: ${position.right}; ${position.bottom};`
+    let style = `position: absolute;\
+        z-index: 100;\
+        left: ${position.left};\
+        top: ${position.top};\
+        right: ${position.right};\
+        bottom: ${position.bottom};`
     mountNode.style = style
     body.appendChild(mountNode)
 
-    const app = createApp(component, {
-        ...props,
-        remove() {  // 用于让组件自行 umount
-            app.unmount(mountNode)
-            document.body.removeChild(mountNode)
-        }
-    })
+    const app = createApp(
+        component,
+        {
+            ...props,
+            remove() {  // 用于让组件自行 umount
+                app.unmount(mountNode)
+                document.body.removeChild(mountNode)
+            }
+        })
     return app.mount(mountNode)
 }
 
