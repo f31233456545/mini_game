@@ -22,6 +22,7 @@ class player(object):
         return dict
 
 
+
 class desk(object):
     def __init__(self) -> None:
         i = 1
@@ -32,24 +33,24 @@ class desk(object):
     # user_info is a list of player object.
     user_info = []
 
-    # 定义并初始化pod_info信息
-
-    class pod_infoClass:
-        playing = False
-        curr_id = 0
-        bookmarker_id = 0
-        term = 0
-        pod_chip_cnt = 0
-        pokes = [0, 0, 0]
-
-    class last_actionClass:
-        user_id = 0
-        action_type = 0
-        raise_num = 0
-
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
 
+    class pod_infoClass(object):
+        def __init__(self) -> None:
+            self.playing = False
+            self.curr_id = 0
+            self.bookmarker_id = 0
+            self.term = 0
+            self.pod_chip_cnt = 0
+            self.pokes = [0, 0, 0]
+
+    class last_actionClass(object):
+        def __init__(self) -> None:
+            self.user_id = 0
+            self.action_type = 0
+            self.raise_num = 0
+            
     def sit(self, room_id, user_name, chip_cnt):
         i = 0
         while i < 8:
