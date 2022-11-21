@@ -21,23 +21,11 @@ class player(object):
         dict["hand_pokes"] = self.hand_pokes
         return dict
 
-class last_actionClass:
-    def __init__(self) -> None:
-        self.user_id = 0
-        self.action_type = 0
-        self.raise_num = 0
+
 
 
 # 定义并初始化pod_info信息
 
-class pod_infoClass():
-    def __init__(self) -> None:
-        self.playing = False
-        self.curr_id = 0
-        self.bookmarker_id = 0
-        self.term = 0
-        self.pod_chip_cnt = 0
-        self.pokes = [0, 0, 0]
 
 
 class desk(object):
@@ -52,6 +40,21 @@ class desk(object):
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
+
+    class pod_infoClass(object):
+        def __init__(self) -> None:
+            self.playing = False
+            self.curr_id = 0
+            self.bookmarker_id = 0
+            self.term = 0
+            self.pod_chip_cnt = 0
+            self.pokes = [0, 0, 0]
+
+    class last_actionClass(object):
+        def __init__(self) -> None:
+            self.user_id = 0
+            self.action_type = 0
+            self.raise_num = 0
 
     def sit(self, room_id, user_name, chip_cnt):
         i = 1
