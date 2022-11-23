@@ -371,19 +371,19 @@ def request_game_info(request):
     desk = desks[r.room_id]
     your_id=desk.get_user_seat_id(my_user_name)
     pod = {}
-    pod["playing"]=desk.pod_infoClass.playing
+    pod["playing"]=desk.pod_info.playing
     pod["your_id"]=your_id
-    pod["curr_id"]=desk.pod_infoClass.curr_id
-    pod["bookmarker_id"]=desk.pod_infoClass.bookmarker_id
-    pod["term"]=desk.pod_infoClass.term
-    pod["pod_chip_cnt"]=desk.pod_infoClass.pod_chip_cnt
-    pod["pokes"]=desk.pod_infoClass.pokes
+    pod["curr_id"]=desk.pod_info.curr_id
+    pod["bookmarker_id"]=desk.pod_info.bookmarker_id
+    pod["term"]=desk.pod_info.term
+    pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
+    pod["pokes"]=desk.pod_info.pokes
     resp["pod_info"]=pod
     resp["user_infos"]=desk.get_player_info()
     last_act={}
-    last_act["user_id"]=desk.last_actionClass.user_id
-    last_act["action_type"]=desk.last_actionClass.action_type
-    last_act["raise_num"]=desk.last_actionClass.raise_num
+    last_act["user_id"]=desk.last_info.user_id
+    last_act["action_type"]=desk.last_info.action_type
+    last_act["raise_num"]=desk.last_info.raise_num
     resp["last_action"]=last_act
     return HttpResponse(json.dumps(resp))
 
