@@ -53,6 +53,14 @@ class desk(object):
         return
         
 
+    def round_end(self):
+        for seat in self.user_info:
+            self.pod_info.pod_chip_cnt += seat.chip_cnt
+            seat.chip_cnt = 0
+        self.pod_info.term += 1
+        if self.pod_info.term == 4:
+            self.pod_info.term = 0
+
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
 
@@ -121,10 +129,10 @@ class desk(object):
         return False
 
     def action(self, user_name, action_type, raise_num):
-        self.pod_infoClass.curr_id = user_name
-        self.last_actionClass.user_id = user_name
-        self.last_actionClass.action_type = action_type
-        self.last_actionClass.raise_num = raise_num
+        self.pod_info.curr_id = user_name
+        self.last_info.user_id = user_name
+        self.last_info.action_type = action_type
+        self.last_info.raise_num = raise_num
         # pass
         # pod_info.curr_id=user_name
         # last_action.user_id=user_name
