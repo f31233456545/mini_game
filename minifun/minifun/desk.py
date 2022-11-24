@@ -25,13 +25,13 @@ class player(object):
 
 class desk(object):
     def __init__(self) -> None:
+        self.user_info=[]
         i = 1
         while i < 9:
             self.user_info.append(player(i))
             i += 1
-
-    # user_info is a list of player object.
-    user_info = []
+        self.pod_info=self.pod_infoClass()
+        self.last_info=self.last_actionClass()
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name

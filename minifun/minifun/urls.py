@@ -30,4 +30,5 @@ urlpatterns = [
     path('exit_room/', views.exit_room),
     path('request_room_list/', views.request_room_list),
     path('request_game_info/', views.request_game_info),
+    path('action/', views.action),
 ]
