@@ -384,6 +384,7 @@ def request_game_info(request):
     resp["last_action"]=last_act
     return HttpResponse(json.dumps(resp))
 
+
 def start_game(request):
     rid=request.GET.get("room_id")
     r = models.Room.objects.filter(room_id=rid)
