@@ -1,4 +1,5 @@
 import json
+import random
 
 class player(object):
     def __init__(self, seat) -> None:
@@ -21,8 +22,6 @@ class player(object):
         dict["hand_pokes"] = self.hand_pokes
         return dict
 
-
-
 class desk(object):
     def __init__(self) -> None:
         self.user_info=[]
@@ -32,6 +31,25 @@ class desk(object):
             i += 1
         self.pod_info=self.pod_infoClass()
         self.last_info=self.last_actionClass()
+
+    #发牌
+    def deal_cards(self):
+        inplay = []        #记录已经使用的牌
+        poke0 = -1         #初始化并标记poke0与poke1
+        poke1 = -1
+        self.pod_info.pokes = random.sample(range(1.52),5) #五张公牌
+        inplay.extend(self.pod_info.pokes)
+        for seat in self.user_info:
+            if seat.user_name != '':         #该座位有人
+                while poke0 in inplay or poke0 == -1:
+                    poke0 = random(range(1,52))
+                inplay.extend(poke0)
+                while poke1 in inplay or poke1 == -1:
+                    poke1 = random(range(1,52))
+                inplay.extend(poke1)
+                seat.hand_pokes = [poke0,poke1]
+        return
+        
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
@@ -44,6 +62,8 @@ class desk(object):
             self.term = 0
             self.pod_chip_cnt = 0
             self.pokes = [0, 0, 0]
+            self.small_blind = 0
+            self.big_blind = 1
 
     class last_actionClass(object):
         def __init__(self) -> None:
@@ -62,7 +82,7 @@ class desk(object):
             i += 1
 
     def start_game(self, room_id):
-        self.pod_infoClass.playing = True
+        self.pod_info.playing = True
         # pass
         # pod_info.playing=True
 
