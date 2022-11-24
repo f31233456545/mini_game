@@ -31,5 +31,5 @@ urlpatterns = [
     path('request_room_list/', views.request_room_list),
     path('request_game_info/', views.request_game_info),
     path('start_game/', views.start_game),
-    #path('action/', views.action),
+    path('action/', views.action),
 ]
