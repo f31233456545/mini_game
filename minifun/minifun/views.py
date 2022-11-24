@@ -446,7 +446,7 @@ def action(request):
         return HttpResponse(json.dumps(resp))
     d = desks[r.room_id]    
 
-    seat_id = d.get_user_seat_id(my_username)
+    seat_id = d.get_user_seat_id(my_username)-1
     # Fold
     if action_type == 0:
         d.user_info[seat_id].folded = True
@@ -471,7 +471,7 @@ def action(request):
             d.pod_chip_cnt += (raise_num-d.user_info[seat_id].chip_cnt)
             d.user_info[seat_id].chip_cnt = raise_num
 
-    d.action(my_username, action_type, raise_num)
+    d.action(seat_id, action_type, raise_num)
 
     pnum = 0
     for u in d.user_info:
@@ -479,7 +479,7 @@ def action(request):
             pnum += 1
     if pnum == 1:
         # TODO: win
-        d.action("-1", 5, 0)
+        d.action(-1, 5, 0)
         resp['succeed'] = True
         resp['message'] = ""
         return HttpResponse(json.dumps(resp))
@@ -494,7 +494,7 @@ def action(request):
                 flag = False
                 break
     if (chip != -1) and (flag == True):
-        d.action("-1", 4, 0)
+        d.action(-1, 4, 0)
         # TODO: A new term
         d.term += 1
     # Move onto the next player 

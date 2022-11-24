@@ -136,9 +136,9 @@ class desk(object):
                 return True
         return False
 
-    def action(self, user_name, action_type, raise_num):
-        self.pod_info.curr_id = user_name
-        self.last_info.user_id = user_name
+    def action(self, user_id, action_type, raise_num):
+        self.pod_info.curr_id = user_id 
+        self.last_info.user_id = user_id
         self.last_info.action_type = action_type
         self.last_info.raise_num = raise_num
         # pass
@@ -216,8 +216,6 @@ class desk(object):
         self.user_info[self.pod_info.small_blind].stack_cnt-=1
         self.user_info[self.pod_info.small_blind].chip_cnt+=1
 
-        self.action(self.user_info[self.pod_info.big_blind].user_name, 2, 2)
-
         # determine first active player
         self.pod_info.curr_id=self.get_next_player_index(self.pod_info.big_blind)+1
 
@@ -225,8 +223,7 @@ class desk(object):
         self.deal_cards()
         print("cards dealed")
         # alert front-end to synchronize desk info
-        self.last_info.action_type=4
-        self.last_info.raise_num=0
+        self.action(self.pod_info.big_blind, 3, 2)
         # TODO:
         # self.last_info.user_id = winner
 
