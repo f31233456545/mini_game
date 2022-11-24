@@ -5,7 +5,7 @@ import json
 from room.models import Room
 from room import models
 from room.models import UserInfo
-from desk import desks,desk
+from .desk import desks,desk
 # this is a test function.
 
 
@@ -384,12 +384,14 @@ def request_game_info(request):
     resp["last_action"]=last_act
     return HttpResponse(json.dumps(resp))
 
+
 def start_game(request):
-    room_id=request.GET.get(room_id)
-    for r in Room.objects.all():
-        if r.room_id == room_id:
-            desks[room_id].start_game(room_id)
-            desks[room_id].deal_cards()
+    rid=request.GET.get("room_id")
+    r = models.Room.objects.filter(room_id=rid)
+    if r[0]:
+        if r[0].room_id == rid:
+            desks[rid].start_game(rid)
+            desks[rid].deal_cards()
             resp={}
             resp['succeed'] = True
             resp['message'] = "游戏开始"
@@ -399,7 +401,8 @@ def start_game(request):
             resp['succeed'] = False
             resp['message'] = "不存在该房间"
             return HttpResponse(json.dumps(resp))
-        
-
-    
-    
+    else:
+        resp={}
+        resp['succeed'] = False
+        resp['message'] = "不存在该房间"
+        return HttpResponse(json.dumps(resp))
