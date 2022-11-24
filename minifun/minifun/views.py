@@ -155,12 +155,19 @@ def create_room(request):
 def start_game(request):
     room_id=request.GET.get(room_id)
     for r in Room.objects.all():
-        if room_id == r.room_id:
+        if r.room_id == room_id:
             desks[room_id].start_game(room_id)
             desks[room_id].deal_cards()
-            
+            resp={}
+            resp['succeed'] = True
+            resp['message'] = "游戏开始"
+            return HttpResponse(json.dumps(resp))
+        else:
+            resp={}
+            resp['succeed'] = False
+            resp['message'] = "不存在该房间"
+            return HttpResponse(json.dumps(resp))
+        
+
     
-    resp={}
-    resp['succeed'] = True
-    resp['message'] = "游戏开始"
-    return HttpResponse(json.dumps(resp))
+    
