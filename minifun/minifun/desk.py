@@ -40,7 +40,7 @@ class desk(object):
         self.pod_info.inplay.clear()
         poke0 = -1         #初始化并标记poke0与poke1
         poke1 = -1
-        self.pod_info.inplay = random.sample(range(1.52),5) #五张公牌
+        self.pod_info.inplay = random.sample(range(1,52),5) #五张公牌
         for seat in self.user_info:
             if seat.user_name != '':         #该座位有人
                 while poke0 in self.pod_info.inplay or poke0 == -1:
