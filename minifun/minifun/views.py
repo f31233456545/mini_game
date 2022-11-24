@@ -390,8 +390,12 @@ def start_game(request):
     r = models.Room.objects.filter(room_id=rid)
     if r[0]:
         if r[0].room_id == rid:
+            if r[0].player_num<2:
+                resp={}
+                resp['succeed'] = False
+                resp['message'] = "num of players less than 2"
+                return HttpResponse(json.dumps(resp))
             desks[rid].start_game(rid)
-            desks[rid].deal_cards()
             resp={}
             resp['succeed'] = True
             resp['message'] = "游戏开始"
