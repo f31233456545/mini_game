@@ -383,7 +383,7 @@ def request_game_info(request):
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
     resp["pod_info"]=pod
-    resp["user_infos"]=desk.get_player_info()
+    resp["user_infos"]=desk.get_player_info(my_user_name)
     last_act={}
     last_act["user_id"]=desk.last_info.user_id
     last_act["action_type"]=desk.last_info.action_type

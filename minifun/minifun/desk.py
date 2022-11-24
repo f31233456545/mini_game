@@ -147,9 +147,11 @@ class desk(object):
             i += 1
         return 1
     
-    def get_player_info(self):
+    def get_player_info(self,username):
         resp = []
         for u in self.user_info:
+            if username != u.user_name:
+                u.hand_pokes=[0,0]
             resp.append(u.to_dict())
         return resp
     
