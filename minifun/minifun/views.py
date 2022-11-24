@@ -396,6 +396,8 @@ def start_game(request):
     rid=int(request.GET.get("room_id"))
     r = models.Room.objects.filter(room_id=rid)
     if r[0]:
+        # debug
+        print(desks)
         if r[0].room_id == rid:
             if r[0].player_num<2:
                 resp={}
@@ -461,7 +463,7 @@ def action(request):
             d.user_info[seat_id].chip_cnt = raise_num
     # Raise
     elif action_type == 2:
-        if d.user_info[seat_id].chip_cnt < raise_num:
+        if d.user_info[seat_id].stack_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))

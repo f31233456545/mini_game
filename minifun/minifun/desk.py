@@ -40,7 +40,7 @@ class desk(object):
         self.pod_info.inplay.clear()
         poke0 = -1         #初始化并标记poke0与poke1
         poke1 = -1
-        self.pod_info.inplay = random.sample(range(1.52),5) #五张公牌
+        self.pod_info.inplay = random.sample(range(1,52),5) #五张公牌
         for seat in self.user_info:
             if seat.user_name != '':         #该座位有人
                 while poke0 in self.pod_info.inplay or poke0 == -1:
@@ -143,9 +143,9 @@ class desk(object):
         self.last_info.raise_num = raise_num
         # pass
         # pod_info.curr_id=user_name
-        # last_action.user_id=user_name
-        # last_action.action_type=action_type
-        # last_action.raise_num=raise_num
+        # self.last_action.user_id=user_name
+        # self.last_action.action_type=action_type
+        # self.last_action.raise_num=raise_num
 
     def get_user_seat_id(self, user_name):
         i = 0
@@ -215,6 +215,8 @@ class desk(object):
         self.user_info[self.pod_info.big_blind].chip_cnt+=2
         self.user_info[self.pod_info.small_blind].stack_cnt-=1
         self.user_info[self.pod_info.small_blind].chip_cnt+=1
+
+        self.action(self.user_info[self.pod_info.big_blind].user_name, 2, 2)
 
         # determine first active player
         self.pod_info.curr_id=self.get_next_player_index(self.pod_info.big_blind)+1
