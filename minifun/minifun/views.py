@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import json
 from room.models import Room
-from room.admin import id_counter
 from room import models
 from room.models import UserInfo
 from desk import desks,desk
@@ -69,12 +68,11 @@ def register(request):
         p = request.GET.get("password")
 
         # 检查数据库中是否存在该用户名
-        x = models.UserInfo.objects.filter(username=u)[0]
+        x = models.UserInfo.objects.filter(username=u)
 
         if x:
             # 存在
-            
-            
+
             resp = {}
             resp['message'] = "用户名已存在"
             resp['succeed'] = False

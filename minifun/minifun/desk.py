@@ -22,13 +22,9 @@ class player(object):
         dict["hand_pokes"] = self.hand_pokes
         return dict
 
-
-
-
-
-
 class desk(object):
     def __init__(self) -> None:
+        self.user_info=[]
         i = 1
         while i < 9:
             self.user_info.append(player(i))
@@ -74,10 +70,10 @@ class desk(object):
             self.user_id = 0
             self.action_type = 0
             self.raise_num = 0
-
+            
     def sit(self, room_id, user_name, chip_cnt):
-        i = 1
-        while i < 9:
+        i = 0
+        while i < 8:
             seat = self.user_info[i]
             if seat.user_name == '':
                 seat.user_name = user_name
