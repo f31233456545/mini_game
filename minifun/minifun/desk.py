@@ -1,4 +1,5 @@
 import json
+import random
 
 class player(object):
     def __init__(self, seat) -> None:
@@ -24,8 +25,6 @@ class player(object):
 
 
 
-# 定义并初始化pod_info信息
-
 
 
 class desk(object):
@@ -34,9 +33,27 @@ class desk(object):
         while i < 9:
             self.user_info.append(player(i))
             i += 1
+        self.pod_info=self.pod_infoClass()
+        self.last_info=self.last_actionClass()
 
-    # user_info is a list of player object.
-    user_info = []
+    #发牌
+    def deal_cards(self):
+        inplay = []        #记录已经使用的牌
+        poke0 = -1         #初始化并标记poke0与poke1
+        poke1 = -1
+        self.pod_info.pokes = random.sample(range(1.52),5) #五张公牌
+        inplay.extend(self.pod_info.pokes)
+        for seat in self.user_info:
+            if seat.user_name != '':         #该座位有人
+                while poke0 in inplay or poke0 == -1:
+                    poke0 = random(range(1,52))
+                inplay.extend(poke0)
+                while poke1 in inplay or poke1 == -1:
+                    poke1 = random(range(1,52))
+                inplay.extend(poke1)
+                seat.hand_pokes = [poke0,poke1]
+        return
+        
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
@@ -49,6 +66,8 @@ class desk(object):
             self.term = 0
             self.pod_chip_cnt = 0
             self.pokes = [0, 0, 0]
+            self.small_blind = 0
+            self.big_blind = 1
 
     class last_actionClass(object):
         def __init__(self) -> None:
@@ -63,12 +82,11 @@ class desk(object):
             if seat.user_name == '':
                 seat.user_name = user_name
                 seat.chip_cnt = chip_cnt
-                break
+                return seat.seat_id
             i += 1
-        return i
 
     def start_game(self, room_id):
-        self.pod_infoClass.playing = True
+        self.pod_info.playing = True
         # pass
         # pod_info.playing=True
 
@@ -82,7 +100,8 @@ class desk(object):
                 seat.chip_cnt = 0
                 seat.folded = True
                 seat.last_action = 0
-                seat.hand_pokes = [0, 0]
+                seat.hand_poke0 = 0
+                seat.hand_poke1 = 0
                 return True
         return False
 
