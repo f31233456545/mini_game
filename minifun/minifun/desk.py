@@ -152,13 +152,13 @@ class desk(object):
     def get_prev_player_index(self,index):
         ret = (index-1+MAX_PLAYER_NUM)%MAX_PLAYER_NUM
         while self.user_info[ret].user_name=='':
-            ret = (index-1+MAX_PLAYER_NUM)%MAX_PLAYER_NUM
+            ret = (ret-1+MAX_PLAYER_NUM)%MAX_PLAYER_NUM
         return ret
     
     def get_next_player_index(self,index):
         ret = (index+1)%MAX_PLAYER_NUM
         while self.user_info[ret].user_name=='':
-            ret = (index+1)%MAX_PLAYER_NUM
+            ret = (ret+1)%MAX_PLAYER_NUM
         return ret
     
     # show hands, distribute chips, then call this func.
@@ -177,8 +177,10 @@ class desk(object):
                 self.user_info[i].hand_poke0 = 0
                 self.user_info[i].hand_poke1 = 0
             i += 1
+        print("players cleared")    
         # check if the game ends
         if self.get_player_num() < 2:
+            print("too less players. game ends")
             self.end_game()
         # Switch BB. 
         bb = self.get_next_player_index(self.pod_info.big_blind)
@@ -189,7 +191,7 @@ class desk(object):
             self.pod_info.dealer = self.pod_info.small_blind
         else:
             self.pod_info.dealer = self.get_prev_player_index(self.pod_info.small_blind)
-        
+        print("blinds determined")
         # assign blinds
         self.user_info[self.pod_info.big_blind].stack_cnt-=2
         self.user_info[self.pod_info.big_blind].chip_cnt+=2
@@ -201,7 +203,7 @@ class desk(object):
 
         # deal_cards
         self.deal_cards()
-
+        print("cards dealed")
         # alert front-end to synchronize desk info
         self.last_info.action_type=4
         self.last_info.raise_num=0

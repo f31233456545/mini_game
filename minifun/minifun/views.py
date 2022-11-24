@@ -402,6 +402,7 @@ def start_game(request):
                 resp['succeed'] = False
                 resp['message'] = "num of players less than 2"
                 return HttpResponse(json.dumps(resp))
+            print("preparing new game")
             desks[rid].start_game(rid)
             resp={}
             resp['succeed'] = True
