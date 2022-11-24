@@ -386,7 +386,7 @@ def request_game_info(request):
 
 
 def start_game(request):
-    rid=request.GET.get("room_id")
+    rid=int(request.GET.get("room_id"))
     r = models.Room.objects.filter(room_id=rid)
     if r[0]:
         if r[0].room_id == rid:
