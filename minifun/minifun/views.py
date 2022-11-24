@@ -146,7 +146,7 @@ def create_room(request):
     resp['room_id'] = id_counter
     resp['message'] = "success"
     # debug
-    print(Room.objects.all())
+    # print(Room.objects.all())
     print(desks)
     return HttpResponse(json.dumps(resp))
 
@@ -372,6 +372,7 @@ def request_game_info(request):
         return HttpResponse(json.dumps(resp))
     resp["room_name"] = r.room_name
     resp["view_cnt"] = r.viewer_num
+    print(desks)
     desk = desks[r.room_id]
     your_id=desk.get_user_seat_id(my_user_name)
     pod = {}
@@ -395,9 +396,8 @@ def request_game_info(request):
 def start_game(request):
     rid=int(request.GET.get("room_id"))
     r = models.Room.objects.filter(room_id=rid)
+    print(desks)
     if r[0]:
-        # debug
-        print(desks)
         if r[0].room_id == rid:
             if r[0].player_num<2:
                 resp={}
@@ -446,30 +446,31 @@ def action(request):
         return HttpResponse(json.dumps(resp))
     d = desks[r.room_id]    
 
-    seat_id = d.get_user_seat_id(my_username)-1
+    seat_id = d.get_user_seat_id(my_username)
+    user_id = seat_id - 1
     # Fold
     if action_type == 0:
-        d.user_info[seat_id].folded = True
-        d.user_info[seat_id].hand_pokers = [0, 0]
+        d.user_info[user_id].folded = True
+        d.user_info[user_id].hand_pokers = [0, 0]
     # Check
     # Call
     elif action_type == 1:
-        if d.user_info[seat_id].stack_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[seat_id].chip_cnt)
-            d.user_info[seat_id].chip_cnt = raise_num
+            d.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].chip_cnt = raise_num
     # Raise
     elif action_type == 2:
-        if d.user_info[seat_id].stack_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[seat_id].chip_cnt)
-            d.user_info[seat_id].chip_cnt = raise_num
+            d.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].chip_cnt = raise_num
 
     d.action(seat_id, action_type, raise_num)
 
@@ -501,7 +502,8 @@ def action(request):
     d.curr_id = (d.curr_id+1)%8
     while d.user_info[d.curr_id].folded == True:
         d.curr_id = (d.curr_id+1)%8
-    
+    d.curr_id += 1
+
     resp['succeed'] = True
     resp['message'] = ""
     return HttpResponse(json.dumps(resp))
