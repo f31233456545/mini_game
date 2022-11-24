@@ -112,6 +112,8 @@ export default{
                 return ["follow","跟注"]
             case 2:
                 return ["raise","加注"]
+            default:
+                return ["no-action",""]
             }
         }
     }

@@ -60,10 +60,10 @@
     />
 
     <div class="play-room-footer">
-        <div v-if="!playing && isBookmarker" class="waiting">
+        <div v-if="!playing && isHost" class="waiting">
             <el-button type="danger" @click="start">开始游戏</el-button>
         </div>
-        <div v-if="playing" class="playing">
+        <div v-if="playing && acting" class="playing">
             <div v-if="acting" class="button-group2">
                 <!-- <el-input-number 
                     v-model="num" @change="handleChange" 
@@ -71,7 +71,7 @@
                     :min="this.$store.state.gameInfo.last_action.raise_num+1"
                     :max="this.$store.state.gameInfo.user_infos[0].stack_cnt" 
                 ></el-input-number> -->
-                <el-button type="success" @click="bet">加注</el-button>
+                <el-button type="success" @click="raise">加注</el-button>
                 <el-button type="primary" @click="call">跟注</el-button>
                 <el-button type="danger" @click="fold">弃牌</el-button>
             </div>
@@ -113,6 +113,12 @@ export default {
         };
     },
     computed:{
+        roomId(){
+            return this.$store.state.inRoomId
+        },
+        userName(){
+            return this.$store.state.userName
+        },
         gameInfo(){
             return this.$store.state.gameInfo
         },
@@ -138,10 +144,11 @@ export default {
             return this.gameInfo.pod_info.playing
         },
         acting(){
-            return this.gameInfo.your_id == this.gameInfo.curr_id
+            return this.gameInfo.pod_info.your_id == this.gameInfo.pod_info.curr_id
         },
-        isBookmarker(){
-            return this.gameInfo.your_id == this.gameInfo.pod_info.bookmarker_id
+        isHost(){
+            //return this.gameInfo.your_id == this.gameInfo.pod_info.bookmarker_id
+            return true
         },
         seated(){
             return this.$store.state.sitDown
@@ -149,9 +156,6 @@ export default {
         defaultRaiseNum(){
             return this.lastAction.raise_num+1
         }
-    },
-    props: {
-        room_id: Number,
     },
     methods: {
         open2() {
@@ -171,6 +175,7 @@ export default {
                 .then(function (res) {
                     switch (res.succeed) {
                     case true:
+                        this.request_gameinfo()
                         self.$message.success('已坐下！')
                         self.$store.commit("sit")
                         break
@@ -190,6 +195,7 @@ export default {
                     console.log(res.data)
                     switch (res.succeed) {
                     case true:
+                        this.request_gameinfo()
                         self.$message.success('已站起！')
                         self.$store.commit("stand")
                         break
@@ -234,7 +240,7 @@ export default {
         start(){
             const self = this;
             var start_data = {
-                room_id: self.room_id
+                room_id: self.roomId
             };
             request("start_game",start_data)
                 .then(function (res) {
@@ -254,83 +260,65 @@ export default {
                     console.log(err);
                 });
         },
-        bet(){
+        fold(){ //弃牌
             const self = this
-            self.acting = true
-            var bet_data = {
-                user_name: self.$store.state.gameInfo.user_infos[0].user_name,
-                action_type: 2,
-                raise_num: self.num,
-                room_id: self.room_id,
-            }
-            request("action",bet_data)
-                .then(function (res) {
-                    console.log(res.data);
-                    switch (res.succeed) {
-                    case true:
-                        self.$message.success('已下注！')
-                        break
-                    case false:
-                        self.$message.error('发生错误！')
-                        console.log(res.message)
-                        break
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        },
-        call(){
-            const self = this;
-            self.acting = true;
-            var call_data = {
-                user_name: self.$store.state.gameInfo.user_infos[0].user_name,
-                action_type: 1,
-                raise_num: self.$store.state.gameInfo.last_action.raise_num,
-                room_id: self.room_id,
-            }
-            request("action",call_data)
-                .then(function (res) {
-                    console.log(res.data)
-                    switch (res.succeed) {
-                    case true:
-                        self.$message.success('已跟注！')
-                        break
-                    case false:
-                        self.$message.error('发生错误！')
-                        console.log(res.message)
-                        break
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        },
-        fold(){
-            const self = this;
-            self.acting = true;
             var fold_data = {
-                user_name: self.$store.state.gameInfo.user_infos[0].user_name,
+                user_name: self.userName,
                 action_type: 0,
-                raise_num: self.$store.state.gameInfo.user_infos[0].chip_cnt,
-                room_id: self.room_id,
+                raise_num: 0,
+                room_id: self.roomId,
             }
             request("action",fold_data)
                 .then(function (res) {
                     console.log(res.data);
-                    switch (res.succeed) {
-                    case true:
-                        self.$message.success('已下注！')
-                        break
-                    case false:
+                    if(!res.succeed){
                         self.$message.error('发生错误！')
                         console.log(res.message)
-                        break
                     }
                 })
                 .catch((err) => {
-                    console.log(err)
-                }); 
+                    console.log(err);
+                });
+        },
+        call(){ //跟注
+            const self = this
+            var call_data = {
+                user_name: self.userName,
+                action_type: 1,
+                raise_num: self.lastAction.raise_num,
+                room_id: self.roomId,
+            }
+            request("action",call_data)
+                .then(function (res) {
+                    console.log(res.data)
+                    if(!res.succeed){
+                        self.$message.error('发生错误！')
+                        console.log(res.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        },
+        raise(){ //加注
+            const self = this
+            var raise_data = {
+                user_name: self.userName,
+                action_type: 2,
+                raise_num: self.lastAction.raise_num,
+                room_id: self.roomId, 
+            }
+            request("action",raise_data)
+                .then(function (res) {
+                    console.log(res.data)
+                    if(!res.succeed){
+                        self.$message.error('发生错误！')
+                        console.log(res.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         },
         request_gameinfo(){
             const self = this;
@@ -355,6 +343,7 @@ export default {
         },
         debug2(){
             this.request_gameinfo()
+            console.log(this.acting)
         }
     },
     watch: {
@@ -413,7 +402,7 @@ export default {
     mounted() {
         //this.$store.commit('enterRoom')
         document.body.style.overflow = "hidden"
-        //this.request_gameinfo()
+        this.request_gameinfo()
         this.timeInter = setInterval(() => {
             this.request_gameinfo()
         }, 1000);

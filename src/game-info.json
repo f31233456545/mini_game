@@ -3,7 +3,7 @@
     "view_cnt": 1,
     "user_infos": [
         {
-        "user_name": "player",
+        "user_name": "",
         "seat_id": 1,
         "stack_cnt": 100,
         "chip_cnt": 50,
@@ -12,7 +12,7 @@
         "hand_pokes": [12,29]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 2,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -21,7 +21,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 3,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -30,7 +30,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 4,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -39,7 +39,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 5,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -48,7 +48,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 6,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -57,7 +57,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 7,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -66,7 +66,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 8,
         "stack_cnt": 100,
         "chip_cnt": 0,
