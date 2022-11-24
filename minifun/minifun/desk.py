@@ -11,6 +11,7 @@ class player(object):
         self.last_action = -1
         self.hand_pokes = [0, 0]
 
+
     def to_dict(self):
         dict = {}
         dict["user_name"] = self.user_name
@@ -34,24 +35,30 @@ class desk(object):
 
     #发牌
     def deal_cards(self):
-        inplay = []        #记录已经使用的牌
+        self.pod_info.inplay.clear()
         poke0 = -1         #初始化并标记poke0与poke1
         poke1 = -1
-        self.pod_info.pokes = random.sample(range(1.52),5) #五张公牌
-        inplay.extend(self.pod_info.pokes)
+        self.pod_info.inplay = random.sample(range(1.52),5) #五张公牌
         for seat in self.user_info:
             if seat.user_name != '':         #该座位有人
-                while poke0 in inplay or poke0 == -1:
-                    poke0 = random(range(1,52))
-                inplay.extend(poke0)
-                while poke1 in inplay or poke1 == -1:
-                    poke1 = random(range(1,52))
-                inplay.extend(poke1)
+                while poke0 in self.pod_info.inplay or poke0 == -1:
+                    poke0 = random.randint(1,52)
+                self.pod_info.inplay.append(poke0)
+                while poke1 in self.pod_info.inplay or poke1 == -1:
+                    poke1 = random.randint(1,52)
+                self.pod_info.inplay.append(poke1)
                 seat.hand_pokes = [poke0,poke1]
         return
         
 
     def round_end(self):
+        if self.pod_info.term == 1:
+            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], 0, 0]
+        elif self.pod_info.term == 2:
+            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], 0]
+        elif self.pod_info.term == 3:
+            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], self.pod_info.inplay[4]]
+        
         for seat in self.user_info:
             self.pod_info.pod_chip_cnt += seat.chip_cnt
             seat.chip_cnt = 0
@@ -69,9 +76,10 @@ class desk(object):
             self.bookmarker_id = 0
             self.term = 0
             self.pod_chip_cnt = 0
-            self.pokes = [0, 0, 0]
+            self.pokes = [0, 0, 0, 0, 0]
             self.small_blind = 0
             self.big_blind = 1
+            self.inplay = []
 
     class last_actionClass(object):
         def __init__(self) -> None:

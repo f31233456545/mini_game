@@ -390,8 +390,8 @@ def start_game(request):
     r = models.Room.objects.filter(room_id=rid)
     if r[0]:
         if r[0].room_id == rid:
-            desks[rid].start_game(rid)
-            desks[rid].deal_cards()
+            desks[r[0].room_id].start_game(r[0].room_id)
+            desks[r[0].room_id].deal_cards()
             resp={}
             resp['succeed'] = True
             resp['message'] = "游戏开始"
