@@ -86,20 +86,20 @@ class desk(object):
             i += 1
         return num
     
-    def sit(self, room_id, user_name, chip_cnt):
+    def sit(self, room_id, user_name, stack_cnt):
         i = 0
         while i < MAX_PLAYER_NUM:
             seat = self.user_info[i]
             if seat.user_name == '':
                 seat.user_name = user_name
-                seat.chip_cnt = chip_cnt
+                seat.stack_cnt = stack_cnt
                 return seat.seat_id
             i += 1
 
     # call prepare_new_game(), dealing cards and assign blinds.
     def start_game(self, room_id):
         self.pod_info.playing = True
-        self.prepare_new_game(self)
+        self.prepare_new_game()
         # pass
         # pod_info.playing=True
 
@@ -179,7 +179,7 @@ class desk(object):
             i += 1
         # check if the game ends
         if self.get_player_num() < 2:
-            self.end_game(self)
+            self.end_game()
         # Switch BB. 
         bb = self.get_next_player_index(self.pod_info.big_blind)
         self.pod_info.big_blind=bb       

@@ -289,7 +289,14 @@ def sit(request):
     #distribute seat for player 
     resp['succeed'] = True
     resp['message'] = "assign minimum available seat_id."
-    resp['seat_id'] = desks[room.room_id].sit(my_room_id,my_user_name,my_chip_cnt)
+    
+    # default value of chip cnt
+    stack_cnt=0
+    if not my_chip_cnt:
+        stack_cnt=200
+    else:
+        stack_cnt=int(my_chip_cnt)
+    resp['seat_id'] = desks[room.room_id].sit(my_room_id,my_user_name,stack_cnt)
 
     #modified database message of room
     room.player_num += 1
