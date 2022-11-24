@@ -39,7 +39,7 @@ class desk(object):
         inplay = []        #记录已经使用的牌
         poke0 = -1         #初始化并标记poke0与poke1
         poke1 = -1
-        self.pod_info.pokes = random.sample(range(1.52),5) #五张公牌
+        self.pod_info.pokes = random.sample(range(1,52),5) #五张公牌
         inplay.extend(self.pod_info.pokes)
         for seat in self.user_info:
             if seat.user_name != '':         #该座位有人
@@ -64,7 +64,7 @@ class desk(object):
             self.bookmarker_id = 0
             self.term = 0
             self.pod_chip_cnt = 0
-            self.pokes = [0, 0, 0]
+            self.pokes = [0, 0, 0, 0, 0]
             # blind player is not seat_id, is user_list index.
             # index is 0~7
             self.small_blind = 0
