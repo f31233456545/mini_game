@@ -181,7 +181,7 @@ class desk(object):
     
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
-        # clear all stack_cnt<=1 players
+        # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
             if self.user_info[i].stack_cnt<=1:
@@ -194,8 +194,10 @@ class desk(object):
                 self.user_info[i].last_action = 0
                 self.user_info[i].hand_poke0 = 0
                 self.user_info[i].hand_poke1 = 0
+            else:
+                self.user_info[i].folded = False
             i += 1
-        print("players cleared")    
+        print("players reset")    
         # check if the game ends
         if self.get_player_num() < 2:
             print("too less players. game ends")
