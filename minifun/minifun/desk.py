@@ -1,5 +1,5 @@
-import json
 import random
+import copy
 
 MAX_PLAYER_NUM=8
 
@@ -13,7 +13,7 @@ class player(object):
         self.last_action = -1
         self.hand_pokes = [0, 0]
         self.flag = False
-
+        self.rank = 0
 
     def to_dict(self):
         dict = {}
@@ -56,6 +56,9 @@ class desk(object):
         
 
     def round_end(self):
+        # dealer first
+        self.pod_info.curr_id = self.pod_info.dealer + 1
+        # deals flop, turn and river
         if self.pod_info.term == 1:
             self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], 0, 0]
         elif self.pod_info.term == 2:
@@ -69,6 +72,9 @@ class desk(object):
             seat.flag = False
         self.pod_info.term += 1
         if self.pod_info.term == 4:
+            # self.compare()
+            self.assign_chips()
+            self.prepare_new_game()
             self.pod_info.term = 0
 
     def create_room(self, private, room_name, game_kind, creator_name):
@@ -79,7 +85,7 @@ class desk(object):
             self.playing = False
             # id is 1~8
             self.curr_id = 0
-            self.bookmarker_id = 0
+            self.bookmarker_id = 0 # is dealer + 1
             self.term = 0
             self.pod_chip_cnt = 0
             self.pokes = [0, 0, 0, 0, 0]
@@ -139,16 +145,16 @@ class desk(object):
                 return True
         return False
 
-    def action(self, user_name, action_type, raise_num):
-        self.pod_info.curr_id = user_name
-        self.last_info.user_id = user_name
+    def action(self, user_id, action_type, raise_num):
+        # self.pod_info.curr_id = user_id 
+        self.last_info.user_id = user_id
         self.last_info.action_type = action_type
         self.last_info.raise_num = raise_num
         # pass
         # pod_info.curr_id=user_name
-        # last_action.user_id=user_name
-        # last_action.action_type=action_type
-        # last_action.raise_num=raise_num
+        # self.last_action.user_id=user_name
+        # self.last_action.action_type=action_type
+        # self.last_action.raise_num=raise_num
 
     def get_user_seat_id(self, user_name):
         i = 0
@@ -162,8 +168,13 @@ class desk(object):
         resp = []
         for u in self.user_info:
             if username != u.user_name:
+                hand = copy.deepcopy(u.hand_pokes)
+                # u.hand_pokes=[0,0]  #stupid code....
                 u.hand_pokes=[0,0]
-            resp.append(u.to_dict())
+                resp.append(u.to_dict())
+                u.hand_pokes=copy.deepcopy(hand)
+            else:
+                resp.append(u.to_dict())
         return resp
     
     # passively called when player less than 2.
@@ -182,9 +193,17 @@ class desk(object):
             ret = (ret+1)%MAX_PLAYER_NUM
         return ret
     
+    # a demo function. an arbitary player gets the pot.
+    def assign_chips(self):
+        winner_index = self.pod_info.dealer
+        while self.user_info[winner_index].folded == True:
+            winner_index=self.get_next_player_index(winner_index)
+        self.user_info[winner_index].stack_cnt += self.pod_info.pod_chip_cnt
+        self.pod_info.pod_chip_cnt=0
+
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
-        # clear all stack_cnt<=1 players
+        # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
             if self.user_info[i].stack_cnt<=1:
@@ -197,8 +216,10 @@ class desk(object):
                 self.user_info[i].last_action = 0
                 self.user_info[i].hand_poke0 = 0
                 self.user_info[i].hand_poke1 = 0
+            else:
+                self.user_info[i].folded = False
             i += 1
-        print("players cleared")    
+        print("players reset")    
         # check if the game ends
         if self.get_player_num() < 2:
             print("too less players. game ends")
@@ -226,9 +247,15 @@ class desk(object):
         self.deal_cards()
         print("cards dealed")
         # alert front-end to synchronize desk info
-        self.last_info.action_type=4
-        self.last_info.raise_num=0
+        self.action(self.pod_info.big_blind, 3, 2)
         # TODO:
         # self.last_info.user_id = winner
 
+        def determine_winner(self):
+            rank = 1
+            for seat in self.user_info:
+                if seat.user_name != '':
+                    seat.rank = rank
+                    rank += 1
+        
 desks = dict()

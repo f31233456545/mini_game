@@ -146,7 +146,7 @@ def create_room(request):
     resp['room_id'] = id_counter
     resp['message'] = "success"
     # debug
-    print(Room.objects.all())
+    # print(Room.objects.all())
     print(desks)
     return HttpResponse(json.dumps(resp))
 
@@ -235,8 +235,14 @@ def exit_room(request):
         return HttpResponse(json.dumps(resp))
     pusrs = r.player_list.filter(username=my_username)
     if pusrs:
-        resp['succeed'] = False
-        resp['message'] = "User "+my_username+" has sit down. Please stand up and then exit."
+        if desks[r.room_id].stand(my_room_id, my_username):
+            r.player_num -= 1
+            r.viewer_num += 1
+            r.player_list.remove(pusrs[0])
+            r.viewer_list.add(pusrs[0])
+            r.save()
+        resp['succeed'] = True
+        resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
     vusrs = r.viewer_list.filter(username=my_username)
     if not vusrs:
@@ -372,13 +378,14 @@ def request_game_info(request):
         return HttpResponse(json.dumps(resp))
     resp["room_name"] = r.room_name
     resp["view_cnt"] = r.viewer_num
+    print(desks)
     desk = desks[r.room_id]
     your_id=desk.get_user_seat_id(my_user_name)
     pod = {}
     pod["playing"]=desk.pod_info.playing
     pod["your_id"]=your_id
     pod["curr_id"]=desk.pod_info.curr_id
-    pod["bookmarker_id"]=desk.pod_info.bookmarker_id
+    pod["bookmarker_id"]=desk.pod_info.dealer+1
     pod["term"]=desk.pod_info.term
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
@@ -395,6 +402,7 @@ def request_game_info(request):
 def start_game(request):
     rid=int(request.GET.get("room_id"))
     r = models.Room.objects.filter(room_id=rid)
+    print(desks)
     if r[0]:
         if r[0].room_id == rid:
             if r[0].player_num<2:
@@ -419,7 +427,9 @@ def start_game(request):
         resp['message'] = "不存在该房间"
         return HttpResponse(json.dumps(resp))
 
-    
+# known bugs: 1, check if action_player and cur_player is the same player.
+#                for example: when it is playerA's turn, playerB cannot fold or raise.
+#             2, raise should decrease stack_cnt.
 def action(request):
     my_username = request.GET.get("user_name")
     action_type = int(request.GET.get("action_type"))
@@ -445,31 +455,35 @@ def action(request):
     d = desks[r.room_id]    
 
     seat_id = d.get_user_seat_id(my_username)
+    user_id = seat_id - 1
     # Fold
     if action_type == 0:
-        d.user_info[seat_id].folded = True
-        d.user_info[seat_id].hand_pokers = [0, 0]
+        d.user_info[user_id].folded = True
+        d.user_info[user_id].hand_pokers = [0, 0]
     # Check
     # Call
     elif action_type == 1:
-        if d.user_info[seat_id].stack_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[seat_id].chip_cnt)
-            d.user_info[seat_id].chip_cnt = raise_num
+            # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].chip_cnt = raise_num
+
     # Raise
     elif action_type == 2:
-        if d.user_info[seat_id].chip_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[seat_id].chip_cnt)
-            d.user_info[seat_id].chip_cnt = raise_num
+            # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].chip_cnt = raise_num
 
-    d.action(my_username, action_type, raise_num)
+    d.action(seat_id, action_type, raise_num)
 
     pnum = 0
     for u in d.user_info:
@@ -477,7 +491,9 @@ def action(request):
             pnum += 1
     if pnum == 1:
         # TODO: win
-        d.action("-1", 5, 0)
+        d.pod_info.term = 3
+        d.round_end()
+        d.action(-1, 5, 0)
         resp['succeed'] = True
         resp['message'] = ""
         return HttpResponse(json.dumps(resp))
@@ -492,14 +508,16 @@ def action(request):
                 flag = False
                 break
     if (chip != -1) and (flag == True):
-        d.action("-1", 4, 0)
+        d.round_end()
+        d.action(-1, 4, 0)
         # TODO: A new term
-        d.term += 1
     # Move onto the next player 
-    d.curr_id = (d.curr_id+1)%8
-    while d.user_info[d.curr_id].folded == True:
-        d.curr_id = (d.curr_id+1)%8
-    
+    cur_index = d.pod_info.curr_id-1
+    cur_index = (cur_index+1)%8
+    while d.user_info[cur_index].folded == True:
+        cur_index = (cur_index+1)%8
+    d.pod_info.curr_id=cur_index+1
+
     resp['succeed'] = True
     resp['message'] = ""
     return HttpResponse(json.dumps(resp))
