@@ -12,7 +12,7 @@ class player(object):
         self.folded = True
         self.last_action = -1
         self.hand_pokes = [0, 0]
-        self.ranking = 0
+        self.rank = 0
 
     def to_dict(self):
         dict = {}
@@ -23,7 +23,7 @@ class player(object):
         dict["folded"] = self.folded
         dict["last_action"] = self.last_action
         dict["hand_pokes"] = self.hand_pokes
-        dict["ranking"] = self.ranking
+        dict["rank"] = self.rank
         return dict
 
 class desk(object):
@@ -230,13 +230,13 @@ class desk(object):
     
     def score(self, seat_id):
 
-        hand = self.user_info[seat_id].hand_pokes
+        hand = self.user_info[seat_id - 1].hand_pokes
         hand += self.pod_info.pokes
         score = 0
         kicker = []
 
-        #pairs{card value:card num}
-        #nop{card num of pair:num of pair} 
+        #pairs:  {cardValue:cardNum}   cardValue in range(2,14) stand for 2->ace
+        #nop  :  {cardNum of one pair:num of according pair} 
         pairs = {}
         for card in hand:
             card %= 13
@@ -258,8 +258,8 @@ class desk(object):
             else:
                 nop[v] = 1
 
-        #
-        if 4 in nop:        #Has 4 of a kind, assigns the score and the value of the 
+        #----------Has 4 of a kind------------- 
+        if 4 in nop:
             score = 7
             pokes = list(pairs.keys())
             kicker = [key for key in pokes if pairs[key] == 4] 
@@ -267,8 +267,8 @@ class desk(object):
             pokes.remove(key)
             kicker.append(max(pokes))
             return [score, kicker]
-
-        elif 3 in nop:      #Has At least 3 of A Kind
+        #----------Has At least 3 of A Kind----------
+        elif 3 in nop:      
             if nop[3] == 2 or 2 in nop:     #Has two 3 of a kind, or a pair and 3 of a kind (fullhouse)
                 score = 6
                 
@@ -279,8 +279,7 @@ class desk(object):
                 kicker = [key for key in pokes if pairs[key] == 3]
                 if( len(kicker) > 1):   # if there are two 3 of a kinds, take the higher as the first kicker
                     key = max(kicker)
-                    kicker.clear()
-                    kicker.append(key)
+                    kicker = [key]
 
                 #removes the value of the kicker already in the list
                 pokes.remove(kicker[0])
@@ -304,8 +303,8 @@ class desk(object):
                 pokes.remove(card)
                 card = max(pokes)
                 kicker.append(card)
-        
-        elif 2 in nop:      #Has at Least a Pair
+        #----------Has at Least a Pair-----------
+        elif 2 in nop: 
             if nop[2] >= 2:     #Has at least 2  or 3 pairs
                 score = 2
                 pokes = list(pairs.keys())   
@@ -328,7 +327,7 @@ class desk(object):
                 kicker.append(card)
 
             else:
-                score = 1 
+                score = 1   #Has only one Pair
                 
                 pokes = list(pairs.keys())   
                 #Gets the value of the pair
@@ -341,8 +340,156 @@ class desk(object):
                 kicker.append(pokes[4])
                 kicker.append(pokes[3])
                 kicker.append(pokes[2])
+        
+        #------------------------------------------------
+        #------------Checking for Straight---------------
+        #------------------------------------------------    
+        
+        counter = 1
+        high = 0
+        straight = False
+        pokes = list(pairs.keys())
+        pokes.sort()
+        
+        
+        #Loops through pokes checking for the straight by comparing the current card to the
+        #the previous one and tabulates the number of cards found in a row
+        #Notice:card in range(2,15) stand for 2->ace
+        prev = 0
+        for card in pokes:
+            if card == (prev + 1):
+                counter += 1
+                if counter >= 5: #A straight has been recognized
+                    straight = True
+                    high = card
+            else:
+                counter = 1
+            prev = card
+
+        if straight and score < 4:
+            score = 4
+            kicker = [high]
+
+        #------------------------------------------------
+        #-------------Checking for Flush-----------------
+        #------------------------------------------------
+        flush = False
+        total = {}
+        
+        #Loops through the hand calculating the number of cards of each symbol.
+        #card 1-52 stand for club->diamond->heart->spade  ace->king
+        for card in hand:
+            key = (card-1) //13
+            if key in total:
+                total[key] += 1
+            else:
+                total[key] = 1
+        
+        #key represents the suit of a flush if it is within the hand
+        key = -1
+        for k, v in total.items():
+            if v >= 5:
+                key = k
+        
+        #If a flush has been realized and the hand has a lower score than a flush
+        if key != -1 and score < 5:
+            flush = True
+            score = 5
+            kicker = [card for card in hand if (card-1)//13 == key]
+            kicker.sort()
+
+        #------------------------------------------------
+        #-----Checking for Straight & Royal Flush--------
+        #------------------------------------------------
+        if flush and straight:            
+            #Notice:card of kicker is in range(1,53)
+            #convert it to range(2,14) for convience
+            temp = []
+            for card in kicker:
+                key =card
+                key %= 13
+                if key <=1 :
+                    key +=13
+                temp.append(key)
+            temp.sort()
+            #Loops through temp checking for the straight by comparing the current card to the
+            #the previous one and tabulates the number of cards found in a row
+            prev = 0
+            counter = 0
+            high = 0
+            straight_flush = False
+
+            for card in temp:
+                if card == prev + 1:
+                    counter += 1
+                    if counter >= 5: #A straight has been recognized
+                        straight_flush = True
+                        high = card
+                else:
+                    counter = 1
+                prev = card
+            #If a straight has been realized and the hand has a lower score than a straight
+            if straight_flush:
+                if high == 14:
+                    score = 9
+                else:
+                    score = 8
+                kicker = [high]
+                return [score, kicker]
+
+        #if there is only a flush then determines the kickers
+        if flush: 
+            #Notice:card of kicker is in range(1,53)
+            #convert it to range(2,14) for convience
+            temp = []
+            for card in kicker:
+                key =card
+                key %= 13
+                if key <=1 :
+                    key += 13
+                temp.append(key)
+            temp.sort(reverse=True)
+            #This ensures only the top 5 kickers are selected and not more.
+            over = len(temp) - 5
+            for i in range (0,over):
+                temp.pop()
+            kicker = temp
+            return [score,kicker]
+        
+        #------------------------------------------------
+        #-------------------High Card--------------------
+        #------------------------------------------------
+
+        #If the score is 0 then high card is the best possible hand
+        if score == 0:      
+            #It will keep track of only the card's value
+            kicker = list(pairs.keys())
+            kicker.sort(reverse=True)
+            #Since the hand is sorted it will pop the two lowest cards position 0, 1 of the list
+            kicker.pop()
+            kicker.pop()   
+        #Return the score, and the kicker to be used in the event of a tie
+        return [score, kicker]
 
 
+    def determine_winner(self):
+        #seats contains all players
+        seats = [seat for seat in self.user_info if seat.user_name != '']
+        scores = []
+
+        for seat in seats:
+            score_kicker = self.score(seat.seat_id)
+            scores.append( [ seat.seat_id, score_kicker] )
+        scores = sorted(scores, key = lambda s:s[1], reverse=True)
+        print(scores)
+        rank = 1
+        length = len(seats)
+        
+        #Set rank for all players
+        for i in range(0,length):
+            self.user_info[scores[i][0] - 1].rank = rank;
+            if i < length-1 and scores[i][1] != scores[i + 1][1]:
+                rank += 1
 
 
 desks = dict()
