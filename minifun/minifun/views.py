@@ -503,6 +503,7 @@ def action(request):
     flag = True
     for u in d.user_info:
         if u.flag == False and u.folded == False:
+            flag = False
             break
         if u.folded == False:
             if chip == -1:
