@@ -36,6 +36,7 @@ class desk(object):
     #发牌
     def deal_cards(self):
         self.pod_info.inplay.clear()
+        self.pod_info.pokes = [0, 0, 0, 0, 0]
         poke0 = -1         #初始化并标记poke0与poke1
         poke1 = -1
         self.pod_info.inplay = random.sample(range(1,52),5) #五张公牌
