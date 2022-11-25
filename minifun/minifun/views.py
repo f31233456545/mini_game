@@ -495,8 +495,8 @@ def action(request):
     if pnum == 1:
         # TODO: win
         d.pod_info.term = 3
-        d.round_end()
         d.action(-1, 5, 0)
+        d.round_end()
         resp['succeed'] = True
         resp['message'] = ""
         return HttpResponse(json.dumps(resp))
@@ -514,8 +514,8 @@ def action(request):
                 flag = False
                 break
     if flag == True:
-        d.round_end()
         d.action(-1, 4, 0)
+        d.round_end()
         # TODO: A new term
     # Move onto the next player 
     cur_index = d.pod_info.curr_id-1
