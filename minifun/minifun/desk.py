@@ -12,7 +12,7 @@ class player(object):
         self.folded = True
         self.last_action = -1
         self.hand_pokes = [0, 0]
-
+        self.rank = 0
 
     def to_dict(self):
         dict = {}
@@ -241,4 +241,11 @@ class desk(object):
         # TODO:
         # self.last_info.user_id = winner
 
+        def determine_winner(self):
+            rank = 1
+            for seat in self.user_info:
+                if seat.user_name != '':
+                    seat.rank = rank
+                    rank += 1
+        
 desks = dict()
