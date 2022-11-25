@@ -54,6 +54,7 @@ class desk(object):
         
 
     def round_end(self):
+        # deals flop, turn and river
         if self.pod_info.term == 1:
             self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], 0, 0]
         elif self.pod_info.term == 2:
@@ -66,6 +67,9 @@ class desk(object):
             seat.chip_cnt = 0
         self.pod_info.term += 1
         if self.pod_info.term == 4:
+            # self.compare()
+            self.assign_chips()
+            self.prepare_new_game()
             self.pod_info.term = 0
 
     def create_room(self, private, room_name, game_kind, creator_name):
@@ -179,6 +183,14 @@ class desk(object):
             ret = (ret+1)%MAX_PLAYER_NUM
         return ret
     
+    # a demo function. an arbitary player gets the pot.
+    def assign_chips(self):
+        winner_index = self.pod_info.dealer
+        while self.user_info[winner_index].folded == True:
+            winner_index=self.get_next_player_index(winner_index)
+        self.user_info[winner_index].stack_cnt += self.pod_info.pod_chip_cnt
+        self.pod_info.pod_chip_cnt=0
+
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
         # clear all stack_cnt<=1 players, reset other players folded = false
