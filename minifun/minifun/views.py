@@ -508,7 +508,7 @@ def action(request):
                 flag = False
                 break
     if (chip != -1) and (flag == True):
-        d.round_enc()
+        d.round_end()
         d.action(-1, 4, 0)
         # TODO: A new term
     # Move onto the next player 
