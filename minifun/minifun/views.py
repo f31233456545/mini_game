@@ -235,8 +235,14 @@ def exit_room(request):
         return HttpResponse(json.dumps(resp))
     pusrs = r.player_list.filter(username=my_username)
     if pusrs:
-        resp['succeed'] = False
-        resp['message'] = "User "+my_username+" has sit down. Please stand up and then exit."
+        if desks[r.room_id].stand(my_room_id, my_username):
+            r.player_num -= 1
+            r.player_list.remove(pusrs[0])
+            r.save()
+            if r.viewer_num+r.player_num == 0:
+                r.delete()
+        resp['succeed'] = True
+        resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
     vusrs = r.viewer_list.filter(username=my_username)
     if not vusrs:
@@ -252,8 +258,8 @@ def exit_room(request):
     resp['succeed'] = True
     resp['message'] = "Goodbye from room " + my_room_id
     # debug
-    for r in Room.objects.all():
-        print(r)
+    # for r in Room.objects.all():
+        # print(r)
     return HttpResponse(json.dumps(resp))
 
 
@@ -379,7 +385,7 @@ def request_game_info(request):
     pod["playing"]=desk.pod_info.playing
     pod["your_id"]=your_id
     pod["curr_id"]=desk.pod_info.curr_id
-    pod["bookmarker_id"]=desk.pod_info.bookmarker_id
+    pod["bookmarker_id"]=desk.pod_info.dealer+1
     pod["term"]=desk.pod_info.term
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
@@ -421,7 +427,9 @@ def start_game(request):
         resp['message'] = "不存在该房间"
         return HttpResponse(json.dumps(resp))
 
-    
+# known bugs: 1, check if action_player and cur_player is the same player.
+#                for example: when it is playerA's turn, playerB cannot fold or raise.
+#             2, raise should decrease stack_cnt.
 def action(request):
     my_username = request.GET.get("user_name")
     action_type = int(request.GET.get("action_type"))
@@ -455,24 +463,31 @@ def action(request):
     # Check
     # Call
     elif action_type == 1:
-        if d.user_info[user_id].stack_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].flag = True
+            # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
+
     # Raise
     elif action_type == 2:
-        if d.user_info[user_id].stack_cnt < raise_num:
+        
+        if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].flag = True
+            # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
     d.action(seat_id, action_type, raise_num)
+    d.user_info[user_id].last_action = action_type
 
     pnum = 0
     for u in d.user_info:
@@ -480,7 +495,9 @@ def action(request):
             pnum += 1
     if pnum == 1:
         # TODO: win
+        d.pod_info.term = 3
         d.action(-1, 5, 0)
+        d.round_end()
         resp['succeed'] = True
         resp['message'] = ""
         return HttpResponse(json.dumps(resp))
@@ -488,21 +505,25 @@ def action(request):
     chip = -1
     flag = True
     for u in d.user_info:
+        if u.flag == False and u.folded == False:
+            flag = False
+            break
         if u.folded == False:
             if chip == -1:
                 chip = u.chip_cnt
             if chip != u.chip_cnt:
                 flag = False
                 break
-    if (chip != -1) and (flag == True):
+    if flag == True:
         d.action(-1, 4, 0)
+        d.round_end()
         # TODO: A new term
-        d.term += 1
     # Move onto the next player 
-    d.curr_id = (d.curr_id+1)%8
-    while d.user_info[d.curr_id].folded == True:
-        d.curr_id = (d.curr_id+1)%8
-    d.curr_id += 1
+    cur_index = d.pod_info.curr_id-1
+    cur_index = (cur_index+1)%8
+    while d.user_info[cur_index].folded == True:
+        cur_index = (cur_index+1)%8
+    d.pod_info.curr_id=cur_index+1
 
     resp['succeed'] = True
     resp['message'] = ""
