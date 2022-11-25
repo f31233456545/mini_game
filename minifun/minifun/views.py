@@ -494,7 +494,7 @@ def action(request):
             pnum += 1
     if pnum == 1:
         # TODO: win
-        d.pod_info.term = 2
+        d.pod_info.term = 3
         d.round_end()
         d.action(-1, 5, 0)
         resp['succeed'] = True
