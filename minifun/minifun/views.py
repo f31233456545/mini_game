@@ -237,9 +237,7 @@ def exit_room(request):
     if pusrs:
         if desks[r.room_id].stand(my_room_id, my_username):
             r.player_num -= 1
-            r.viewer_num += 1
             r.player_list.remove(pusrs[0])
-            r.viewer_list.add(pusrs[0])
             r.save()
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
