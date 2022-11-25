@@ -457,21 +457,24 @@ def action(request):
     # Check
     # Call
     elif action_type == 1:
-        if d.user_info[user_id].stack_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
             d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
+
     # Raise
     elif action_type == 2:
-        if d.user_info[user_id].stack_cnt < raise_num:
+        if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
             d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
     d.action(seat_id, action_type, raise_num)
@@ -482,6 +485,8 @@ def action(request):
             pnum += 1
     if pnum == 1:
         # TODO: win
+        d.pod_info.term = 3
+        d.round_end()
         d.action(-1, 5, 0)
         resp['succeed'] = True
         resp['message'] = ""
@@ -497,9 +502,9 @@ def action(request):
                 flag = False
                 break
     if (chip != -1) and (flag == True):
+        d.round_enc()
         d.action(-1, 4, 0)
         # TODO: A new term
-        d.term += 1
     # Move onto the next player 
     cur_index = d.pod_info.curr_id-1
     cur_index = (cur_index+1)%8
