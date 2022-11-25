@@ -468,7 +468,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
@@ -479,7 +479,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
