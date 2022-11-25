@@ -468,17 +468,20 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
+            d.user_info[user_id].flag = True
             # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
     # Raise
     elif action_type == 2:
+        
         if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
+            d.user_info[user_id].flag = True
             # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
@@ -501,13 +504,15 @@ def action(request):
     chip = -1
     flag = True
     for u in d.user_info:
+        if u.flag == False and u.folded == False:
+            break
         if u.folded == False:
             if chip == -1:
                 chip = u.chip_cnt
             if chip != u.chip_cnt:
                 flag = False
                 break
-    if (chip != -1) and (flag == True):
+    if flag == True:
         d.round_end()
         d.action(-1, 4, 0)
         # TODO: A new term
