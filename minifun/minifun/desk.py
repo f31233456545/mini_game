@@ -1,5 +1,5 @@
-import json
 import random
+import copy
 
 MAX_PLAYER_NUM=8
 
@@ -80,7 +80,7 @@ class desk(object):
             self.playing = False
             # id is 1~8
             self.curr_id = 0
-            self.bookmarker_id = 0
+            self.bookmarker_id = 0 # is dealer + 1
             self.term = 0
             self.pod_chip_cnt = 0
             self.pokes = [0, 0, 0, 0, 0]
@@ -163,8 +163,13 @@ class desk(object):
         resp = []
         for u in self.user_info:
             if username != u.user_name:
+                hand = copy.deepcopy(u.hand_pokes)
+                # u.hand_pokes=[0,0]  #stupid code....
                 u.hand_pokes=[0,0]
-            resp.append(u.to_dict())
+                resp.append(u.to_dict())
+                u.hand_pokes=copy.deepcopy(hand)
+            else:
+                resp.append(u.to_dict())
         return resp
     
     # passively called when player less than 2.
