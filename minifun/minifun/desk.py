@@ -12,6 +12,7 @@ class player(object):
         self.folded = True
         self.last_action = -1
         self.hand_pokes = [0, 0]
+        self.flag = False
 
 
     def to_dict(self):
@@ -65,6 +66,7 @@ class desk(object):
         for seat in self.user_info:
             self.pod_info.pod_chip_cnt += seat.chip_cnt
             seat.chip_cnt = 0
+            seat.flag = False
         self.pod_info.term += 1
         if self.pod_info.term == 4:
             self.pod_info.term = 0
