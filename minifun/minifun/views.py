@@ -379,7 +379,7 @@ def request_game_info(request):
     pod["playing"]=desk.pod_info.playing
     pod["your_id"]=your_id
     pod["curr_id"]=desk.pod_info.curr_id
-    pod["bookmarker_id"]=desk.pod_info.bookmarker_id
+    pod["bookmarker_id"]=desk.pod_info.dealer+1
     pod["term"]=desk.pod_info.term
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
@@ -421,7 +421,9 @@ def start_game(request):
         resp['message'] = "不存在该房间"
         return HttpResponse(json.dumps(resp))
 
-    
+# known bugs: 1, check if action_player and cur_player is the same player.
+#                for example: when it is playerA's turn, playerB cannot fold or raise.
+#             2, raise should decrease stack_cnt.
 def action(request):
     my_username = request.GET.get("user_name")
     action_type = int(request.GET.get("action_type"))
@@ -460,7 +462,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
     # Raise
     elif action_type == 2:
@@ -469,7 +471,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
-            d.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
+            d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
     d.action(seat_id, action_type, raise_num)
@@ -499,10 +501,11 @@ def action(request):
         # TODO: A new term
         d.term += 1
     # Move onto the next player 
-    d.curr_id = (d.curr_id+1)%8
-    while d.user_info[d.curr_id].folded == True:
-        d.curr_id = (d.curr_id+1)%8
-    d.curr_id += 1
+    cur_index = d.pod_info.curr_id-1
+    cur_index = (cur_index+1)%8
+    while d.user_info[cur_index].folded == True:
+        cur_index = (cur_index+1)%8
+    d.pod_info.curr_id=cur_index+1
 
     resp['succeed'] = True
     resp['message'] = ""
