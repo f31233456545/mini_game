@@ -239,6 +239,8 @@ def exit_room(request):
             r.player_num -= 1
             r.player_list.remove(pusrs[0])
             r.save()
+            if r.viewer_num+r.player_num == 0:
+                r.delete()
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
@@ -256,8 +258,8 @@ def exit_room(request):
     resp['succeed'] = True
     resp['message'] = "Goodbye from room " + my_room_id
     # debug
-    for r in Room.objects.all():
-        print(r)
+    # for r in Room.objects.all():
+        # print(r)
     return HttpResponse(json.dumps(resp))
 
 
