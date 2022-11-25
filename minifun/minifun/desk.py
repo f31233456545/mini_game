@@ -55,6 +55,8 @@ class desk(object):
         
 
     def round_end(self):
+        # dealer first
+        self.pod_info.curr_id = self.pod_info.dealer + 1
         # deals flop, turn and river
         if self.pod_info.term == 1:
             self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], 0, 0]
