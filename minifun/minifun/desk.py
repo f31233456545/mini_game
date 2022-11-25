@@ -12,7 +12,7 @@ class player(object):
         self.folded = True
         self.last_action = -1
         self.hand_pokes = [0, 0]
-
+        self.ranking = 0
 
     def to_dict(self):
         dict = {}
@@ -23,6 +23,7 @@ class player(object):
         dict["folded"] = self.folded
         dict["last_action"] = self.last_action
         dict["hand_pokes"] = self.hand_pokes
+        dict["ranking"] = self.ranking
         return dict
 
 class desk(object):
@@ -226,5 +227,122 @@ class desk(object):
         self.action(self.pod_info.big_blind, 3, 2)
         # TODO:
         # self.last_info.user_id = winner
+    
+    def score(self, seat_id):
+
+        hand = self.user_info[seat_id].hand_pokes
+        hand += self.pod_info.pokes
+        score = 0
+        kicker = []
+
+        #pairs{card value:card num}
+        #nop{card num of pair:num of pair} 
+        pairs = {}
+        for card in hand:
+            card %= 13
+            #for convient comparation
+            #set 14 as value of A
+            #set 13 as value of K
+            #...
+            if card <= 1:
+                card += 13
+            if card in pairs:
+                pairs[card] += 1
+            else:
+                pairs[card] = 1
+
+        nop = {}
+        for k, v in pairs.items():
+            if v in nop:
+                nop[v] += 1
+            else:
+                nop[v] = 1
+
+        #
+        if 4 in nop:        #Has 4 of a kind, assigns the score and the value of the 
+            score = 7
+            pokes = list(pairs.keys())
+            kicker = [key for key in pokes if pairs[key] == 4] 
+            key = kicker[0]
+            pokes.remove(key)
+            kicker.append(max(pokes))
+            return [score, kicker]
+
+        elif 3 in nop:      #Has At least 3 of A Kind
+            if nop[3] == 2 or 2 in nop:     #Has two 3 of a kind, or a pair and 3 of a kind (fullhouse)
+                score = 6
+                
+                #gets a list of all the pairs
+                pokes = list(pairs.keys())
+                
+                #ensures the first kicker is the value of the highest 3 of a king
+                kicker = [key for key in pokes if pairs[key] == 3]
+                if( len(kicker) > 1):   # if there are two 3 of a kinds, take the higher as the first kicker
+                    key = max(kicker)
+                    kicker.clear()
+                    kicker.append(key)
+
+                #removes the value of the kicker already in the list
+                pokes.remove(kicker[0])
+                kicker[1] = 0
+                #Gets the highest pair or 3 of kind and adds that to the kickers list
+                for card in pokes:
+                    if pairs[card] >= 2 and card > kicker[2]:
+                        kicker[1] = card
+
+            else:
+                score = 3
+                pokes = list(pairs.keys())       #Gets the value of the 3 of a king
+                kicker = [key for key in pokes if pairs[key] == 3]
+                
+                #Gets a list of all the cards remaining once the three of a kind is removed
+                pokes.remove(kicker[0])
+                #Get the 2 last cards in the list which are the 2 highest to be used in the 
+                #event of a tie
+                card = max(pokes)
+                kicker.append(card)
+                pokes.remove(card)
+                card = max(pokes)
+                kicker.append(card)
+        
+        elif 2 in nop:      #Has at Least a Pair
+            if nop[2] >= 2:     #Has at least 2  or 3 pairs
+                score = 2
+                pokes = list(pairs.keys())   
+                
+                #Gets the card value of all the pairs 
+                temp = [key for key in pokes if pairs[key] == 2]
+                
+                key = max(temp)
+                kicker.append(key)
+                temp.remove(key)
+
+                key = max(temp)
+                kicker.append(key)
+                
+                #Gets a list of all the cards remaining once the the 2 pairs are removed
+                pokes.remove(kicker[0])
+                pokes.remove(kicker[1])
+                #Gets the max card in the list remained
+                card = max(pokes)
+                kicker.append(card)
+
+            else:
+                score = 1 
+                
+                pokes = list(pairs.keys())   
+                #Gets the value of the pair
+                kicker = [key for key in pokes if pairs[key] == 2]
+                #Gets a list of all the cards remaining once pair are removed
+                pokes.remove(kicker[0])
+                #Gets the last 3 cards in the list which are the highest remaining cards
+                #which will be used in the event of a tie
+                pokes.sort()
+                kicker.append(pokes[4])
+                kicker.append(pokes[3])
+                kicker.append(pokes[2])
+
+
+
 
 desks = dict()
