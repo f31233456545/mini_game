@@ -235,8 +235,14 @@ def exit_room(request):
         return HttpResponse(json.dumps(resp))
     pusrs = r.player_list.filter(username=my_username)
     if pusrs:
-        resp['succeed'] = False
-        resp['message'] = "User "+my_username+" has sit down. Please stand up and then exit."
+        if desks[r.room_id].stand(my_room_id, my_username):
+            r.player_num -= 1
+            r.viewer_num += 1
+            r.player_list.remove(pusrs[0])
+            r.viewer_list.add(pusrs[0])
+            r.save()
+        resp['succeed'] = True
+        resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
     vusrs = r.viewer_list.filter(username=my_username)
     if not vusrs:
@@ -502,7 +508,7 @@ def action(request):
                 flag = False
                 break
     if (chip != -1) and (flag == True):
-        d.round_enc()
+        d.round_end()
         d.action(-1, 4, 0)
         # TODO: A new term
     # Move onto the next player 
