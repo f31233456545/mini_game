@@ -60,7 +60,7 @@
     />
 
     <div class="play-room-footer">
-        <div v-if="!playing && isHost" class="waiting">
+        <div v-if="!playing && isHost && seated" class="waiting">
             <el-button type="danger" @click="start">开始游戏</el-button>
         </div>
         <div v-if="playing && acting" class="playing">
@@ -175,9 +175,9 @@ export default {
                 .then(function (res) {
                     switch (res.succeed) {
                     case true:
-                        this.request_gameinfo()
                         self.$message.success('已坐下！')
                         self.$store.commit("sit")
+                        this.request_gameinfo()
                         break
                     case false:
                         console.log("sit err!")
@@ -195,9 +195,9 @@ export default {
                     console.log(res.data)
                     switch (res.succeed) {
                     case true:
-                        this.request_gameinfo()
                         self.$message.success('已站起！')
                         self.$store.commit("stand")
+                        this.request_gameinfo()
                         break
                     case false:
                         self.$message.error('发生错误！')
