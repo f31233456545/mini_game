@@ -71,7 +71,7 @@ class desk(object):
             seat.chip_cnt = 0
             seat.flag = False
         self.pod_info.term += 1
-        if self.pod_info.term == 4:
+        if self.pod_info.term == 3:
             # self.compare()
             self.assign_chips()
             self.prepare_new_game()
