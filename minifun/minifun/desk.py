@@ -1,6 +1,8 @@
 import json
 import random
 
+MAX_PLAYER_NUM=8
+
 class player(object):
     def __init__(self, seat) -> None:
         self.user_name = ""
@@ -73,33 +75,48 @@ class desk(object):
     class pod_infoClass(object):
         def __init__(self) -> None:
             self.playing = False
+            # id is 1~8
             self.curr_id = 0
             self.bookmarker_id = 0
             self.term = 0
             self.pod_chip_cnt = 0
             self.pokes = [0, 0, 0, 0, 0]
+            self.inplay = []
+            # blind player is not seat_id, is user_list index.
+            # index is 0~7
             self.small_blind = 0
             self.big_blind = 1
-            self.inplay = []
-
+            self.dealer = 0
+            
     class last_actionClass(object):
         def __init__(self) -> None:
             self.user_id = 0
             self.action_type = 0
             self.raise_num = 0
-            
-    def sit(self, room_id, user_name, chip_cnt):
+    
+    def get_player_num(self):
         i = 0
-        while i < 8:
+        num = 0
+        while i < MAX_PLAYER_NUM :
+            if self.user_info[i].user_name != '':
+                num += 1
+            i += 1
+        return num
+    
+    def sit(self, room_id, user_name, stack_cnt):
+        i = 0
+        while i < MAX_PLAYER_NUM:
             seat = self.user_info[i]
             if seat.user_name == '':
                 seat.user_name = user_name
-                seat.chip_cnt = chip_cnt
+                seat.stack_cnt = stack_cnt
                 return seat.seat_id
             i += 1
 
+    # call prepare_new_game(), dealing cards and assign blinds.
     def start_game(self, room_id):
         self.pod_info.playing = True
+        self.prepare_new_game()
         # pass
         # pod_info.playing=True
 
@@ -109,7 +126,9 @@ class desk(object):
                 seat.user_name = ''
                 # 用户名为‘’表示该座位无人
                 # 恢复初始化状态
-                seat.stack_cnt = 0
+                seat.stack_cnt = -1
+                # need to add chip_cnt to pot. otherwise player can escape losing chips by standing up
+                self.pod_info.pod_chip_cnt += seat.chip_cnt
                 seat.chip_cnt = 0
                 seat.folded = True
                 seat.last_action = 0
@@ -131,29 +150,83 @@ class desk(object):
 
     def get_user_seat_id(self, user_name):
         i = 0
-        while i < 8:
+        while i < MAX_PLAYER_NUM:
             if self.user_info[i].user_name == user_name:
                 return i + 1
             i += 1
         return 1
     
-    def get_player_info(self):
+    def get_player_info(self,username):
         resp = []
         for u in self.user_info:
-            # resp.append(json.dumps(u))
-            # u_json={}
-            # u_json["user_name"]=u["user_name"]
-            # u_json["seat_id"]=u["seat_id"]
-            # u_json["stack_cnt"]=u["stack_cnt"]
-            # u_json["chip_cnt"]=u["chip_cnt"]
-            # u_json["folded"]=u["folded"]
-            # u_json["last_action"]=u["last_action"]
-            # u_json["stack_cnt"]=u["stack_cnt"]
-            # hand_pokes=[]
-            # hand_pokes[0]=u["hand_poke0"]
-            # hand_pokes[1]=u["hand_poke1"]
-            # u_json["hand_pokes"]=hand_pokes
+            if username != u.user_name:
+                u.hand_pokes=[0,0]
             resp.append(u.to_dict())
         return resp
+    
+    # passively called when player less than 2.
+    def end_game(self):
+        self.pod_info.playing=False
+    
+    def get_prev_player_index(self,index):
+        ret = (index-1+MAX_PLAYER_NUM)%MAX_PLAYER_NUM
+        while self.user_info[ret].user_name=='':
+            ret = (ret-1+MAX_PLAYER_NUM)%MAX_PLAYER_NUM
+        return ret
+    
+    def get_next_player_index(self,index):
+        ret = (index+1)%MAX_PLAYER_NUM
+        while self.user_info[ret].user_name=='':
+            ret = (ret+1)%MAX_PLAYER_NUM
+        return ret
+    
+    # show hands, distribute chips, then call this func.
+    def prepare_new_game(self):
+        # clear all stack_cnt<=1 players
+        i = 0
+        while i < MAX_PLAYER_NUM :
+            if self.user_info[i].stack_cnt<=1:
+                self.user_info[i].user_name = ''
+                # 用户名为‘’表示该座位无人
+                # 恢复初始化状态
+                self.user_info[i].stack_cnt = -1
+                self.user_info[i].chip_cnt = 0
+                self.user_info[i].folded = True
+                self.user_info[i].last_action = 0
+                self.user_info[i].hand_poke0 = 0
+                self.user_info[i].hand_poke1 = 0
+            i += 1
+        print("players cleared")    
+        # check if the game ends
+        if self.get_player_num() < 2:
+            print("too less players. game ends")
+            self.end_game()
+        # Switch BB. 
+        bb = self.get_next_player_index(self.pod_info.big_blind)
+        self.pod_info.big_blind=bb       
+        # Determine SB and dealer. SB is prev player of BB, dealer is prev player of SB(when 2 players, it is SB)
+        self.pod_info.small_blind = self.get_prev_player_index(self.pod_info.big_blind)
+        if self.get_player_num() == 2:
+            self.pod_info.dealer = self.pod_info.small_blind
+        else:
+            self.pod_info.dealer = self.get_prev_player_index(self.pod_info.small_blind)
+        print("blinds determined")
+        # assign blinds
+        self.user_info[self.pod_info.big_blind].stack_cnt-=2
+        self.user_info[self.pod_info.big_blind].chip_cnt+=2
+        self.user_info[self.pod_info.small_blind].stack_cnt-=1
+        self.user_info[self.pod_info.small_blind].chip_cnt+=1
+
+        # determine first active player
+        self.pod_info.curr_id=self.get_next_player_index(self.pod_info.big_blind)+1
+
+        # deal_cards
+        self.deal_cards()
+        print("cards dealed")
+        # alert front-end to synchronize desk info
+        self.last_info.action_type=4
+        self.last_info.raise_num=0
+        # TODO:
+        # self.last_info.user_id = winner
 
 desks = dict()
