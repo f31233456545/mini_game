@@ -144,7 +144,7 @@ class desk(object):
         return False
 
     def action(self, user_id, action_type, raise_num):
-        self.pod_info.curr_id = user_id 
+        # self.pod_info.curr_id = user_id 
         self.last_info.user_id = user_id
         self.last_info.action_type = action_type
         self.last_info.raise_num = raise_num
