@@ -389,6 +389,8 @@ def request_game_info(request):
     pod["term"]=desk.pod_info.term
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
+    pod["big_id"]=desk.pod_info.big_blind+1
+    pod["small_id"]=desk.pod_info.small_blind+1
     resp["pod_info"]=pod
     resp["user_infos"]=desk.get_player_info(my_user_name)
     last_act={}
@@ -496,8 +498,8 @@ def action(request):
     if pnum == 1:
         # TODO: win
         d.pod_info.term = 3
+        d.action(-1, 4, 0)
         d.round_end()
-        d.action(-1, 5, 0)
         resp['succeed'] = True
         resp['message'] = ""
         return HttpResponse(json.dumps(resp))
@@ -515,8 +517,8 @@ def action(request):
                 flag = False
                 break
     if flag == True:
+        d.action(-1, 3, 0)
         d.round_end()
-        d.action(-1, 4, 0)
         # TODO: A new term
     # Move onto the next player 
     cur_index = d.pod_info.curr_id-1

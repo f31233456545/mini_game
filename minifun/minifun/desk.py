@@ -142,6 +142,40 @@ class desk(object):
                 seat.last_action = 0
                 seat.hand_poke0 = 0
                 seat.hand_poke1 = 0
+                # Judge if the game state will change because of this
+                cur_index = self.pod_info.curr_id-1
+                if seat.user_name == self.user_info[cur_index].user_name:
+                    pnum = 0
+                    for u in self.user_info:
+                        if u.folded == False:
+                            pnum += 1
+                    if pnum == 1:
+                        # win
+                        self.pod_info.term = 3
+                        self.action(-1, 4, 0)
+                        self.round_end()
+                    else:
+                        chip = -1
+                        term_flag = True
+                        for u in self.user_info:
+                            if u.flag == False and u.folded == False:
+                                term_flag = False
+                                break
+                            if u.folded == False:
+                                if chip == -1:
+                                    chip = u.chip_cnt
+                                if chip != u.chip_cnt:
+                                    term_flag = False
+                                break
+                        if term_flag == True:
+                            # A new term
+                            self.action(-1, 3, 0)
+                            self.round_end()
+                        # Move onto the next player 
+                        cur_index = (cur_index+1)%8
+                        while self.user_info[cur_index].folded == True:
+                            cur_index = (cur_index+1)%8
+                        self.pod_info.curr_id=cur_index+1
                 return True
         return False
 
