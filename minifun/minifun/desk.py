@@ -174,7 +174,7 @@ class desk(object):
                 u.hand_pokes=[]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
-            else if username != u.user_name:
+            elif username != u.user_name:
                 hand = copy.deepcopy(u.hand_pokes)
                 # u.hand_pokes=[0,0]  #stupid code....
                 u.hand_pokes=[0,0]
