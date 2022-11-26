@@ -498,7 +498,7 @@ def action(request):
     if pnum == 1:
         # TODO: win
         d.pod_info.term = 3
-        d.action(-1, 5, 0)
+        d.action(-1, 4, 0)
         d.round_end()
         resp['succeed'] = True
         resp['message'] = ""
@@ -517,7 +517,7 @@ def action(request):
                 flag = False
                 break
     if flag == True:
-        d.action(-1, 4, 0)
+        d.action(-1, 3, 0)
         d.round_end()
         # TODO: A new term
     # Move onto the next player 
