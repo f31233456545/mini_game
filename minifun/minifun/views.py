@@ -358,9 +358,9 @@ def request_room_list(request):
     rooms = []
     for r in Room.objects.filter(game_kind=my_game_kind, private=False):
         d = desks[r.room_id]
-        r.status = 0
         if d.pod_info.playing == True:
             r.status = 1
+        else r.status = 0
         r.save()
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
