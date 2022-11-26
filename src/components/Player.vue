@@ -41,7 +41,10 @@
     </div>
     <div :class="'empty p'+pos" v-else>
         <div class="player-container">
-            <div class="empty-sign">EMPTY</div>
+            <div class="empty-wrapper">
+                <div class="empty-sign">空位</div>
+            </div>
+            
         </div>
     </div>
 </template>
@@ -79,6 +82,8 @@ export default{
             return this.gameInfo.user_infos[this.seatId-1]
         },
         playerCharacter(){
+            if(!this.gameInfo.pod_info.playing)
+                return ["normal-player",""]
             let bookmarkerId = this.gameInfo.pod_info.bookmarker_id;
             if(this.playerInfo.seat_id==bookmarkerId){
                 return ["bookmarker","庄家"]
@@ -98,7 +103,7 @@ export default{
         },
         lastAction(){
             if(!this.gameInfo.pod_info.playing)
-                return ["fold",""]
+                return ["no-action",""]
             let actionType = this.playerInfo.last_action
             switch(actionType){
             case 0:
@@ -107,6 +112,8 @@ export default{
                 return ["follow","跟注"]
             case 2:
                 return ["raise","加注"]
+            default:
+                return ["no-action",""]
             }
         }
     }
@@ -122,12 +129,21 @@ export default{
 }
 .empty-sign{
     position: absolute;
-    top: 30px;
-    border: solid;
-    border-radius: 6px;
+    top: 40px;
+    height: 40px;
+    width: 100px;
     color: rgba(255,255,255,0.5);
-    font-size: 40px;
-    transform:rotate(330deg);
+    font-size: 30px;
+    text-align: center;
+}
+.empty-wrapper{
+    position: absolute;
+    height: 120px;
+    width: 100px;
+    border: solid;
+    border-color: rgba(255,255,255,0.5);
+    border-width: 1px;
+    border-radius: 6px;
 }
 
 .p1{
@@ -238,6 +254,9 @@ export default{
     color: white;
     text-align: center;
     border-radius: 4px;
+}
+.no-action{
+    background: none;
 }
 .fold{
     background: rgba(128,128,128,0.8);
