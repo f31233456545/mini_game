@@ -487,6 +487,7 @@ def action(request):
             d.user_info[user_id].chip_cnt = raise_num
 
     d.action(seat_id, action_type, raise_num)
+    d.user_info[user_id].last_action = action_type
 
     pnum = 0
     for u in d.user_info:
