@@ -163,7 +163,7 @@ class desk(object):
             if self.user_info[i].user_name == user_name:
                 return i + 1
             i += 1
-        return 1
+        return 0
     
     def get_player_info(self,username):
         resp = []
