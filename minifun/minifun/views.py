@@ -389,6 +389,8 @@ def request_game_info(request):
     pod["term"]=desk.pod_info.term
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
+    pod["big_id"]=desk.pod_info.big_blind+1
+    pod["small_id"]=desk.pod_info.small_blind+1
     resp["pod_info"]=pod
     resp["user_infos"]=desk.get_player_info(my_user_name)
     last_act={}
