@@ -147,7 +147,7 @@ def create_room(request):
     resp['message'] = "success"
     # debug
     # print(Room.objects.all())
-    print(desks)
+    # print(desks)
     return HttpResponse(json.dumps(resp))
 
 def join_room(request):
@@ -200,8 +200,8 @@ def join_room(request):
     resp['succeed'] = True
     resp['message'] = "Welcome to room " + my_room_id
     # debug
-    for r in Room.objects.all():
-        print(r)
+    # for r in Room.objects.all():
+    #    print(r)
     return HttpResponse(json.dumps(resp))
 
 
@@ -366,8 +366,8 @@ def request_room_list(request):
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)
     resp['rooms'] = rooms
-    for r in Room.objects.filter(game_kind=my_game_kind):
-        print(r)
+    # for r in Room.objects.filter(game_kind=my_game_kind):
+    #    print(r)
 
     return HttpResponse(json.dumps(resp))
 
@@ -383,7 +383,7 @@ def request_game_info(request):
         return HttpResponse(json.dumps(resp))
     resp["room_name"] = r.room_name
     resp["view_cnt"] = r.viewer_num
-    print(desks)
+    # print(desks)
     desk = desks[r.room_id]
     your_id=desk.get_user_seat_id(my_user_name)
     pod = {}
@@ -409,7 +409,7 @@ def request_game_info(request):
 def start_game(request):
     rid=int(request.GET.get("room_id"))
     r = models.Room.objects.filter(room_id=rid)
-    print(desks)
+    # print(desks)
     if r[0]:
         if r[0].room_id == rid:
             if r[0].player_num<2:
