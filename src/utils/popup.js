@@ -28,7 +28,7 @@ const createPopup = function (component, position, props) {
 
 export function createActionPopup(title, message) {
     let position = { top: `10%`, right: `0px` }
-    let props = { title: title, message: message, duration: 1000 }
+    let props = { title: title, message: message, duration: 3000 }
     createPopup(ActionPopup,position,props)
 }
 

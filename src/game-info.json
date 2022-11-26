@@ -77,7 +77,7 @@
     ],
 
     "pod_info": {
-        "playing": true,
+        "playing": false,
         "your_id": 4,
         "curr_id": 7,
         "bookmarker_id": 4,

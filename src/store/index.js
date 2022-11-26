@@ -19,7 +19,7 @@ const store = createStore({
                 last_action: gameData.last_action,
             },
             sitDown: false, //是否坐下
-            x: 0, // debug 用于测试各种动作
+            showAction: [false,false,false,false,false,false,false,false], //是否显示玩家行动记录
         }
     },
     mutations: {
@@ -54,12 +54,15 @@ const store = createStore({
         updataGameinfo(state,info){
             state.gameInfo=info
         },
-        // debug 不是正式的方法
-        changeInfo(state) {
-            state.x = (state.x + 1) % 6
-            state.gameInfo.last_action = { user_id: 1, action_type: state.x, raise_num: 0 }
-            state.gameInfo.pod_info.your_id = 7
-        },
+        changeShowAction(state, user_id) {
+            if (user_id >= 1 && user_id <=8) {
+                state.showAction[user_id - 1] = true
+            }
+            else if(user_id == -1){
+                state.showAction = [false,false,false,false,false,false,false,false]
+            }
+            console.log(user_id)
+        }
     },
     actions: {
         // updateRoomList({ commit, state }, gameId) {

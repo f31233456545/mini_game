@@ -79,7 +79,7 @@
     </div>
 
     <!-- 调试用 -->
-    <div class="debug">
+    <div class="debug" v-if="debug">
         <el-button type="primary" @click="debug1">debug: close timer</el-button>
         <el-button type="primary" @click="debug2">debug: get game info</el-button>
     </div>  
@@ -98,7 +98,7 @@ import router from "../router/index.js"
 import { request } from "../utils/request.js"
 import { createActionPopup } from '../utils/popup.js'
   
-export default {
+const app = {
     name: 'PlayRoom',
     components: {
         Player,
@@ -110,6 +110,7 @@ export default {
             spectate: spectate,
             num: 0,
             timeInter: null, // 定时器，mount时设定
+            debug: false,
         };
     },
     computed:{
@@ -374,26 +375,27 @@ export default {
             case 0: // 弃牌
                 title = user_id + " " + user_name
                 action = "弃牌"
+                store.commit('changeShowAction',user_id)
                 break;
-            case 1: // 过牌
-                title = user_id + " " + user_name
-                action = "过牌"
-                break;
-            case 2: // 跟注
+            case 1: // 跟注
                 title = user_id + " " + user_name
                 action = "跟注到" + chip_cnt
+                store.commit('changeShowAction',user_id)
                 break;
-            case 3: // 加注
+            case 2: // 加注
                 title = user_id + " " + user_name
                 action = "加注到" + chip_cnt
+                store.commit('changeShowAction',user_id)
                 break;
-            case 4: // 新回合
+            case 3: // 新回合
                 title = "<< " + self.term + " >>"
                 action = ""
+                store.commit('changeShowAction',-1)
                 break;
-            case 5: // 结束
+            case 4: // 结束
                 title = "游戏结束！"
                 action = ""
+                store.commit('changeShowAction',-1)
                 break;
             }
             createActionPopup(
@@ -424,6 +426,25 @@ export default {
     },
 
 }
+if (sessionStorage.getItem('store')) {
+    try {
+        store.replaceState(JSON.parse(sessionStorage.getItem('store')))
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('store', JSON.stringify(store.state));
+});
+window.addEventListener("popstate", function (e) {
+    app.methods.exit_room({
+        room_id: store.state.inRoomId,
+        user_name: store.state.userName
+    });
+}, false);
+
+export default app;
 </script>
 
   
