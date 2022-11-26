@@ -85,6 +85,9 @@ export default{
             if(!this.gameInfo.pod_info.playing)
                 return ["normal-player",""]
             let bookmarkerId = this.gameInfo.pod_info.bookmarker_id;
+            if(bookmarkerId==0){ //只有两个玩家，没有庄家
+                
+            }
             if(this.playerInfo.seat_id==bookmarkerId){
                 return ["bookmarker","庄家"]
             }

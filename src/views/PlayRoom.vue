@@ -65,12 +65,12 @@
         </div>
         <div v-if="playing && acting" class="playing">
             <div v-if="acting" class="button-group2">
-                <!-- <el-input-number 
+                <el-input-number 
                     v-model="num" @change="handleChange" 
                     :step="1" step-strictly 
-                    :min="this.$store.state.gameInfo.last_action.raise_num+1"
-                    :max="this.$store.state.gameInfo.user_infos[0].stack_cnt" 
-                ></el-input-number> -->
+                    :min="defaultRaiseNum"
+                    :max="yourInfo.stack_cnt" 
+                ></el-input-number>
                 <el-button type="success" @click="raise">加注</el-button>
                 <el-button type="primary" @click="call">跟注</el-button>
                 <el-button type="danger" @click="fold">弃牌</el-button>
@@ -108,7 +108,7 @@ export default {
         return{
             table0: table0,
             spectate: spectate,
-
+            num: 0,
             timeInter: null, // 定时器，mount时设定
         };
     },
@@ -155,6 +155,9 @@ export default {
         },
         defaultRaiseNum(){
             return this.lastAction.raise_num+1
+        },
+        yourInfo(){
+            return this.userInfos.find(info=>info.seat_id === this.gameInfo.pod_info.your_id)
         }
     },
     methods: {
@@ -305,7 +308,7 @@ export default {
             var raise_data = {
                 user_name: self.userName,
                 action_type: 2,
-                raise_num: self.lastAction.raise_num,
+                raise_num: self.num,
                 room_id: self.roomId, 
             }
             request("action",raise_data)
