@@ -505,7 +505,10 @@ class desk(object):
             score_kicker = self.score(seat.seat_id)
             scores.append( [ seat.seat_id, score_kicker] )
         scores = sorted(scores, key = lambda s:s[1], reverse=True)
+
+        #for debug
         print(scores)
+        
         rank = 1
         length = len(seats)
         

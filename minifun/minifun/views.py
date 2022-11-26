@@ -528,3 +528,4 @@ def action(request):
     resp['succeed'] = True
     resp['message'] = ""
     return HttpResponse(json.dumps(resp))
+
