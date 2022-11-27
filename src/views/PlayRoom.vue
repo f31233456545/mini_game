@@ -8,6 +8,9 @@
                 <div class="room-id">
                     {{ "房间号: " + this.$route.params.room_id }}
                 </div>
+                <div class="spectate-state" v-if="!seated">
+                    您尚未坐下，正在观战
+                </div>
                 <div class="spectate">
                     <div class="spectate-icon">
                         <img :src="spectate" />
@@ -92,6 +95,7 @@ export default {
             table0: table0,
             spectate: spectate,
             num: 0,
+            oldPodChipCount: 0,
             timeInter: null, // 定时器，mount时设定
             debug: false,
         };
@@ -375,7 +379,7 @@ export default {
                     popupProps = {
                         title: '跟注 ',
                         titleColor: '#FFFFFF',
-                        message: chip_cnt,
+                        message: `${chip_cnt}`,
                         messageColor: '#FFFFFF',
                         backgroundColor: '#409EFF',
                         duration: 3000
@@ -393,7 +397,7 @@ export default {
                     popupProps = {
                         title: '加注 ',
                         titleColor: '#FFFFFF',
-                        message: chip_cnt,
+                        message: `${chip_cnt}`,
                         messageColor: '#FFFFFF',
                         backgroundColor: '#67C23A',
                         duration: 3000
@@ -416,16 +420,19 @@ export default {
                         backgroundColor: '#00000088',
                         duration: 3000
                     }
+                    self.oldPodChipCount = self.$store.state.gameInfo.pod_info.pod_chip_cnt
                     store.commit('changeShowAction', -1)
                     break;
                 case 4: // 结束
                     popupProps = {
-                        title: '游戏结束',
+                        title: '游戏结束 ',
                         titleColor: '#FFFFFF',
-                        message: '',
+                        message: self.userInfos[user_id - 1].user_name + ' 获胜，筹码 +' + self.oldPodChipCount,
+                        messageColor: '#FFCC00',
                         backgroundColor: '#00000088',
-                        duration: 3000
+                        duration: 5000
                     }
+                    self.oldPodChipCount = 0
                     store.commit('changeShowAction', -1)
                     break;
             }
@@ -538,6 +545,22 @@ export default {
     color: rgb(50, 200, 240);
     font-size: 20px;
     padding: 4px;
+}
+
+.spectate-state {
+    display: flex;
+    float: left;
+    height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: rgb(15, 115, 143);
+    border-radius: 2px;
+    margin-top: 5px;
+    margin-left: 5px;
+    padding-top: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .play-room-footer {
