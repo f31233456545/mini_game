@@ -52,9 +52,8 @@
             </div>
             <div v-if="playing && acting" class="playing">
                 <div v-if="acting" class="button-group2">
-                    <el-input-number v-model="num" @change="handleChange" :step="1" step-strictly :min="defaultRaiseNum"
-                        :max="yourInfo.stack_cnt"></el-input-number>
-                    <el-button type="success" @click="raise">加注</el-button>
+                    <el-input-number v-model="num" @change="handleChange" :step="1"></el-input-number>
+                    <el-button type="success" @click="raise" :disabled="raiseCheck">加注</el-button>
                     <el-button type="primary" @click="call">跟注</el-button>
                     <el-button type="danger" @click="fold">弃牌</el-button>
                 </div>
@@ -142,6 +141,9 @@ export default {
         },
         yourInfo() {
             return this.userInfos.find(info => info.seat_id === this.gameInfo.pod_info.your_id)
+        },
+        raiseCheck(){
+            return this.num!=parseInt(this.num)||this.num<=this.lastAction.raise_num||this.num>this.yourInfo.stack_cnt
         }
     },
     methods: {
@@ -293,6 +295,7 @@ export default {
                 raise_num: self.num,
                 room_id: self.roomId,
             }
+            if(self.num==parseInt(self.num)&&self.num>self.lastAction.raise_num&&self.num<=self.userInfos.find(info => info.seat_id === this.gameInfo.pod_info.your_id).stack_cnt){
             request("action", raise_data)
                 .then(function (res) {
                     console.log(res.data)
@@ -304,6 +307,10 @@ export default {
                 .catch((err) => {
                     console.log(err);
                 });
+            }
+            else{
+                self.$message.error('加注不合法，请重新加注')
+            }
         },
         request_gameinfo() {
             const self = this;
