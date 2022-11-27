@@ -25,7 +25,6 @@ class player(object):
         dict["folded"] = self.folded
         dict["last_action"] = self.last_action
         dict["hand_pokes"] = self.hand_pokes
-        dict["rank"] = self.rank
         return dict
 
 class desk(object):
@@ -142,8 +141,43 @@ class desk(object):
                 seat.chip_cnt = 0
                 seat.folded = True
                 seat.last_action = 0
-                seat.hand_poke0 = 0
-                seat.hand_poke1 = 0
+                seat.hand_pokes = [0, 0]
+                if self.pod_info.playing == False:
+                    return True
+                # Judge if the game state will change because of this
+                cur_index = self.pod_info.curr_id-1
+                if seat.user_name == self.user_info[cur_index].user_name:
+                    pnum = 0
+                    for u in self.user_info:
+                        if u.folded == False:
+                            pnum += 1
+                    if pnum == 1:
+                        # win
+                        self.pod_info.term = 3
+                        self.action(-1, 4, 0)
+                        self.round_end()
+                    else:
+                        chip = -1
+                        term_flag = True
+                        for u in self.user_info:
+                            if u.flag == False and u.folded == False:
+                                term_flag = False
+                                break
+                            if u.folded == False:
+                                if chip == -1:
+                                    chip = u.chip_cnt
+                                if chip != u.chip_cnt:
+                                    term_flag = False
+                                break
+                        if term_flag == True:
+                            # A new term
+                            self.action(-1, 3, 0)
+                            self.round_end()
+                        # Move onto the next player 
+                        cur_index = (cur_index+1)%8
+                        while self.user_info[cur_index].folded == True:
+                            cur_index = (cur_index+1)%8
+                        self.pod_info.curr_id=cur_index+1
                 return True
         return False
 
@@ -164,17 +198,21 @@ class desk(object):
             if self.user_info[i].user_name == user_name:
                 return i + 1
             i += 1
-        return 0
+        return 1
     
     def get_player_info(self,username):
         resp = []
         for u in self.user_info:
+<<<<<<< HEAD
             if u.folded == True:
                 hand = copy.deepcopy(u.hand_pokes)
                 u.hand_pokes=[]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
             elif username != u.user_name:
+=======
+            if username != u.user_name:
+>>>>>>> 595506d29110f3cdc96ad985fafb243dee294019
                 hand = copy.deepcopy(u.hand_pokes)
                 u.hand_pokes=[0,0]
                 resp.append(u.to_dict())
@@ -289,7 +327,7 @@ class desk(object):
         self.action(self.pod_info.big_blind, 3, 2)
         # TODO:
         # self.last_info.user_id = winner
-    
+
     def score(self, seat_id):
 
         hand = self.user_info[seat_id - 1].hand_pokes
@@ -535,8 +573,8 @@ class desk(object):
 
 
     def determine_winner(self):
-        #seats contains all players
-        seats = [seat for seat in self.user_info if seat.user_name != '']
+        #seats contains all playing players
+        seats = [seat for seat in self.user_info if seat.folded == False]
         scores = []
 
         for seat in seats:
