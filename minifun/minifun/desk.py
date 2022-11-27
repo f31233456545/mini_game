@@ -291,7 +291,7 @@ class desk(object):
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
-        time.sleep(1)
+        time.sleep(5)
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
