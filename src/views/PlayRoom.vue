@@ -78,7 +78,7 @@ import GameBoard from '../components/GameBoard.vue'
 import store from "../store/index.js"
 import router from "../router/index.js"
 import { request } from "../utils/request.js"
-import { createActionPopup } from '../utils/popup.js'
+import { createActionPopup, createSimplePopup } from '../utils/popup.js'
 
 export default {
     name: 'PlayRoom',
@@ -162,7 +162,7 @@ export default {
                         case true:
                             self.$message.success('已坐下！')
                             self.$store.commit("sit")
-                            this.request_gameinfo()
+                            self.request_gameinfo()
                             break
                         case false:
                             console.log("sit err!")
@@ -182,7 +182,7 @@ export default {
                         case true:
                             self.$message.success('已站起！')
                             self.$store.commit("stand")
-                            this.request_gameinfo()
+                            self.request_gameinfo()
                             break
                         case false:
                             self.$message.error('发生错误！')
@@ -354,30 +354,51 @@ export default {
             let action = ""
             switch (action_type) {
                 case 0: // 弃牌
-                    title = user_id + " " + user_name
-                    action = "弃牌"
-                    break;
+                    title = "弃牌"
+                    action = ""
+                    createSimplePopup(
+                        title,
+                        action,
+                        (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                    )
+                    break
                 case 1: // 跟注
-                    title = user_id + " " + user_name
-                    action = "跟注到" + chip_cnt
+                    title = "跟注"
+                    action = chip_cnt
+                    createSimplePopup(
+                        title,
+                        action,
+                        (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                    )
                     break;
                 case 2: // 加注
-                    title = user_id + " " + user_name
-                    action = "加注到" + chip_cnt
+                    title = "加注"
+                    action = chip_cnt
+                    createSimplePopup(
+                        title,
+                        action,
+                        (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                    )
                     break;
                 case 3: // 新回合
-                    title = "<< " + self.term + " >>"
-                    action = ""
+                    title = "进入阶段"
+                    action = "<< " + self.term + " >>"
+                    createSimplePopup(
+                        title,
+                        action,
+                        -1
+                    )
                     break;
                 case 4: // 结束
                     title = "游戏结束！"
                     action = ""
+                    createSimplePopup(
+                        title,
+                        action,
+                        -1
+                    )
                     break;
             }
-            createActionPopup(
-                title,
-                action
-            )
         }
     },
     mounted() {
