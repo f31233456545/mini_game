@@ -14,6 +14,7 @@ class player(object):
         self.hand_pokes = [0, 0]
         self.flag = False
         self.rank = 0
+        self.side_pot = 0 # if he wins, how many will he win? 0 means all
 
     def to_dict(self):
         dict = {}
@@ -170,13 +171,11 @@ class desk(object):
         for u in self.user_info:
             if u.folded == True:
                 hand = copy.deepcopy(u.hand_pokes)
-                # u.hand_pokes=[0,0]  #stupid code....
                 u.hand_pokes=[]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
             elif username != u.user_name:
                 hand = copy.deepcopy(u.hand_pokes)
-                # u.hand_pokes=[0,0]  #stupid code....
                 u.hand_pokes=[0,0]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
@@ -200,13 +199,44 @@ class desk(object):
             ret = (ret+1)%MAX_PLAYER_NUM
         return ret
     
-    # a demo function. an arbitary player gets the pot.
     def assign_chips(self):
-        winner_index = self.pod_info.dealer
-        while self.user_info[winner_index].folded == True:
-            winner_index=self.get_next_player_index(winner_index)
-        self.user_info[winner_index].stack_cnt += self.pod_info.pod_chip_cnt
-        self.pod_info.pod_chip_cnt=0
+        r = 1
+        while r < MAX_PLAYER_NUM: 
+            winner = []
+            for u in self.user_info:
+                if u.rank == r:
+                    winner.append(u)
+            # give chips.
+            num = len(winner)
+            no_allin_winner = []
+            # firstly gives all allin-players money
+            for w in winner:
+                if w.side_pot > 0:
+                    w.stack_cnt += w.side_pot/num
+                    self.pod_info.pod_chip_cnt -= w.side_pot/num
+                else:
+                    no_allin_winner.append(w)
+
+            # then split money
+            pot = self.pod_info.pod_chip_cnt
+            num_no_allin = len(no_allin_winner)
+            for w in no_allin_winner:
+                w.stack_cnt += pot/num_no_allin
+                self.pod_info.pod_chip_cnt -= pot/num_no_allin
+               
+
+            # gives the rest money to someone
+            if self.pod_info.pod_chip_cnt > 0 :
+                winner_index = self.pod_info.small_blind
+                while self.user_info[winner_index].folded == True:
+                    winner_index=self.get_next_player_index(winner_index)
+                self.user_info[winner_index].stack_cnt += self.pod_info.pod_chip_cnt
+                self.pod_info.pod_chip_cnt=0
+            if num_no_allin > 0:
+                break
+            if self.pod_info.pod_chip_cnt == 0 :
+                break
+            r += 1
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
@@ -225,6 +255,8 @@ class desk(object):
                 self.user_info[i].hand_poke1 = 0
             else:
                 self.user_info[i].folded = False
+                self.user_info[i].flag = False
+                self.user_info[i].side_pot = 0
             i += 1
         print("players reset")    
         # check if the game ends
