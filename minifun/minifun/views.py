@@ -34,7 +34,7 @@ def login(request):
             if x[0].password == p:
                 # create a python dictionary
                 resp = {}
-                resp['message'] = "登陆成功"
+                resp['message'] = "登录成功"
                 resp['succeed'] = True
                 # convert dict to json
                 return HttpResponse(json.dumps(resp))
