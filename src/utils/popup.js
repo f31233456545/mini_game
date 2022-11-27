@@ -86,8 +86,7 @@ var seatPopupOffsets = {
     [8] : { top: -60, left: 60 },
 }
 
-export function createSimplePopup(title, message, seat) {
-    let props = { title: title, message: message, duration: 3000 }
+export function createSimplePopup(props, seat) {
     createPopupOffset(SimplePopup, seatPopupPositions[seat], seatPopupOffsets[seat], props)
 }
 

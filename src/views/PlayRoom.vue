@@ -352,53 +352,64 @@ export default {
             }
             let title = ""
             let action = ""
+            let popupSeat = -1
+            let popupProps = null
             switch (action_type) {
                 case 0: // 弃牌
-                    title = "弃牌"
-                    action = ""
-                    createSimplePopup(
-                        title,
-                        action,
-                        (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
-                    )
+                    popupProps = {
+                        title: '弃牌',
+                        titleColor: '#FF0000',
+                        message: '',
+                        duration: 3000
+                    }
+                    if (user) {
+                        popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                    }
                     break
                 case 1: // 跟注
-                    title = "跟注"
-                    action = chip_cnt
-                    createSimplePopup(
-                        title,
-                        action,
-                        (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
-                    )
+                    popupProps = {
+                        title: '跟注',
+                        titleColor: '#0000FF',
+                        message: chip_cnt,
+                        duration: 3000
+                    }
+                    if (user) {
+                        popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                    }
                     break;
                 case 2: // 加注
-                    title = "加注"
-                    action = chip_cnt
-                    createSimplePopup(
-                        title,
-                        action,
-                        (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
-                    )
+                    popupProps = {
+                        title: '加注',
+                        titleColor: '#00FF00',
+                        message: chip_cnt,
+                        duration: 3000
+                    }
+                    if (user) {
+                        popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                    }
                     break;
                 case 3: // 新回合
-                    title = "进入阶段"
-                    action = "<< " + self.term + " >>"
-                    createSimplePopup(
-                        title,
-                        action,
-                        -1
-                    )
+                    popupProps = {
+                        title: '进入阶段',
+                        titleColor: '#FFFFFF',
+                        message: '<< ' + self.term + ' >>',
+                        messageColor: '#FFCC00',
+                        duration: 3000
+                    }
                     break;
                 case 4: // 结束
-                    title = "游戏结束！"
-                    action = ""
-                    createSimplePopup(
-                        title,
-                        action,
-                        -1
-                    )
+                    popupProps = {
+                        title: '游戏结束',
+                        titleColor: '#FFFFFF',
+                        message: '',
+                        duration: 3000
+                    }
                     break;
             }
+            createSimplePopup(
+                popupProps,
+                popupSeat
+            )
         }
     },
     mounted() {
