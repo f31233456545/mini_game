@@ -141,6 +141,8 @@ class desk(object):
                 seat.folded = True
                 seat.last_action = 0
                 seat.hand_pokes = [0, 0]
+                if self.pod_info.playing == False:
+                    return True
                 # Judge if the game state will change because of this
                 cur_index = self.pod_info.curr_id-1
                 if seat.user_name == self.user_info[cur_index].user_name:
