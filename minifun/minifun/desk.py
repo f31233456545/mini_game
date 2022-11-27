@@ -198,21 +198,17 @@ class desk(object):
             if self.user_info[i].user_name == user_name:
                 return i + 1
             i += 1
-        return 1
+        return 0
     
     def get_player_info(self,username):
         resp = []
         for u in self.user_info:
-<<<<<<< HEAD
             if u.folded == True:
                 hand = copy.deepcopy(u.hand_pokes)
                 u.hand_pokes=[]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
             elif username != u.user_name:
-=======
-            if username != u.user_name:
->>>>>>> 595506d29110f3cdc96ad985fafb243dee294019
                 hand = copy.deepcopy(u.hand_pokes)
                 u.hand_pokes=[0,0]
                 resp.append(u.to_dict())
