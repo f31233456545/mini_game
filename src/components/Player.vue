@@ -16,10 +16,13 @@
                 <div class="action-info">
                     {{inAction?'行动中...':''}}
                 </div>
-                <div :class="'last-action '+lastAction[0]" v-if="lastActionDisplay">
+                <div class="waiting-info">
+                    {{waiting?'等待中...':''}}
+                </div>
+                <div :class="'last-action '+lastAction[0]" v-if="showActionTag">
                     {{lastAction[1]}}
                 </div>
-                <div class="put-chip" v-if="lastActionDisplay">
+                <div class="put-chip">
                     <img class="chip-icon2" src="../assets/icons/chip2.png"/>
                     <div class="chip-cnt">
                         {{playerInfo.chip_cnt}}
@@ -55,11 +58,6 @@ import SimplePopup from './SimplePopup.vue'
 
 export default{
     components:{Card, SimplePopup},
-    data(){
-        return{
-            lastActionDisplay: true, // 是否显示上个行动
-        }
-    },
     props:{
         pos: Number,
     },
@@ -82,17 +80,19 @@ export default{
             return this.gameInfo.user_infos[this.seatId-1]
         },
         playerCharacter(){
-            if(!this.gameInfo.pod_info.playing)
+            if(!this.gameInfo.pod_info.playing || this.playerInfo.folded)
                 return ["normal-player",""]
-            let bookmarkerId = this.gameInfo.pod_info.bookmarker_id;
-            if(this.playerInfo.seat_id==bookmarkerId){
-                return ["bookmarker","庄家"]
-            }
-            else if(this.playerInfo.seat_id==(bookmarkerId%8)+1){
+            let bookmarkerId = this.gameInfo.pod_info.bookmarker_id
+            let smallId = this.gameInfo.pod_info.small_id
+            let bigId = this.gameInfo.pod_info.big_id
+            if(this.playerInfo.seat_id==smallId){
                 return ["small-blind","小盲"]
             }
-            else if(this.playerInfo.seat_id==((bookmarkerId+1)%8)+1){
+            else if(this.playerInfo.seat_id==bigId){
                 return ["big-blind","大盲"]
+            }
+            if(this.playerInfo.seat_id==bookmarkerId){
+                return ["bookmarker","庄家"]
             }
             else{
                 return ["normal-player",""]
@@ -100,6 +100,17 @@ export default{
         },
         inAction(){
             return (this.playerInfo.seat_id == this.gameInfo.pod_info.curr_id) && (this.gameInfo.pod_info.playing)
+        },
+        waiting(){
+            if(this.playerInfo.hand_pokes.length == 0){
+                return true
+            }
+            else{
+                return false
+            }
+        },
+        showActionTag(){
+            return this.$store.state.showAction[this.seatId-1]
         },
         lastAction(){
             if(!this.gameInfo.pod_info.playing)
@@ -115,7 +126,8 @@ export default{
             default:
                 return ["no-action",""]
             }
-        }
+        },
+
     }
 }
 </script>
@@ -241,6 +253,16 @@ export default{
     left: 0px;
     font-size: 16px;
     color: yellow;
+    text-align: center;
+}
+.waiting-info{
+    position: absolute;
+    width: 100px;
+    height: 20px;
+    top: 50px;
+    left: 0px;
+    font-size: 16px;
+    color: rgb(180,180,180);
     text-align: center;
 }
 

@@ -81,14 +81,20 @@ export default {
 0%{
     transform: translate(200px,0px);
 }
-20%{
+10%{
     transform: translate(0px,0px);
 }
-80%{
+90%{
     transform: translate(0px,0px);
+    opacity: 100%;
+}
+95%{
+    transform: translate(0px,0px);
+    opacity: 50%;
 }
 100%{
     transform: translate(200px,0px);
+    opacity: 0%;
 }
 }
 .actionpopup-head {
@@ -99,7 +105,7 @@ export default {
     width: 200px;
     height: 40px;
     animation: slide-in 1s;
-    -webkit-animation: slide-in 1s;
+    -webkit-animation: slide-in 3s;
 }
 .prefix {
     position: absolute;

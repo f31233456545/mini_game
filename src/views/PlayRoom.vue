@@ -45,6 +45,7 @@
 
         <Player v-for="i in [1, 2, 3, 4, 5, 6, 7, 8]" :pos="i" />
 
+
         <div class="play-room-footer">
             <div v-if="!playing && isHost && seated" class="waiting">
                 <el-button type="danger" @click="start">开始游戏</el-button>
@@ -61,7 +62,7 @@
         </div>
 
         <!-- 调试用 -->
-        <div class="debug">
+        <div class="debug" v-if="debug">
             <el-button type="primary" @click="debug1">debug: close timer</el-button>
             <el-button type="primary" @click="debug2">debug: get game info</el-button>
         </div>
@@ -78,7 +79,7 @@ import GameBoard from '../components/GameBoard.vue'
 import store from "../store/index.js"
 import router from "../router/index.js"
 import { request } from "../utils/request.js"
-import { createActionPopup, createSimplePopup } from '../utils/popup.js'
+import { createSimplePopup } from '../utils/popup.js'
 
 export default {
     name: 'PlayRoom',
@@ -92,6 +93,7 @@ export default {
             spectate: spectate,
             num: 0,
             timeInter: null, // 定时器，mount时设定
+            debug: false,
         };
     },
     computed: {
@@ -350,8 +352,6 @@ export default {
                 user_name = user.user_name
                 chip_cnt = user.chip_cnt
             }
-            let title = ""
-            let action = ""
             let popupSeat = -1
             let popupProps = null
             switch (action_type) {
@@ -364,6 +364,7 @@ export default {
                     }
                     if (user) {
                         popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        store.commit('changeShowAction', user_id)
                     }
                     break
                 case 1: // 跟注
@@ -375,6 +376,7 @@ export default {
                     }
                     if (user) {
                         popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        store.commit('changeShowAction', user_id)
                     }
                     break;
                 case 2: // 加注
@@ -386,6 +388,7 @@ export default {
                     }
                     if (user) {
                         popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        store.commit('changeShowAction', user_id)
                     }
                     break;
                 case 3: // 新回合
@@ -396,6 +399,7 @@ export default {
                         messageColor: '#FFCC00',
                         duration: 3000
                     }
+                    store.commit('changeShowAction', -1)
                     break;
                 case 4: // 结束
                     popupProps = {
@@ -404,6 +408,7 @@ export default {
                         message: '',
                         duration: 3000
                     }
+                    store.commit('changeShowAction', -1)
                     break;
             }
             createSimplePopup(
