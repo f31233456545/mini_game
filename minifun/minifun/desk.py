@@ -315,6 +315,7 @@ class desk(object):
         if self.get_player_num() < 2:
             print("too less players. game ends")
             self.end_game()
+            return
         # Switch BB. 
         bb = self.get_next_player_index(self.pod_info.big_blind)
         self.pod_info.big_blind=bb       
