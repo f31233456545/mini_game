@@ -164,7 +164,7 @@ export default {
                         case true:
                             self.$message.success('已坐下！')
                             self.$store.commit("sit")
-                            self.request_gameinfo()
+                            // self.request_gameinfo()
                             break
                         case false:
                             console.log("sit err!")
@@ -184,7 +184,7 @@ export default {
                         case true:
                             self.$message.success('已站起！')
                             self.$store.commit("stand")
-                            self.request_gameinfo()
+                            // self.request_gameinfo()
                             break
                         case false:
                             self.$message.error('发生错误！')
@@ -198,6 +198,10 @@ export default {
         },
         exit_room(exit_data) {
             const self = this;
+            if (self.seated) {
+                self.$message.error('请先站起！')
+                return
+            }
             request("exit_room", exit_data)
                 .then(function (res) {
                     switch (res.succeed) {
@@ -208,12 +212,6 @@ export default {
                             self.$message.success('已退出房间！')
                             break
                         case false:
-                            if (self.seated) {
-                                self.$message.error('请先站起！')
-                            }
-                            else {
-                                self.$message.error('发生错误！')
-                            }
                             console.log(res.message)
                             break
                     }
@@ -252,7 +250,7 @@ export default {
             var fold_data = {
                 user_name: self.userName,
                 action_type: 0,
-                raise_num: 0,
+                raise_num: self.lastAction.raise_num,
                 room_id: self.roomId,
             }
             request("action", fold_data)
@@ -358,45 +356,64 @@ export default {
                 case 0: // 弃牌
                     popupProps = {
                         title: '弃牌',
-                        titleColor: '#FF0000',
+                        titleColor: '#FFFFFF',
                         message: '',
+                        messageColor: '#FFFFFF',
+                        backgroundColor: '#F56C6C',
                         duration: 3000
                     }
                     if (user) {
-                        popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        if (self.seated) {
+                            popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        } else {
+                            popupSeat = user.seat_id
+                        }
                         store.commit('changeShowAction', user_id)
                     }
                     break
                 case 1: // 跟注
                     popupProps = {
-                        title: '跟注',
-                        titleColor: '#0000FF',
+                        title: '跟注 ',
+                        titleColor: '#FFFFFF',
                         message: chip_cnt,
+                        messageColor: '#FFFFFF',
+                        backgroundColor: '#409EFF',
                         duration: 3000
                     }
                     if (user) {
-                        popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        if (self.seated) {
+                            popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        } else {
+                            popupSeat = user.seat_id
+                        }
                         store.commit('changeShowAction', user_id)
                     }
                     break;
                 case 2: // 加注
                     popupProps = {
-                        title: '加注',
-                        titleColor: '#00FF00',
+                        title: '加注 ',
+                        titleColor: '#FFFFFF',
                         message: chip_cnt,
+                        messageColor: '#FFFFFF',
+                        backgroundColor: '#67C23A',
                         duration: 3000
                     }
                     if (user) {
-                        popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        if (self.seated) {
+                            popupSeat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        } else {
+                            popupSeat = user.seat_id
+                        }
                         store.commit('changeShowAction', user_id)
                     }
                     break;
                 case 3: // 新回合
                     popupProps = {
-                        title: '进入阶段',
+                        title: '进入阶段 ',
                         titleColor: '#FFFFFF',
                         message: '<< ' + self.term + ' >>',
                         messageColor: '#FFCC00',
+                        backgroundColor: '#00000088',
                         duration: 3000
                     }
                     store.commit('changeShowAction', -1)
@@ -406,6 +423,7 @@ export default {
                         title: '游戏结束',
                         titleColor: '#FFFFFF',
                         message: '',
+                        backgroundColor: '#00000088',
                         duration: 3000
                     }
                     store.commit('changeShowAction', -1)
@@ -420,6 +438,9 @@ export default {
     mounted() {
         //this.$store.commit('enterRoom')
         document.body.style.overflow = "hidden"
+
+        this.$store.commit('stand')
+
         this.request_gameinfo()
 
         this.timeInter = setInterval(() => {

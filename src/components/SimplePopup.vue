@@ -1,15 +1,15 @@
 <template>
     <div
-        class="simplepopup-head"
+        :style="{ backgroundColor: backgroundColor, borderRadius: '4px', padding: '3px'}"
         @mouseover="mouseoverHandler"
         @mouseout="mouseoutHandler"
         @click="clickHandler">
-        <span :style="{ color: titleColor }">
-            {{ title }}:
-        </span>
-        <span :style="{ color: messageColor }">
-            {{ message }}
-        </span>
+            <span :style="{ color: titleColor }">
+            {{ title }}
+            </span>
+            <span :style="{ color: messageColor }">
+                {{ message }}
+            </span>
     </div>
 </template>
 
@@ -34,6 +34,10 @@ export default {
             default: 'something'
         },
         messageColor: {
+            type: String,
+            default: '#FFFFFF'
+        },
+        backgroundColor: {
             type: String,
             default: '#FFFFFF'
         },
@@ -75,9 +79,5 @@ export default {
 </script>
 
 <style>
-.simplepopup-head {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-    padding: 3px;
-}
+
 </style>
