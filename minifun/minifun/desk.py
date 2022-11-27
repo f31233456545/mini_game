@@ -1,5 +1,6 @@
 import random
 import copy
+import time
 
 MAX_PLAYER_NUM=8
 
@@ -65,16 +66,32 @@ class desk(object):
         elif self.pod_info.term == 1:
             self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], 0]
         elif self.pod_info.term == 2:
-            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], self.pod_info.inplay[4]]
+            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], self.pod_info.inplay[4]]        
         
         for seat in self.user_info:
             self.pod_info.pod_chip_cnt += seat.chip_cnt
+
+        for seat in self.user_info:
+            if seat.stack_cnt == 0: # allin
+                seat.side_pot = self.pod_info.pod_chip_cnt
+                for u in self.user_info:
+                    if u.chip_cnt > seat.chip_cnt:
+                        seat.side_pot -= (u.chip_cnt - seat.chip_cnt)
+
+        for seat in self.user_info:        
             seat.chip_cnt = 0
             seat.flag = False
+
         self.pod_info.term += 1
         if self.pod_info.term == 4:
-            # self.compare()
+            self.determine_winner()
             self.assign_chips()
+            winner_id = 0
+            for u in self.user_info:
+                if u.rank == 1:
+                    winner_id = u.seat_id
+                    break
+            self.action(winner_id, 4, 0)
             self.prepare_new_game()
             self.pod_info.term = 0
 
@@ -274,6 +291,7 @@ class desk(object):
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
+        time.sleep(1)
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
