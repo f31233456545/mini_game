@@ -286,7 +286,7 @@ class desk(object):
 
     def score(self, seat_id):
 
-        hand = self.user_info[seat_id - 1].hand_pokes
+        hand = self.user_info[seat_id - 1].hand_pokes.deepcopy()
         hand += self.pod_info.pokes
         score = 0
         kicker = []
