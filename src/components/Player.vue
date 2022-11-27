@@ -99,7 +99,7 @@ export default{
             }
         },
         inAction(){
-            return this.playerInfo.seat_id == this.gameInfo.pod_info.curr_id
+            return (this.playerInfo.seat_id == this.gameInfo.pod_info.curr_id) && (this.gameInfo.pod_info.playing)
         },
         waiting(){
             if(this.playerInfo.hand_pokes.length == 0){
