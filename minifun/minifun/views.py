@@ -483,7 +483,6 @@ def action(request):
 
     # Raise
     elif action_type == 2:
-        
         if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
