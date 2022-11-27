@@ -1,5 +1,6 @@
 import random
 import copy
+import time
 
 MAX_PLAYER_NUM=8
 
@@ -14,6 +15,7 @@ class player(object):
         self.hand_pokes = [0, 0]
         self.flag = False
         self.rank = 0
+        self.side_pot = 0 # if he wins, how many will he win? 0 means all
 
     def to_dict(self):
         dict = {}
@@ -64,16 +66,32 @@ class desk(object):
         elif self.pod_info.term == 1:
             self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], 0]
         elif self.pod_info.term == 2:
-            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], self.pod_info.inplay[4]]
+            self.pod_info.pokes = [self.pod_info.inplay[0], self.pod_info.inplay[1], self.pod_info.inplay[2], self.pod_info.inplay[3], self.pod_info.inplay[4]]        
         
         for seat in self.user_info:
             self.pod_info.pod_chip_cnt += seat.chip_cnt
+
+        for seat in self.user_info:
+            if seat.stack_cnt == 0: # allin
+                seat.side_pot = self.pod_info.pod_chip_cnt
+                for u in self.user_info:
+                    if u.chip_cnt > seat.chip_cnt:
+                        seat.side_pot -= (u.chip_cnt - seat.chip_cnt)
+
+        for seat in self.user_info:        
             seat.chip_cnt = 0
             seat.flag = False
+
         self.pod_info.term += 1
         if self.pod_info.term == 4:
-            # self.compare()
+            self.determine_winner()
             self.assign_chips()
+            winner_id = 0
+            for u in self.user_info:
+                if u.rank == 1:
+                    winner_id = u.seat_id
+                    break
+            self.action(winner_id, 4, 0)
             self.prepare_new_game()
             self.pod_info.term = 0
 
@@ -141,6 +159,8 @@ class desk(object):
                 seat.folded = True
                 seat.last_action = 0
                 seat.hand_pokes = [0, 0]
+                if self.pod_info.playing == False:
+                    return True
                 # Judge if the game state will change because of this
                 cur_index = self.pod_info.curr_id-1
                 if seat.user_name == self.user_info[cur_index].user_name:
@@ -195,14 +215,18 @@ class desk(object):
             if self.user_info[i].user_name == user_name:
                 return i + 1
             i += 1
-        return 1
+        return 0
     
     def get_player_info(self,username):
         resp = []
         for u in self.user_info:
-            if username != u.user_name:
+            if u.folded == True:
                 hand = copy.deepcopy(u.hand_pokes)
-                # u.hand_pokes=[0,0]  #stupid code....
+                u.hand_pokes=[]
+                resp.append(u.to_dict())
+                u.hand_pokes=copy.deepcopy(hand)
+            elif username != u.user_name:
+                hand = copy.deepcopy(u.hand_pokes)
                 u.hand_pokes=[0,0]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
@@ -226,16 +250,48 @@ class desk(object):
             ret = (ret+1)%MAX_PLAYER_NUM
         return ret
     
-    # a demo function. an arbitary player gets the pot.
     def assign_chips(self):
-        winner_index = self.pod_info.dealer
-        while self.user_info[winner_index].folded == True:
-            winner_index=self.get_next_player_index(winner_index)
-        self.user_info[winner_index].stack_cnt += self.pod_info.pod_chip_cnt
-        self.pod_info.pod_chip_cnt=0
+        r = 1
+        while r < MAX_PLAYER_NUM: 
+            winner = []
+            for u in self.user_info:
+                if u.rank == r:
+                    winner.append(u)
+            # give chips.
+            num = len(winner)
+            no_allin_winner = []
+            # firstly gives all allin-players money
+            for w in winner:
+                if w.side_pot > 0:
+                    w.stack_cnt += w.side_pot/num
+                    self.pod_info.pod_chip_cnt -= w.side_pot/num
+                else:
+                    no_allin_winner.append(w)
+
+            # then split money
+            pot = self.pod_info.pod_chip_cnt
+            num_no_allin = len(no_allin_winner)
+            for w in no_allin_winner:
+                w.stack_cnt += pot/num_no_allin
+                self.pod_info.pod_chip_cnt -= pot/num_no_allin
+               
+
+            # gives the rest money to someone
+            if self.pod_info.pod_chip_cnt > 0 :
+                winner_index = self.pod_info.small_blind
+                while self.user_info[winner_index].folded == True:
+                    winner_index=self.get_next_player_index(winner_index)
+                self.user_info[winner_index].stack_cnt += self.pod_info.pod_chip_cnt
+                self.pod_info.pod_chip_cnt=0
+            if num_no_allin > 0:
+                break
+            if self.pod_info.pod_chip_cnt == 0 :
+                break
+            r += 1
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
+        time.sleep(5)
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
@@ -247,16 +303,20 @@ class desk(object):
                 self.user_info[i].chip_cnt = 0
                 self.user_info[i].folded = True
                 self.user_info[i].last_action = 0
-                self.user_info[i].hand_poke0 = 0
-                self.user_info[i].hand_poke1 = 0
+                self.user_info[i].hand_pokes = [0,0]
+                self.user_info[i].last_action = -1
             else:
                 self.user_info[i].folded = False
+                self.user_info[i].flag = False
+                self.user_info[i].last_action = -1
+                self.user_info[i].side_pot = 0
             i += 1
         print("players reset")    
         # check if the game ends
         if self.get_player_num() < 2:
             print("too less players. game ends")
             self.end_game()
+            return
         # Switch BB. 
         bb = self.get_next_player_index(self.pod_info.big_blind)
         self.pod_info.big_blind=bb       
