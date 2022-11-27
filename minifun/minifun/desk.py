@@ -303,11 +303,12 @@ class desk(object):
                 self.user_info[i].chip_cnt = 0
                 self.user_info[i].folded = True
                 self.user_info[i].last_action = 0
-                self.user_info[i].hand_poke0 = 0
-                self.user_info[i].hand_poke1 = 0
+                self.user_info[i].hand_pokes = [0,0]
+                self.user_info[i].last_action = -1
             else:
                 self.user_info[i].folded = False
                 self.user_info[i].flag = False
+                self.user_info[i].last_action = -1
                 self.user_info[i].side_pot = 0
             i += 1
         print("players reset")    
