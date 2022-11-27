@@ -311,7 +311,7 @@ export default {
                 room_id: self.$store.state.inRoomId,
                 user_name: self.$store.state.userName,
             };
-            request("request_game_info", request_data)
+            request("request_game_info", request_data, false)
                 .then(data => {
                     self.$store.commit('updataGameinfo', data)
                     console.log(data)
@@ -473,7 +473,7 @@ export default {
     height: 100%;
     overflow: hidden;
     width: 100%;
-    position: absolute;
+    position: fixed;
 }
 
 .play-room-header {
