@@ -1,6 +1,7 @@
 import random
 import copy
 import time
+import math
 
 MAX_PLAYER_NUM=8
 
@@ -225,6 +226,8 @@ class desk(object):
                 u.hand_pokes=[]
                 resp.append(u.to_dict())
                 u.hand_pokes=copy.deepcopy(hand)
+            elif self.last_info.action_type == 4: #game ends, show hands
+                resp.append(u.to_dict())
             elif username != u.user_name:
                 hand = copy.deepcopy(u.hand_pokes)
                 u.hand_pokes=[0,0]
@@ -263,8 +266,8 @@ class desk(object):
             # firstly gives all allin-players money
             for w in winner:
                 if w.side_pot > 0:
-                    w.stack_cnt += w.side_pot/num
-                    self.pod_info.pod_chip_cnt -= w.side_pot/num
+                    w.stack_cnt += math.floor(w.side_pot/num)
+                    self.pod_info.pod_chip_cnt -= math.floor(w.side_pot/num)
                 else:
                     no_allin_winner.append(w)
 
@@ -272,8 +275,8 @@ class desk(object):
             pot = self.pod_info.pod_chip_cnt
             num_no_allin = len(no_allin_winner)
             for w in no_allin_winner:
-                w.stack_cnt += pot/num_no_allin
-                self.pod_info.pod_chip_cnt -= pot/num_no_allin
+                w.stack_cnt += math.floor(pot/num_no_allin)
+                self.pod_info.pod_chip_cnt -= math.floor(pot/num_no_allin)
                
 
             # gives the rest money to someone
