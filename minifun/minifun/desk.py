@@ -118,7 +118,7 @@ class desk(object):
     class last_actionClass(object):
         def __init__(self) -> None:
             self.user_id = 0
-            self.action_type = 0
+            self.action_type = -1
             self.raise_num = 0
     
     def get_player_num(self):
@@ -253,6 +253,18 @@ class desk(object):
         return ret
     
     def assign_chips(self):
+        # check if only one player remain
+        remain_num = 0
+        remain_player = self.user_info[0]
+        for u in self.user_info:
+            if u.folded == False:
+                remain_num+=1
+                remain_player = u
+        if remain_num == 1:
+            remain_player.stack_cnt += self.pod_info.pod_chip_cnt
+            self.pod_info.pod_chip_cnt = 0
+            return 
+
         r = 1
         while r < MAX_PLAYER_NUM: 
             winner = []
