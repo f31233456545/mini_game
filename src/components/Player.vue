@@ -1,6 +1,7 @@
 <template>
     <div :class="'player p'+pos" v-if="playerInfo.user_name!=''">
         <div class="player-container">
+            <div class="your-pos-tip" v-if="seated && pos==1">YOU<br/><span class="pointer">▼</span></div>
             <div :class="inAction?'user-wrapper in-action':'user-wrapper'">
                 <div class="user-name">{{playerInfo.user_name}}</div>
                 <img class="user-icon" src="../assets/icons/user-regular.svg" />
@@ -350,5 +351,30 @@ export default{
     top: 2px;
     color: white;
     text-align: center;
+}
+
+@keyframes tip-animation{
+0%{
+
+}
+100%{
+    transform: translate(0px,-3px);
+}
+}
+.your-pos-tip{
+    position: absolute;
+    left: 0px;
+    top: -30px;
+    width: 100px;
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    animation: tip-animation 0.7s linear infinite alternate;
+    -webkit-animation: tip-animation 0.7s linear infinite alternate;
+}
+.pointer{
+    position: relative;
+    top: -2px;
+    font-size: 10px;
 }
 </style>

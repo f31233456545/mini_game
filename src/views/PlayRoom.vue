@@ -21,7 +21,9 @@
                 </div>
 
             </div>
+
             <div class="button-group1">
+                <div class="sit-tip" v-if="!seated">点击这里坐下 ▷</div>
                 <el-button v-if="!seated" type="success" @click="sit({
                     room_id: this.$store.state.inRoomId,
                     user_name: this.$store.state.userName,
@@ -583,6 +585,24 @@ export default {
     float: right;
     margin-top: 5px;
     margin-right: 20px;
+}
+
+@keyframes tip-animation {
+0%{
+
+}
+100%{
+    transform: translate(-10px,0px);
+}
+}
+
+.sit-tip {
+    color: yellow;
+    font-size: 18px;
+    margin-right: 20px;
+    margin-top: 3px;
+    animation: tip-animation 0.7s linear infinite alternate;
+    -webkit-animation: tip-animation 0.7s linear infinite alternate;
 }
 
 .button-group2 {}
