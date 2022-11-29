@@ -291,7 +291,7 @@ class desk(object):
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
-        time.sleep(1)
+        time.sleep(5)
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
@@ -303,11 +303,12 @@ class desk(object):
                 self.user_info[i].chip_cnt = 0
                 self.user_info[i].folded = True
                 self.user_info[i].last_action = 0
-                self.user_info[i].hand_poke0 = 0
-                self.user_info[i].hand_poke1 = 0
+                self.user_info[i].hand_pokes = [0,0]
+                self.user_info[i].last_action = -1
             else:
                 self.user_info[i].folded = False
                 self.user_info[i].flag = False
+                self.user_info[i].last_action = -1
                 self.user_info[i].side_pot = 0
             i += 1
         print("players reset")    
@@ -345,8 +346,9 @@ class desk(object):
 
     def score(self, seat_id):
 
-        hand = self.user_info[seat_id - 1].hand_pokes
-        hand += self.pod_info.pokes
+        hand = copy.deepcopy(self.user_info[seat_id - 1].hand_pokes)
+        pokes = copy.deepcopy(self.pod_info.pokes)
+        hand += pokes
         score = 0
         kicker = []
 
