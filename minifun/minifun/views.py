@@ -503,7 +503,6 @@ def action(request):
     if pnum == 1:
         # TODO: win
         d.pod_info.term = 3
-        d.action(-1, 4, 0)
         d.round_end()
         resp['succeed'] = True
         resp['message'] = ""

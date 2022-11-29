@@ -172,7 +172,6 @@ class desk(object):
                     if pnum == 1:
                         # win
                         self.pod_info.term = 3
-                        self.action(-1, 4, 0)
                         self.round_end()
                     else:
                         chip = -1
