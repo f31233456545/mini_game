@@ -85,14 +85,27 @@ class desk(object):
 
         self.pod_info.term += 1
         if self.pod_info.term == 4:
-            self.determine_winner()
-            self.assign_chips()
-            winner_id = 0
+            # check if only one player remain
+            remain_num = 0
+            remain_player = self.user_info[0]
             for u in self.user_info:
-                if u.rank == 1:
-                    winner_id = u.seat_id
-                    break
-            self.action(winner_id, 4, 0)
+                if u.folded == False:
+                    remain_num+=1
+                    remain_player = u
+            
+            if remain_num == 1:
+                remain_player.stack_cnt += self.pod_info.pod_chip_cnt
+                self.pod_info.pod_chip_cnt = 0
+                self.action(remain_player.seat_id, 4, 0)
+            else:
+                self.determine_winner()
+                self.assign_chips()
+                winner_id = 0
+                for u in self.user_info:
+                    if u.rank == 1:
+                        winner_id = u.seat_id
+                        break
+                self.action(winner_id, 4, 0)
             self.prepare_new_game()
             self.pod_info.term = 0
 
@@ -253,18 +266,6 @@ class desk(object):
         return ret
     
     def assign_chips(self):
-        # check if only one player remain
-        remain_num = 0
-        remain_player = self.user_info[0]
-        for u in self.user_info:
-            if u.folded == False:
-                remain_num+=1
-                remain_player = u
-        if remain_num == 1:
-            remain_player.stack_cnt += self.pod_info.pod_chip_cnt
-            self.pod_info.pod_chip_cnt = 0
-            return 
-
         r = 1
         while r < MAX_PLAYER_NUM: 
             winner = []
