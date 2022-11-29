@@ -78,17 +78,17 @@
 
     "pod_info": {
         "playing": false,
-        "your_id": 4,
-        "curr_id": 7,
-        "bookmarker_id": 4,
-        "term": 1,
-        "pod_chip_cnt": 100,
-        "pokes": [33,20,5,0,0]
+        "your_id": 0,
+        "curr_id": 0,
+        "bookmarker_id": 0,
+        "term": -1,
+        "pod_chip_cnt": 0,
+        "pokes": []
     },
 
     "last_action": {
         "user_id": 0,
-        "action_type": 0,
-        "raise_num": 15
+        "action_type": -1,
+        "raise_num": 0
     }
 }

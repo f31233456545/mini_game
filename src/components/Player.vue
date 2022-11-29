@@ -8,14 +8,15 @@
                 <div class="user-chip">
                     <img class="chip-icon" src="../assets/icons/chip.png"/>
                     <div class="stack-cnt">
-                        {{playerInfo.stack_cnt}}
+                        {{stackCnt}}
+                        <span class="stack-inc" v-if="stackInc > 0">(+{{stackInc}})</span>
                     </div>
                 </div>
                 <div :class="'tag '+playerCharacter[0]">
                     {{playerCharacter[1]}}
                 </div>
                 <div class="action-info">
-                    {{inAction?'行动中...':''}}
+                    {{(inAction && !waiting)?'行动中...':''}}
                 </div>
                 <div class="waiting-info">
                     {{waiting?'等待中...':''}}
@@ -59,6 +60,11 @@ import SimplePopup from './SimplePopup.vue'
 
 export default{
     components:{Card, SimplePopup},
+    data(){
+        return {
+            stackInc: -1,
+        }
+    },
     props:{
         pos: Number,
     },
@@ -79,6 +85,9 @@ export default{
         },
         playerInfo(){
             return this.gameInfo.user_infos[this.seatId-1]
+        },
+        stackCnt(){
+            return this.playerInfo.stack_cnt
         },
         playerCharacter(){
             if(!this.gameInfo.pod_info.playing || this.playerInfo.folded)
@@ -128,7 +137,32 @@ export default{
                 return ["no-action",""]
             }
         },
-
+    },
+    watch:{
+        playerInfo(newPlayerInfo, oldPlayerInfo){
+            let self = this
+            if(newPlayerInfo.user_name != oldPlayerInfo.user_name){
+                return
+            }
+            let newStackCnt = newPlayerInfo.stack_cnt
+            let oldStackCnt = oldPlayerInfo.stack_cnt
+            if(oldStackCnt == -1){
+                return
+            }
+            var inc = newStackCnt - oldStackCnt
+            if(inc>0){
+                new Promise(function (resolve, reject) {
+                    self.stackInc = inc
+                    resolve()
+                }).then(function () {
+                    setTimeout(function () {
+                        console.log("reset")
+                        self.stackInc = -1
+                        resolve()
+                    }, 5000)
+                })
+            }
+        }
     }
 }
 </script>

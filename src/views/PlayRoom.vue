@@ -436,7 +436,7 @@ export default {
                     popupProps = {
                         title: '游戏结束 ',
                         titleColor: '#FFFFFF',
-                        message: self.userInfos[user_id - 1].user_name + ' 获胜，筹码 +' + self.oldPodChipCount,
+                        message: self.userInfos[user_id - 1].user_name + ' 获胜',
                         messageColor: '#FFCC00',
                         backgroundColor: '#00000088',
                         duration: 5000
