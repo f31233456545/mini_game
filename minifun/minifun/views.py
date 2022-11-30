@@ -34,14 +34,14 @@ def login(request):
             if x[0].password == p:
                 # create a python dictionary
                 resp = {}
-                resp['message'] = "登陆成功"
+                resp['message'] = "login succeeded"
                 resp['succeed'] = True
                 # convert dict to json
                 return HttpResponse(json.dumps(resp))
                 return HttpResponse("登录成功")
             else:
                 resp = {}
-                resp['message'] = "密码错误"
+                resp['message'] = "password error"
                 resp['succeed'] = False
                 # convert dict to json
                 return HttpResponse(json.dumps(resp))
@@ -49,7 +49,7 @@ def login(request):
         else:
             # create a python dictionary
             resp = {}
-            resp['message'] = "用户名不存在"
+            resp['message'] = "username does not exist"
             resp['succeed'] = False
             # convert dict to json
             return HttpResponse(json.dumps(resp))
@@ -74,7 +74,7 @@ def register(request):
             # 存在
 
             resp = {}
-            resp['message'] = "用户名已存在"
+            resp['message'] = "username already exists"
             resp['succeed'] = False
             # convert dict to json
             return HttpResponse(json.dumps(resp))
@@ -89,7 +89,7 @@ def register(request):
             # 将数据写入数据库
             user.save()
             resp = {}
-            resp['message'] = "注册成功"
+            resp['message'] = "register succeeded"
             resp['succeed'] = True
             # convert dict to json
             return HttpResponse(json.dumps(resp))
