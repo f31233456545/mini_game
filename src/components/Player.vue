@@ -265,6 +265,8 @@ export default{
 .user-chip{
     height: 19px;
     background: rgba(80,200,50,1);
+    display: flex;
+    flex-wrap: nowrap;
 }
 .chip-icon{
     width: 20px;
@@ -278,6 +280,9 @@ export default{
     display: flex;
     float: left;
     color: white;
+}
+.stack-inc{
+    font-size: 10px;
 }
 
 .action-info{

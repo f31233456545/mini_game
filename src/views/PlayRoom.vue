@@ -444,6 +444,8 @@ export default {
                     self.oldPodChipCount = 0
                     store.commit('changeShowAction', -1)
                     break;
+                default:
+                    return
             }
             createSimplePopup(
                 popupProps,
