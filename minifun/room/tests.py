@@ -62,6 +62,7 @@ class APITestCase(TestCase):
 
     def api_create_room(self):
         print("API create_room:")
+
         print("    正常创建")
         response = self.client.get('/create_room/', QUERY_STRING="creator_name=lyc&room_name=test_room&game_kind=0&private=0")
         response_text = response.content.decode("utf-8")

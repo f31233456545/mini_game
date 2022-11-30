@@ -147,7 +147,7 @@ def create_room(request):
     resp['message'] = "success"
     # debug
     # print(Room.objects.all())
-    print(desks)
+    # print(desks)
     return HttpResponse(json.dumps(resp))
 
 def join_room(request):
@@ -200,8 +200,8 @@ def join_room(request):
     resp['succeed'] = True
     resp['message'] = "Welcome to room " + my_room_id
     # debug
-    for r in Room.objects.all():
-        print(r)
+    # for r in Room.objects.all():
+    #    print(r)
     return HttpResponse(json.dumps(resp))
 
 
@@ -237,10 +237,10 @@ def exit_room(request):
     if pusrs:
         if desks[r.room_id].stand(my_room_id, my_username):
             r.player_num -= 1
-            r.viewer_num += 1
             r.player_list.remove(pusrs[0])
-            r.viewer_list.add(pusrs[0])
             r.save()
+            if r.viewer_num+r.player_num == 0:
+                r.delete()
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
@@ -258,8 +258,8 @@ def exit_room(request):
     resp['succeed'] = True
     resp['message'] = "Goodbye from room " + my_room_id
     # debug
-    for r in Room.objects.all():
-        print(r)
+    # for r in Room.objects.all():
+        # print(r)
     return HttpResponse(json.dumps(resp))
 
 
@@ -357,12 +357,18 @@ def request_room_list(request):
 
     rooms = []
     for r in Room.objects.filter(game_kind=my_game_kind, private=False):
+        d = desks[r.room_id]
+        if d.pod_info.playing == True:
+            r.status = 1
+        else:
+            r.status = 0
+        r.save()
         room = {'room_id': r.room_id, 'game_kind': r.game_kind, 'room_name': r.room_name,
                 'player_num': r.player_num, 'viewer_num': r.viewer_num, 'max_num': r.max_num, 'status': r.status}
         rooms.append(room)
     resp['rooms'] = rooms
-    for r in Room.objects.filter(game_kind=my_game_kind):
-        print(r)
+    # for r in Room.objects.filter(game_kind=my_game_kind):
+    #    print(r)
 
     return HttpResponse(json.dumps(resp))
 
@@ -378,7 +384,7 @@ def request_game_info(request):
         return HttpResponse(json.dumps(resp))
     resp["room_name"] = r.room_name
     resp["view_cnt"] = r.viewer_num
-    print(desks)
+    # print(desks)
     desk = desks[r.room_id]
     your_id=desk.get_user_seat_id(my_user_name)
     pod = {}
@@ -389,6 +395,8 @@ def request_game_info(request):
     pod["term"]=desk.pod_info.term
     pod["pod_chip_cnt"]=desk.pod_info.pod_chip_cnt
     pod["pokes"]=desk.pod_info.pokes
+    pod["big_id"]=desk.pod_info.big_blind+1
+    pod["small_id"]=desk.pod_info.small_blind+1
     resp["pod_info"]=pod
     resp["user_infos"]=desk.get_player_info(my_user_name)
     last_act={}
@@ -402,7 +410,7 @@ def request_game_info(request):
 def start_game(request):
     rid=int(request.GET.get("room_id"))
     r = models.Room.objects.filter(room_id=rid)
-    print(desks)
+    # print(desks)
     if r[0]:
         if r[0].room_id == rid:
             if r[0].player_num<2:
@@ -468,6 +476,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
+            d.user_info[user_id].flag = True
             # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
@@ -479,11 +488,13 @@ def action(request):
             resp['message'] = "Insufficient chip."
             return HttpResponse(json.dumps(resp))
         else:
+            d.user_info[user_id].flag = True
             # d.pod_info.pod_chip_cnt += (raise_num-d.user_info[user_id].chip_cnt)
             d.user_info[user_id].stack_cnt -= (raise_num - d.user_info[user_id].chip_cnt)
             d.user_info[user_id].chip_cnt = raise_num
 
     d.action(seat_id, action_type, raise_num)
+    d.user_info[user_id].last_action = action_type
 
     pnum = 0
     for u in d.user_info:
@@ -493,7 +504,6 @@ def action(request):
         # TODO: win
         d.pod_info.term = 3
         d.round_end()
-        d.action(-1, 5, 0)
         resp['succeed'] = True
         resp['message'] = ""
         return HttpResponse(json.dumps(resp))
@@ -501,15 +511,18 @@ def action(request):
     chip = -1
     flag = True
     for u in d.user_info:
+        if u.flag == False and u.folded == False:
+            flag = False
+            break
         if u.folded == False:
             if chip == -1:
                 chip = u.chip_cnt
             if chip != u.chip_cnt:
                 flag = False
                 break
-    if (chip != -1) and (flag == True):
+    if flag == True:
+        d.action(-1, 3, 0)
         d.round_end()
-        d.action(-1, 4, 0)
         # TODO: A new term
     # Move onto the next player 
     cur_index = d.pod_info.curr_id-1
