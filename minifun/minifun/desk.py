@@ -84,7 +84,7 @@ class desk(object):
             seat.flag = False
 
         self.pod_info.term += 1
-        if self.pod_info.term == 4:
+        if self.pod_info.term >= 4:
             self.pod_info.term = 0
             # check if only one player remain
             remain_num = 0
