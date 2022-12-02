@@ -159,6 +159,7 @@ class desk(object):
     # call prepare_new_game(), dealing cards and assign blinds.
     def start_game(self, room_id):
         self.pod_info.playing = True
+        self.lock.release()
         self.prepare_new_game()
         # pass
         # pod_info.playing=True
