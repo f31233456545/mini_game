@@ -53,15 +53,21 @@ class APITestCase(TestCase):
 
     def api_create_room(self):
         print("API create_room:")
-        response = self.client.get('/create_room/', QUERY_STRING="creator_name=zky&room_name=test_room&game_kind=0&private=0")
+        flag = False
+        response = self.client.get('/create_room/', QUERY_STRING="creator_name=adam&room_name=test_room&game_kind=0&private=0")
         response_text = response.content.decode("utf-8")
+        if response_text.find('"succeed": true') != -1:
+            flag = True
         print("\033[36m" + str(response_text) + "\033[0m")
         self.assertEqual(
             response.status_code,
             200,
             "Test Failed"
         )
-        print('\033[32m  Pass\033[0m')
+        if flag == True:
+            print('\033[32m  Pass\033[0m')
+        else:
+            print('\033[31m  Fail\033[0m')
 
 
     
