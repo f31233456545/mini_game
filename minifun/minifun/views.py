@@ -234,12 +234,16 @@ def exit_room(request):
         return HttpResponse(json.dumps(resp))
     pusrs = r.player_list.filter(username=my_username)
     if pusrs:
+        desks[r.room_id].lock.acquire()
         if desks[r.room_id].stand(my_room_id, my_username):
+            desks[r.room_id].lock.release()
             r.player_num -= 1
             r.player_list.remove(pusrs[0])
             r.save()
             if r.viewer_num+r.player_num == 0:
                 r.delete()
+        else:
+            desks[r.room_id].lock.release()
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
@@ -329,8 +333,8 @@ def stand(request):
         resp['succeed'] = False
         resp['message'] = "User "+my_user_name+" is not a player in room "+str(my_room_id)+"."
         return HttpResponse(json.dumps(resp))
-    #judge if user_name is valid(by calling stand)
-    #modify desk.user_info and database message of room
+    # judge if user_name is valid(by calling stand)
+    # modify desk.user_info and database message of room
     desks[room.room_id].lock.acquire()
     if desks[room.room_id].stand(my_room_id, my_user_name):
         desks[room.room_id].lock.release()
