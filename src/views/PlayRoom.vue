@@ -127,6 +127,8 @@ export default {
                     return "TURN"
                 case 3:
                     return "RIVER"
+                default:
+                    return this.gameInfo.pod_info.term
             }
         },
         playing() {
