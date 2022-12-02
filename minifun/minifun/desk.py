@@ -85,6 +85,7 @@ class desk(object):
 
         self.pod_info.term += 1
         if self.pod_info.term == 4:
+            self.pod_info.term = 0
             # check if only one player remain
             remain_num = 0
             remain_player = self.user_info[0]
@@ -107,7 +108,6 @@ class desk(object):
                         break
                 self.action(winner_id, 4, 0)
             self.prepare_new_game()
-            self.pod_info.term = 0
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
