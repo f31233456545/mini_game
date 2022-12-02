@@ -2,6 +2,7 @@ import random
 import copy
 import time
 import math
+import threading
 
 MAX_PLAYER_NUM=8
 
@@ -38,6 +39,7 @@ class desk(object):
             i += 1
         self.pod_info=self.pod_infoClass()
         self.last_info=self.last_actionClass()
+        self.lock=threading.Lock()
 
     #发牌
     def deal_cards(self):
@@ -306,7 +308,9 @@ class desk(object):
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
+        self.lock.acquire()
         time.sleep(5)
+        self.lock.release()
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
