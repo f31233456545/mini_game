@@ -109,6 +109,7 @@ class desk(object):
                         winner_id = u.seat_id
                         break
                 self.action(winner_id, 4, 0)
+            self.lock.release()
             self.prepare_new_game()
 
     def create_room(self, private, room_name, game_kind, creator_name):
@@ -310,7 +311,6 @@ class desk(object):
     def prepare_new_game(self):
         self.lock.acquire()
         time.sleep(5)
-        self.lock.release()
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
         while i < MAX_PLAYER_NUM :
@@ -362,6 +362,7 @@ class desk(object):
         self.action(self.pod_info.big_blind, 3, 2)
         # TODO:
         # self.last_info.user_id = winner
+        self.lock.release()
 
     def score(self, seat_id):
 
