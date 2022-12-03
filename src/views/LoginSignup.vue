@@ -14,7 +14,7 @@
             <el-input type="text" placeholder="用户名" v-model="rulesForm.username"></el-input>
           </el-form-item>
           <el-form-item props="password">
-            <el-input type="password" placeholder="密码" v-model="rulesForm.password"></el-input>
+            <el-input type="password" placeholder="密码" v-model="rulesForm.password" @keyup.enter="login({username:rulesForm.username,password:rulesForm.password})"></el-input>
             <span class="errTips" v-if="error">*用户名或密码错误！</span>
           </el-form-item>
           <el-form-item>
@@ -34,7 +34,7 @@
             <span class="errTips" v-if="existed">*用户名已经存在！</span>
           </el-form-item>
           <el-form-item props="password">
-            <el-input type="password" placeholder="密码" v-model="rulesForm.password"></el-input>
+            <el-input type="password" placeholder="密码" v-model="rulesForm.password" @keyup.enter="register({username:rulesForm.username,password:rulesForm.password})"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="button-wrapper">
