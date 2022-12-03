@@ -11,7 +11,7 @@
       <div class="form-section" v-if="!islogin">
         <el-form label-position="top" label-width="100px" class="demo-ruleForm" :rules="rules" :model="rulesForm" status-icon ref="ruleForm">
           <el-form-item props="name">
-            <el-input type="text" placeholder="用户名" v-model="rulesForm.name"></el-input>
+            <el-input type="text" placeholder="用户名" v-model="rulesForm.username"></el-input>
           </el-form-item>
           <el-form-item props="password">
             <el-input type="password" placeholder="密码" v-model="rulesForm.password"></el-input>
@@ -19,7 +19,7 @@
           </el-form-item>
           <el-form-item>
             <div class="button-wrapper">
-              <el-button class="button" type="primary" @click="login">登录</el-button>
+              <el-button class="button" type="primary" @click="login({username:rulesForm.username,password:rulesForm.password})">登录</el-button>
             </div>
             <div class="button-wrapper">
               <el-button class="button" type="primary" @click="changeType">立即注册</el-button>
@@ -30,7 +30,7 @@
       <div class="form-section" v-else>
         <el-form label-position="top" label-width="100px" class="demo-ruleForm" :rules="rules" status-icon ref="ruleForm">
           <el-form-item props="name">
-            <el-input type="text" placeholder="用户名" v-model="rulesForm.name"></el-input>
+            <el-input type="text" placeholder="用户名" v-model="rulesForm.username"></el-input>
             <span class="errTips" v-if="existed">*用户名已经存在！</span>
           </el-form-item>
           <el-form-item props="password">
@@ -38,7 +38,7 @@
           </el-form-item>
           <el-form-item>
             <div class="button-wrapper">
-              <el-button class="button" type="primary" @click="register">注册</el-button>
+              <el-button class="button" type="primary" @click="register({username:rulesForm.username,password:rulesForm.password})">注册</el-button>
             </div>
             <div class="button-wrapper">
               <el-button class="button" type="primary" @click="changeType"> 马上登录</el-button>
@@ -51,10 +51,10 @@
 </template>
     
 <script>
-import Navigation from "../components/Navigation.vue";
-import { request } from "../utils/request.js";
-import store from "../store/index.js";
-import router from "../router/index.js";
+import Navigation from "../components/Navigation.vue"
+import { request } from "../utils/request.js"
+import store from "../store/index.js"
+import router from "../router/index.js"
 export default {
   components: { Navigation },
   data() {
@@ -63,8 +63,7 @@ export default {
       error: false, //用户名或密码是否错误
       existed: false, //用户名是否已被注册
       rulesForm: {
-        islogin: true,
-        name: "",
+        username: "",
         password: "",
       },
     };
@@ -73,18 +72,13 @@ export default {
     //登录/注册界面切换
     changeType() {
       (this.islogin = !this.islogin),
-        (this.rulesForm.name = ""),
+        (this.rulesForm.username = ""),
         (this.rulesForm.password = "");
     },
     //用户登录
-    login() {
+    login(LoginData) {
       const self = this;
-      var LoginData = {
-        username: self.rulesForm.name,
-        password: self.rulesForm.password,
-      };
-      if (self.rulesForm.name != "" && self.rulesForm.password != "") {
-        //axios.post('http://47.94.92.103:3005/login',LoginData)
+      if (self.rulesForm.username != "" && self.rulesForm.password != "") {
         request("login", LoginData)
           .then(function (res) {
             console.log(res.succeed);
@@ -108,21 +102,21 @@ export default {
       }
       },
     //用户注册
-    register() {
+    register(LoginData) {
       const self = this;
-      var LoginData = {
-        username: self.rulesForm.name,
-        password: self.rulesForm.password,
-      };
-      if (self.rulesForm.name != "" && self.rulesForm.password != "") {
+    //   var LoginData = {
+    //     username: self.rulesForm.username,
+    //     password: self.rulesForm.password,
+    //   };
+      if (self.rulesForm.username != "" && self.rulesForm.password != "") {
         //axios.post('http://47.94.92.103:3005/register',LoginData)
         request("register", LoginData)
           .then(function (res) {
             switch (res.succeed) {
               case true:
                   self.$message.success('注册成功！正在登陆，请稍后...');
-                self.login();
-                break;
+                    self.login(LoginData);
+                    break;
               case false:
                 self.existed = true;
             }
@@ -161,6 +155,9 @@ export default {
 }
 .button {
   width: 200px;
+}
+.errTips {
+    color: white;
 }
 </style>
 

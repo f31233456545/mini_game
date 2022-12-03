@@ -1,10 +1,12 @@
 {
+    "room_name": "room",
+    "view_cnt": 1,
     "user_infos": [
         {
-        "user_name": "小王",
+        "user_name": "",
         "seat_id": 1,
         "stack_cnt": 100,
-        "chip_cnt": 0,
+        "chip_cnt": 50,
         "folded": false,
         "last_action": 0,
         "hand_pokes": [12,29]
@@ -19,7 +21,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 3,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -28,7 +30,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 4,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -37,7 +39,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 5,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -46,7 +48,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 6,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -55,7 +57,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 7,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -64,7 +66,7 @@
         "hand_pokes": [0,0]
         },
         {
-        "user_name": "user",
+        "user_name": "",
         "seat_id": 8,
         "stack_cnt": 100,
         "chip_cnt": 0,
@@ -75,16 +77,18 @@
     ],
 
     "pod_info": {
-        "curr_id": 7,
-        "bookmarker_id": 4,
-        "term": 1,
-        "pod_chip_cnt": 100,
-        "pokes": [33,20,5,0,0]
+        "playing": false,
+        "your_id": 0,
+        "curr_id": 0,
+        "bookmarker_id": 0,
+        "term": -1,
+        "pod_chip_cnt": 0,
+        "pokes": []
     },
 
     "last_action": {
         "user_id": 0,
-        "action_type": 0,
+        "action_type": -1,
         "raise_num": 0
     }
 }

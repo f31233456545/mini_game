@@ -1,15 +1,17 @@
 <template>
     <div
-        :style="{ backgroundColor: backgroundColor, borderRadius: '4px', padding: '3px'}"
+        class="actionpopup-head"
         @mouseover="mouseoverHandler"
         @mouseout="mouseoutHandler"
-        @click="clickHandler">
-            <span :style="{ color: titleColor }">
-            {{ title }}
-            </span>
-            <span :style="{ color: messageColor }">
-                {{ message }}
-            </span>
+        @click="clickHandler"
+    >
+        <div class="prefix"/>
+        <span :style="{ color: titleColor }">
+            {{ title + " " }}
+        </span>
+        <span :style="{ color: messageColor }">
+            {{ message }}
+        </span>
     </div>
 </template>
 
@@ -27,7 +29,7 @@ export default {
         },
         titleColor: {
             type: String,
-            default: '#FFCC00'
+            default: '#FFAA00'
         },
         message: {
             type: String,
@@ -35,11 +37,7 @@ export default {
         },
         messageColor: {
             type: String,
-            default: '#FFFFFF'
-        },
-        backgroundColor: {
-            type: String,
-            default: '#FFFFFF'
+            default: '#000000'
         },
         duration: {
             type: Number,
@@ -79,5 +77,44 @@ export default {
 </script>
 
 <style>
+@keyframes slide-in {
+0%{
+    transform: translate(200px,0px);
+}
+10%{
+    transform: translate(0px,0px);
+}
+90%{
+    transform: translate(0px,0px);
+    opacity: 100%;
+}
+95%{
+    transform: translate(0px,0px);
+    opacity: 50%;
+}
+100%{
+    transform: translate(200px,0px);
+    opacity: 0%;
+}
+}
+.actionpopup-head {
+    position: relative;
+    background-color: white;
+    /* border-radius: 4px; */
+    padding: 10px;
+    width: 200px;
+    height: 40px;
+    animation: slide-in 1s;
+    -webkit-animation: slide-in 3s;
+}
+.prefix {
+    position: absolute;
+    top: 0px;
+    left: -5px;
+    height: 40px;
+    width: 8px;
+    background: #FFAA00;
+}
+
 
 </style>
