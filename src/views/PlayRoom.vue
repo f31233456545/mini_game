@@ -4,7 +4,7 @@
         <GameBoard v-if="playing" />
 
         <Player v-for="i in [1, 2, 3, 4, 5, 6, 7, 8]" :pos="i" />
-        
+
         <div class="play-room-header">
             <div class="room-info">
                 <div class="room-name">
@@ -42,10 +42,7 @@
                 })">
                     站起
                 </el-button>
-                <el-button type="danger" @click="exit_room({
-                    room_id: this.$store.state.inRoomId,
-                    user_name: this.$store.state.userName
-                })">
+                <el-button type="danger" @click="show_confirm">
                     离开房间
                 </el-button>
             </div>
@@ -69,6 +66,21 @@
         <div class="debug" v-if="debug">
             <el-button type="primary" @click="debug1">debug: close timer</el-button>
             <el-button type="primary" @click="debug2">debug: get game info</el-button>
+        </div>
+
+        <div class="confirm" v-if="displayConfirm">
+            <div class="confirm-cover"></div>
+            <div class="confirm-container">
+                <div class="confirm-tit">确定要离开房间吗？</div>
+                <div class="confirm-buttons">
+                    <el-button type="info" @click="confirm_cancel">取消</el-button>
+                    <el-button type="danger" @click="exit_room({
+                        room_id: this.$store.state.inRoomId,
+                        user_name: this.$store.state.userName
+                    })">确定</el-button>  
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -98,6 +110,7 @@ export default {
             num: 0,
             oldPodChipCount: 0,
             timeInter: null, // 定时器，mount时设定
+            displayConfirm: false,
             debug: false,
         };
     },
@@ -155,14 +168,6 @@ export default {
         }
     },
     methods: {
-        open2() {
-            this.$notify({
-                title: '操作提示',
-                message: '玩家5加注15,玩家6开始操作',
-                duration: 0,
-                offset: 100
-            });
-        },
         handleChange(value) {
             console.log(value);
         },
@@ -182,7 +187,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log(err)
                 })
         },
         stand(stand_data) {
@@ -207,11 +212,7 @@ export default {
                 })
         },
         exit_room(exit_data) {
-            const self = this;
-            if (self.seated) {
-                self.$message.error('请先站起！')
-                return
-            }
+            const self = this
             request("exit_room", exit_data)
                 .then(function (res) {
                     switch (res.succeed) {
@@ -227,13 +228,23 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log(err)
                 });
-
-
+        },
+        show_confirm(){
+            const self = this
+            if (self.seated) {
+                self.$message.error('请先站起！')
+            }
+            else{
+                this.displayConfirm = true
+            }
+        },
+        confirm_cancel(){
+            this.displayConfirm = false
         },
         start() {
-            const self = this;
+            const self = this
             var start_data = {
                 room_id: self.roomId
             };
@@ -252,7 +263,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log(err)
                 });
         },
         fold() { //弃牌
@@ -272,7 +283,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log(err)
                 });
         },
         call() { //跟注
@@ -292,7 +303,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log(err)
                 });
         },
         raise() { //加注
@@ -313,7 +324,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log(err)
                 });
             }
             else{
@@ -321,7 +332,7 @@ export default {
             }
         },
         request_gameinfo() {
-            const self = this;
+            const self = this
             var request_data = {
                 room_id: self.$store.state.inRoomId,
                 user_name: self.$store.state.userName,
@@ -629,6 +640,42 @@ export default {
 }
 
 .button-group2 {}
+
+.confirm {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+}
+.confirm-cover {
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+}
+.confirm-container {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    top: -50px;
+    left: -100px;
+    background: white;
+    border-radius: 10px;
+}
+.confirm-tit {
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    color: black;
+    font-size: 18px;
+    margin-top: 20px;
+}
+.confirm-buttons {
+    width: 100%;
+    height: 32px;
+    text-align: center;
+    margin-top: 10px;
+}
 
 /* debug */
 .debug {
