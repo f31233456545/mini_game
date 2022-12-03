@@ -5,7 +5,10 @@
         <div class="header-wrapper">
             <h1 class="room-list-header">{{ gameInfo.name }} rooms</h1>
             <div class="update-wrapper">
-                <button class="update-button" @click="update()"><img src="../assets/icons/update.svg" /></button>
+                <button class="update-button" @click="update()">
+                    <img src="../assets/icons/update.svg" />
+                    <div class="update-hint"><span>刷新房间列表</span></div>
+                </button>
             </div>
             <JoinRoom class="join-room-wrapper" />
         </div>
@@ -33,6 +36,11 @@ import { request } from '../utils/request.js'
 
 export default {
     components: { RoomListItem, CreateRoom, Navigation, JoinRoom },
+    data(){
+        return {
+            timeInter: null, // 定时器，mount时设定
+        }
+    },
     computed: {
         gameInfo() {
             return this.$store.state.games.find(gameInfo => gameInfo.id === parseInt(this.$route.params.id))
@@ -42,9 +50,9 @@ export default {
         // update(){
         //     this.$store.dispatch('updateRoomList',this.gameInfo.id)
         // },
-        update() {
+        update(useloading=true) {
             var params = { game_kind: this.gameInfo.id, user_name: this.$store.state.userName }
-            request('request_room_list', params)
+            request('request_room_list', params, useloading)
                 .then(data => {
                     this.$store.commit('updateRoomListInfo', { gameId: this.gameInfo.id, list: data.rooms })
                     console.log(data)
@@ -58,7 +66,14 @@ export default {
     },
     mounted() {
         this.$store.commit('setGameId', this.gameInfo.id)
-        this.update()
+        this.update(false)
+        this.timeInter = setInterval(() => {
+            this.update(false)
+        }, 10000) // 10s自动刷新一次房间列表
+    },
+    unmounted() {
+        clearInterval(this.timeInter)
+        this.timeInter = null
     }
 }
 
@@ -81,6 +96,7 @@ export default {
 }
 
 .update-button {
+    position: relative;
     width: 50px;
     height: 50px;
     background-color: transparent;
@@ -88,6 +104,29 @@ export default {
     cursor: pointer;
     margin-top: 21px;
     margin-left: 20px;
+}
+
+.update-hint {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 0px;
+    left: 0px;
+}
+
+.update-hint span{
+    display: none;
+}
+
+.update-hint:hover span{
+    position: relative;
+    top: 20px;
+    left: 40px;
+    display: block;
+    width: 100px;
+    height: 20px;
+    background: rgb(250,250,220);
+    color: rgb(50,50,50);
 }
 
 .update-button:hover {
@@ -112,4 +151,5 @@ export default {
     width: 100%;
     height: 85px;
 }
+
 </style>
