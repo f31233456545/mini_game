@@ -1,5 +1,10 @@
 <template>
     <div class="play-room">
+
+        <GameBoard v-if="playing" />
+
+        <Player v-for="i in [1, 2, 3, 4, 5, 6, 7, 8]" :pos="i" />
+        
         <div class="play-room-header">
             <div class="room-info">
                 <div class="room-name">
@@ -45,11 +50,6 @@
                 </el-button>
             </div>
         </div>
-
-        <GameBoard v-if="playing" />
-
-        <Player v-for="i in [1, 2, 3, 4, 5, 6, 7, 8]" :pos="i" />
-
 
         <div class="play-room-footer">
             <div v-if="!playing && isHost && seated" class="waiting">
