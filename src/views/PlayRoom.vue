@@ -445,6 +445,25 @@ export default {
                     }
                     self.oldPodChipCount = 0
                     store.commit('changeShowAction', -1)
+                    let seat = -1
+                    if (user) {
+                        if (self.seated) {
+                            seat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
+                        } else {
+                            seat = user.seat_id
+                        }
+                    }
+                    createSimplePopup(
+                        {
+                            title: '🎉胜利🎉',
+                            titleColor: '#FFFFFF',
+                            message: '',
+                            messageColor: '#FFFFFF',
+                            backgroundColor: '#FFB600',
+                            duration: 3000
+                        },
+                        seat
+                    )
                     break;
                 default:
                     return
