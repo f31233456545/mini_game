@@ -247,9 +247,11 @@ export default{
 .user-name{
     font-size: 16px;
     height: 20px;
+    width: 100px;
     color: white;
     padding-right: 6px;
-    overflow: visible;  
+    overflow: hidden;
+    text-overflow:ellipsis;
     text-align: center;
     background: rgba(100,180,220,1);
 }

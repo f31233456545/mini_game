@@ -8,9 +8,10 @@
 
     <div class="menu right">
         <router-link class="menu-item" to='/login-signup' v-if="!this.$store.state.login">Login/Sign Up</router-link>
-        <div v-else>
-          <router-link class="user" to='/user-info'>
-            <img src="../assets/icons/user-circle.svg" />
+        <div v-else class="user-and-logout">
+          <router-link class="menu-item user" to='/user-info'>
+            <img class="user-icon" src="../assets/icons/user-circle.svg"/>
+            <div class="user-name">{{this.$store.state.userName}}</div>
           </router-link>
           <a class="menu-item logout" @click="logout">Logout</a>
         </div>
@@ -27,12 +28,15 @@ export default {
   methods:{
     logout(){
       this.$store.commit('logout')
+      if(this.$route.path=='/user-info'){
+        this.$router.back()
+      }
     }
   }
 }
 </script>
 
-<style lan="css">
+<style lan="css" scoped>
 
 /* Navigation */
 #nav {
@@ -109,14 +113,36 @@ export default {
     top: -4px;
 }
 
+.user-and-logout {
+    display: flex;
+}
+
 .user {
     font-size: 1.2rem;
-    position: absolute;
-    top: -2px;
+    position: relative;
+    top: 0px;
+    width: 90px;
+    height: 25px;
+    display: flex;
+    background: rgb(70,90,120);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.user-icon {
+  width: 22.5px;
+  height: 22.5px;
+}
+
+.user-name {
+    width: 60px;
+    height: 22.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .logout {
-    margin-left: 40px;
+    margin-left: 0px;
     cursor: pointer;
 }
 </style>
