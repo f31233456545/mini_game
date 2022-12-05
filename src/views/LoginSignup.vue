@@ -9,7 +9,7 @@
         </el-menu>
       </div>
       <div class="form-section" v-if="islogin">
-        <el-form label-position="top" label-width="100px" @keyup.enter="login()">
+        <el-form label-position="top" label-width="100px" >
           <el-form-item props="name">
             <el-input type="text" placeholder="用户名" v-model="rulesForm.username"></el-input>
           </el-form-item>
