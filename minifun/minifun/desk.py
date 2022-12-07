@@ -109,8 +109,11 @@ class desk(object):
                         winner_id = u.seat_id
                         break
                 self.action(winner_id, 4, 0)
-            self.lock.release()
             self.prepare_new_game()
+            try:
+                self.lock.release()
+            finally:
+                pass
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
@@ -159,8 +162,11 @@ class desk(object):
     # call prepare_new_game(), dealing cards and assign blinds.
     def start_game(self, room_id):
         self.pod_info.playing = True
-        self.lock.release()
         self.prepare_new_game()
+        try:
+                self.lock.release()
+        finally:
+                pass
         # pass
         # pod_info.playing=True
 
@@ -310,7 +316,6 @@ class desk(object):
 
     # show hands, distribute chips, then call this func.
     def prepare_new_game(self):
-        self.lock.acquire()
         time.sleep(5)
         # clear all stack_cnt<=1 players, reset other players folded = false
         i = 0
@@ -363,7 +368,6 @@ class desk(object):
         self.action(self.pod_info.big_blind, 3, 2)
         # TODO:
         # self.last_info.user_id = winner
-        self.lock.release()
 
     def score(self, seat_id):
 

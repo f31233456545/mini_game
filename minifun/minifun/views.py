@@ -236,14 +236,20 @@ def exit_room(request):
     if pusrs:
         desks[r.room_id].lock.acquire()
         if desks[r.room_id].stand(my_room_id, my_username):
-            desks[r.room_id].lock.release()
+            try:
+                desks[r.room_id].lock.release()
+            finally:
+                pass
             r.player_num -= 1
             r.player_list.remove(pusrs[0])
             r.save()
             if r.viewer_num+r.player_num == 0:
                 r.delete()
         else:
-            desks[r.room_id].lock.release()
+            try:
+                desks[r.room_id].lock.release()
+            finally:
+                pass
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
@@ -307,7 +313,10 @@ def sit(request):
         stack_cnt=int(my_chip_cnt)
     desks[room.room_id].lock.acquire()
     resp['seat_id'] = desks[room.room_id].sit(my_room_id,my_user_name,stack_cnt)
-    desks[room.room_id].lock.release()
+    try:
+        desks[room.room_id].lock.release()
+    finally:
+        pass
     #modified database message of room
     room.player_num += 1
     room.viewer_num -= 1
@@ -337,7 +346,10 @@ def stand(request):
     # modify desk.user_info and database message of room
     desks[room.room_id].lock.acquire()
     if desks[room.room_id].stand(my_room_id, my_user_name):
-        desks[room.room_id].lock.release()
+        try:
+            desks[room.room_id].lock.release()
+        finally:
+            pass
         room.player_num -= 1
         room.viewer_num += 1
         room.player_list.remove(pusrs[0])
@@ -347,7 +359,10 @@ def stand(request):
         resp['message'] = " "
         return HttpResponse(json.dumps(resp))
     else:
-        desks[room.room_id].lock.release()
+        try:
+            desks[room.room_id].lock.release()
+        finally:
+            pass
         resp['succeed'] = False
         resp['message'] = "desk.stand() return false."
         return HttpResponse(json.dumps(resp))
@@ -428,7 +443,10 @@ def start_game(request):
             print("preparing new game")
             desks[rid].lock.acquire()
             desks[rid].start_game(rid)
-            desks[rid].lock.release()
+            try:
+                desks[rid].lock.release()
+            finally:
+                pass
             resp={}
             resp['succeed'] = True
             resp['message'] = "游戏开始"
@@ -484,7 +502,10 @@ def action(request):
         if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
-            d.lock.release()
+            try:
+                d.lock.release()
+            finally:
+                pass
             return HttpResponse(json.dumps(resp))
         else:
             d.user_info[user_id].flag = True
@@ -497,7 +518,10 @@ def action(request):
         if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
-            d.lock.release()
+            try:
+                d.lock.release()
+            finally:
+                pass
             return HttpResponse(json.dumps(resp))
         else:
             d.user_info[user_id].flag = True
@@ -545,6 +569,8 @@ def action(request):
     
     resp['succeed'] = True
     resp['message'] = ""
-    
-    d.lock.release()
+    try:
+        d.lock.release()
+    finally:
+        pass
     return HttpResponse(json.dumps(resp))
