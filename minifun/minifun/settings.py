@@ -60,7 +60,7 @@ ROOT_URLCONF = 'minifun.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': ['dist'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic.base import TemplateView
 from . import views
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
     path('request_game_info/', views.request_game_info),
     path('start_game/', views.start_game),
     path('action/', views.action),
+    path("",TemplateView.as_view(template_name='index.html'))
 ]
