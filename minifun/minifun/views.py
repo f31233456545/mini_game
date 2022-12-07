@@ -93,7 +93,6 @@ def register(request):
             resp['succeed'] = True
             # convert dict to json
             return HttpResponse(json.dumps(resp))
-            return HttpResponse("用户名已存在")
 
 
 # create a room function
@@ -235,12 +234,22 @@ def exit_room(request):
         return HttpResponse(json.dumps(resp))
     pusrs = r.player_list.filter(username=my_username)
     if pusrs:
+        desks[r.room_id].lock.acquire()
         if desks[r.room_id].stand(my_room_id, my_username):
+            try:
+                desks[r.room_id].lock.release()
+            except :
+                pass
             r.player_num -= 1
             r.player_list.remove(pusrs[0])
             r.save()
             if r.viewer_num+r.player_num == 0:
                 r.delete()
+        else:
+            try:
+                desks[r.room_id].lock.release()
+            except :
+                pass
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
         return HttpResponse(json.dumps(resp))
@@ -302,8 +311,12 @@ def sit(request):
         stack_cnt=200
     else:
         stack_cnt=int(my_chip_cnt)
+    desks[room.room_id].lock.acquire()
     resp['seat_id'] = desks[room.room_id].sit(my_room_id,my_user_name,stack_cnt)
-
+    try:
+        desks[room.room_id].lock.release()
+    except :
+        pass
     #modified database message of room
     room.player_num += 1
     room.viewer_num -= 1
@@ -329,9 +342,14 @@ def stand(request):
         resp['succeed'] = False
         resp['message'] = "User "+my_user_name+" is not a player in room "+str(my_room_id)+"."
         return HttpResponse(json.dumps(resp))
-    #judge if user_name is valid(by calling stand)
-    #modify desk.user_info and database message of room
+    # judge if user_name is valid(by calling stand)
+    # modify desk.user_info and database message of room
+    desks[room.room_id].lock.acquire()
     if desks[room.room_id].stand(my_room_id, my_user_name):
+        try:
+            desks[room.room_id].lock.release()
+        except :
+            pass
         room.player_num -= 1
         room.viewer_num += 1
         room.player_list.remove(pusrs[0])
@@ -341,6 +359,10 @@ def stand(request):
         resp['message'] = " "
         return HttpResponse(json.dumps(resp))
     else:
+        try:
+            desks[room.room_id].lock.release()
+        except :
+            pass
         resp['succeed'] = False
         resp['message'] = "desk.stand() return false."
         return HttpResponse(json.dumps(resp))
@@ -372,7 +394,7 @@ def request_room_list(request):
 
     return HttpResponse(json.dumps(resp))
 
-
+# no need to lock.acquire(), otherwise it will lead to a deadlock
 def request_game_info(request):
     my_room_id=int(request.GET.get("room_id"))
     my_user_name=request.GET.get("user_name")
@@ -419,7 +441,12 @@ def start_game(request):
                 resp['message'] = "num of players less than 2"
                 return HttpResponse(json.dumps(resp))
             print("preparing new game")
+            desks[rid].lock.acquire()
             desks[rid].start_game(rid)
+            try:
+                desks[rid].lock.release()
+            except :
+                pass
             resp={}
             resp['succeed'] = True
             resp['message'] = "游戏开始"
@@ -438,6 +465,7 @@ def start_game(request):
 # known bugs: 1, check if action_player and cur_player is the same player.
 #                for example: when it is playerA's turn, playerB cannot fold or raise.
 #             2, raise should decrease stack_cnt.
+# fixed.
 def action(request):
     my_username = request.GET.get("user_name")
     action_type = int(request.GET.get("action_type"))
@@ -461,7 +489,7 @@ def action(request):
         resp['message'] = "Invalid action type."
         return HttpResponse(json.dumps(resp))
     d = desks[r.room_id]    
-
+    d.lock.acquire()
     seat_id = d.get_user_seat_id(my_username)
     user_id = seat_id - 1
     # Fold
@@ -474,6 +502,10 @@ def action(request):
         if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
+            try:
+                d.lock.release()
+            except :
+                pass
             return HttpResponse(json.dumps(resp))
         else:
             d.user_info[user_id].flag = True
@@ -486,6 +518,10 @@ def action(request):
         if d.user_info[user_id].stack_cnt + d.user_info[user_id].chip_cnt < raise_num:
             resp['succeed'] = False
             resp['message'] = "Insufficient chip."
+            try:
+                d.lock.release()
+            except :
+                pass
             return HttpResponse(json.dumps(resp))
         else:
             d.user_info[user_id].flag = True
@@ -530,7 +566,11 @@ def action(request):
     while d.user_info[cur_index].folded == True:
         cur_index = (cur_index+1)%8
     d.pod_info.curr_id=cur_index+1
-
+    
     resp['succeed'] = True
     resp['message'] = ""
+    try:
+        d.lock.release()
+    except :
+        pass
     return HttpResponse(json.dumps(resp))

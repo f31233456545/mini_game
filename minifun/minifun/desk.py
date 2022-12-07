@@ -2,6 +2,7 @@ import random
 import copy
 import time
 import math
+import threading
 
 MAX_PLAYER_NUM=8
 
@@ -38,6 +39,7 @@ class desk(object):
             i += 1
         self.pod_info=self.pod_infoClass()
         self.last_info=self.last_actionClass()
+        self.lock=threading.Lock()
 
     #发牌
     def deal_cards(self):
@@ -108,6 +110,10 @@ class desk(object):
                         break
                 self.action(winner_id, 4, 0)
             self.prepare_new_game()
+            try:
+                self.lock.release()
+            except :
+                pass
 
     def create_room(self, private, room_name, game_kind, creator_name):
         self.room_name = room_name
@@ -157,6 +163,10 @@ class desk(object):
     def start_game(self, room_id):
         self.pod_info.playing = True
         self.prepare_new_game()
+        try:
+            self.lock.release()
+        except :
+            pass
         # pass
         # pod_info.playing=True
 
