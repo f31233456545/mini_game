@@ -1,7 +1,8 @@
 from django.test import TestCase, Client 
-from .models import UserInfo, Room
+from models import UserInfo, Room
 import requests
 import json 
+import time 
 
 host = "http://127.0.0.1:8000"
 headers = {'content-Type': 'application/json', 'Accept': '*/*'}
@@ -316,4 +317,36 @@ def api_test(method, url, body_data=None, query_string=None, rest_query_string=N
 
 # Example
 #api_test("GET", "/create_room/", query_string="username=zky&password=123")
+
+def performance_test(method, url, body_data=None, query_string=None, rest_query_string=None):
+    my_url = host + url 
+    if rest_query_string:
+        my_url = my_url + str(rest_query_string)
+    if query_string:
+        my_url = my_url + "?" + query_string
+    if method == "GET" and body_data:
+        body_data = json.dumps(body_data)
+
+    print("Test "+url[1:url.len():1])
+    start_time = time.time()
+
+    response_data = requests.request(method, my_url, data=body_data, headers=headers)
+
+    end_time = time.time()
+    span = end_time - start_time
+
+    response_content = response_data.content.decode("utf-8")
+    if response_content.find("True") or response_content.find("true"):
+        print("\033[32m    Pass\033[0m")
+    else:
+        print("\031[32m    Fail\031[0m")
+    print("Test Details:")
+    print(response_content)
+    print("Time Spent:\n", round(span, 4), 'sec')
+
+performance_test("GET", "/register/", query_string="username=zky_test&password=123456")
+performance_test("GET", "/login/", query_string="username=zky_test&password=123456")
+performance_test("GET", "/create_room/", query_string="creator_name=zky_test&room_name=zky_room")
+performance_test("GET", "/join_room/", query_string="user_name=zky_test&room_id=1")
+performance_test("GET", "/request_game_info/", query_string="user_name=zky_test")
 
