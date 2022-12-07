@@ -238,7 +238,7 @@ def exit_room(request):
         if desks[r.room_id].stand(my_room_id, my_username):
             try:
                 desks[r.room_id].lock.release()
-            finally:
+            except :
                 pass
             r.player_num -= 1
             r.player_list.remove(pusrs[0])
@@ -248,7 +248,7 @@ def exit_room(request):
         else:
             try:
                 desks[r.room_id].lock.release()
-            finally:
+            except :
                 pass
         resp['succeed'] = True
         resp['message'] = "Goodbye from room " + my_room_id
@@ -315,7 +315,7 @@ def sit(request):
     resp['seat_id'] = desks[room.room_id].sit(my_room_id,my_user_name,stack_cnt)
     try:
         desks[room.room_id].lock.release()
-    finally:
+    except :
         pass
     #modified database message of room
     room.player_num += 1
@@ -348,7 +348,7 @@ def stand(request):
     if desks[room.room_id].stand(my_room_id, my_user_name):
         try:
             desks[room.room_id].lock.release()
-        finally:
+        except :
             pass
         room.player_num -= 1
         room.viewer_num += 1
@@ -361,7 +361,7 @@ def stand(request):
     else:
         try:
             desks[room.room_id].lock.release()
-        finally:
+        except :
             pass
         resp['succeed'] = False
         resp['message'] = "desk.stand() return false."
@@ -445,7 +445,7 @@ def start_game(request):
             desks[rid].start_game(rid)
             try:
                 desks[rid].lock.release()
-            finally:
+            except :
                 pass
             resp={}
             resp['succeed'] = True
@@ -504,7 +504,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             try:
                 d.lock.release()
-            finally:
+            except :
                 pass
             return HttpResponse(json.dumps(resp))
         else:
@@ -520,7 +520,7 @@ def action(request):
             resp['message'] = "Insufficient chip."
             try:
                 d.lock.release()
-            finally:
+            except :
                 pass
             return HttpResponse(json.dumps(resp))
         else:
@@ -571,6 +571,6 @@ def action(request):
     resp['message'] = ""
     try:
         d.lock.release()
-    finally:
+    except :
         pass
     return HttpResponse(json.dumps(resp))

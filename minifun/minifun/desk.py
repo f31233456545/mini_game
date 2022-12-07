@@ -112,7 +112,7 @@ class desk(object):
             self.prepare_new_game()
             try:
                 self.lock.release()
-            finally:
+            except :
                 pass
 
     def create_room(self, private, room_name, game_kind, creator_name):
@@ -164,9 +164,9 @@ class desk(object):
         self.pod_info.playing = True
         self.prepare_new_game()
         try:
-                self.lock.release()
-        finally:
-                pass
+            self.lock.release()
+        except :
+            pass
         # pass
         # pod_info.playing=True
 
