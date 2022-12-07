@@ -12,7 +12,6 @@ class UserInfo(models.Model):
         return "Profile for user: username={0}, password={1}.\n".format(self.username, self.password)
 
 
-
 class Room(models.Model):
     room_id = models.IntegerField()
     room_name = models.CharField(max_length = 128)
@@ -37,7 +36,6 @@ class Room(models.Model):
         blank=True,
         related_name='viewer_list',
     )
-    desk = desk()
 
     def player_list_display(self):
         return ','.join([i.username for i in self.player_list.all()])
