@@ -257,7 +257,7 @@ export default {
                             self.playing = true
                             break
                         case false:
-                            self.$message.error('发生错误！')
+                            self.$message.error(res.message)
                             console.log(res.message)
                             break
                     }
@@ -458,7 +458,7 @@ export default {
                     store.commit('changeShowAction', -1)
                     let seat = -1
                     if (user) {
-                        if (self.seated) {
+                        if (self.seated && self.yourInfo) {
                             seat = (user.seat_id - self.yourInfo.seat_id + 8) % 8 + 1
                         } else {
                             seat = user.seat_id

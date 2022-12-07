@@ -247,7 +247,7 @@ export default{
 .user-name{
     font-size: 16px;
     height: 20px;
-    width: 100px;
+    width: 98px;
     color: white;
     padding-right: 6px;
     overflow: hidden;
