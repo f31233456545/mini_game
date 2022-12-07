@@ -1,25 +1,30 @@
 <template>
     <div :class="'player p'+pos" v-if="playerInfo.user_name!=''">
         <div class="player-container">
+            <div class="your-pos-tip" v-if="seated && pos==1">YOU<br/><span class="pointer">▼</span></div>
             <div :class="inAction?'user-wrapper in-action':'user-wrapper'">
                 <div class="user-name">{{playerInfo.user_name}}</div>
                 <img class="user-icon" src="../assets/icons/user-regular.svg" />
                 <div class="user-chip">
                     <img class="chip-icon" src="../assets/icons/chip.png"/>
                     <div class="stack-cnt">
-                        {{playerInfo.stack_cnt}}
+                        {{stackCnt}}
+                        <span class="stack-inc" v-if="stackInc > 0">(+{{stackInc}})</span>
                     </div>
                 </div>
                 <div :class="'tag '+playerCharacter[0]">
                     {{playerCharacter[1]}}
                 </div>
                 <div class="action-info">
-                    {{inAction?'行动中...':''}}
+                    {{(inAction && !waiting)?'行动中...':''}}
                 </div>
-                <div :class="'last-action '+lastAction[0]" v-if="lastActionDisplay">
+                <div class="waiting-info">
+                    {{waiting?'等待中...':''}}
+                </div>
+                <div :class="'last-action '+lastAction[0]" v-if="showActionTag">
                     {{lastAction[1]}}
                 </div>
-                <div class="put-chip" v-if="lastActionDisplay">
+                <div class="put-chip">
                     <img class="chip-icon2" src="../assets/icons/chip2.png"/>
                     <div class="chip-cnt">
                         {{playerInfo.chip_cnt}}
@@ -56,8 +61,8 @@ import SimplePopup from './SimplePopup.vue'
 export default{
     components:{Card, SimplePopup},
     data(){
-        return{
-            lastActionDisplay: true, // 是否显示上个行动
+        return {
+            stackInc: -1,
         }
     },
     props:{
@@ -81,25 +86,41 @@ export default{
         playerInfo(){
             return this.gameInfo.user_infos[this.seatId-1]
         },
+        stackCnt(){
+            return this.playerInfo.stack_cnt
+        },
         playerCharacter(){
-            if(!this.gameInfo.pod_info.playing)
+            if(!this.gameInfo.pod_info.playing || this.playerInfo.folded)
                 return ["normal-player",""]
-            let bookmarkerId = this.gameInfo.pod_info.bookmarker_id;
-            if(this.playerInfo.seat_id==bookmarkerId){
-                return ["bookmarker","庄家"]
-            }
-            else if(this.playerInfo.seat_id==(bookmarkerId%8)+1){
+            let bookmarkerId = this.gameInfo.pod_info.bookmarker_id
+            let smallId = this.gameInfo.pod_info.small_id
+            let bigId = this.gameInfo.pod_info.big_id
+            if(this.playerInfo.seat_id==smallId){
                 return ["small-blind","小盲"]
             }
-            else if(this.playerInfo.seat_id==((bookmarkerId+1)%8)+1){
+            else if(this.playerInfo.seat_id==bigId){
                 return ["big-blind","大盲"]
+            }
+            if(this.playerInfo.seat_id==bookmarkerId){
+                return ["bookmarker","庄家"]
             }
             else{
                 return ["normal-player",""]
             }
         },
         inAction(){
-            return this.playerInfo.seat_id == this.gameInfo.pod_info.curr_id
+            return (this.playerInfo.seat_id == this.gameInfo.pod_info.curr_id) && (this.gameInfo.pod_info.playing)
+        },
+        waiting(){
+            if(this.playerInfo.hand_pokes.length == 0){
+                return true
+            }
+            else{
+                return false
+            }
+        },
+        showActionTag(){
+            return this.$store.state.showAction[this.seatId-1]
         },
         lastAction(){
             if(!this.gameInfo.pod_info.playing)
@@ -114,6 +135,32 @@ export default{
                 return ["raise","加注"]
             default:
                 return ["no-action",""]
+            }
+        },
+    },
+    watch:{
+        playerInfo(newPlayerInfo, oldPlayerInfo){
+            let self = this
+            if(newPlayerInfo.user_name != oldPlayerInfo.user_name){
+                return
+            }
+            let newStackCnt = newPlayerInfo.stack_cnt
+            let oldStackCnt = oldPlayerInfo.stack_cnt
+            if(oldStackCnt == -1){
+                return
+            }
+            var inc = newStackCnt - oldStackCnt
+            if(inc>0){
+                new Promise(function (resolve, reject) {
+                    self.stackInc = inc
+                    resolve()
+                }).then(function () {
+                    setTimeout(function () {
+                        console.log("reset")
+                        self.stackInc = -1
+                        resolve()
+                    }, 5000)
+                })
             }
         }
     }
@@ -200,9 +247,11 @@ export default{
 .user-name{
     font-size: 16px;
     height: 20px;
+    width: 98px;
     color: white;
     padding-right: 6px;
-    overflow: visible;  
+    overflow: hidden;
+    text-overflow:ellipsis;
     text-align: center;
     background: rgba(100,180,220,1);
 }
@@ -218,6 +267,8 @@ export default{
 .user-chip{
     height: 19px;
     background: rgba(80,200,50,1);
+    display: flex;
+    flex-wrap: nowrap;
 }
 .chip-icon{
     width: 20px;
@@ -232,6 +283,9 @@ export default{
     float: left;
     color: white;
 }
+.stack-inc{
+    font-size: 10px;
+}
 
 .action-info{
     position: absolute;
@@ -241,6 +295,16 @@ export default{
     left: 0px;
     font-size: 16px;
     color: yellow;
+    text-align: center;
+}
+.waiting-info{
+    position: absolute;
+    width: 100px;
+    height: 20px;
+    top: 50px;
+    left: 0px;
+    font-size: 16px;
+    color: rgb(180,180,180);
     text-align: center;
 }
 
@@ -328,5 +392,30 @@ export default{
     top: 2px;
     color: white;
     text-align: center;
+}
+
+@keyframes tip-animation{
+0%{
+
+}
+100%{
+    transform: translate(0px,-3px);
+}
+}
+.your-pos-tip{
+    position: absolute;
+    left: 0px;
+    top: -30px;
+    width: 100px;
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    animation: tip-animation 0.7s linear infinite alternate;
+    -webkit-animation: tip-animation 0.7s linear infinite alternate;
+}
+.pointer{
+    position: relative;
+    top: -2px;
+    font-size: 10px;
 }
 </style>
